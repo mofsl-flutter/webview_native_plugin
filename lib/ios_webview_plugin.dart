@@ -3,20 +3,23 @@ import 'package:flutter/services.dart';
 class IosWebViewPlugin {
   static const MethodChannel _channel = MethodChannel('webview_mo_flutter');
   static const EventChannel _eventChannel = EventChannel('webview_plugin_events');
-
   // Method to open the WebView in iOS
-
   // Stream<String>? _onPageLoadedStream;
-
   static Stream<String>? _onMessageReceivedStream;
-
   Stream<String> get onMessageReceived => _onMessageReceivedStream!;
-
-  static Future<void> openWebView(String url,
-      {String? javascriptChannelName, bool? isChart,String? backgroundColor}) async {
+  static Future<void> openWebView(
+    String url, {
+    String? javascriptChannelName,
+    bool? isChart,
+    String? backgroundColor,
+  }) async {
     try {
-      await _channel.invokeMethod('loadUrl',
-          {'initialUrl': url, 'javaScriptChannelName': javascriptChannelName, 'isChart': isChart,'backgroundColor':backgroundColor});
+      await _channel.invokeMethod('loadUrl', {
+        'initialUrl': url,
+        'javaScriptChannelName': javascriptChannelName,
+        'isChart': isChart,
+        'backgroundColor': backgroundColor,
+      });
     } on PlatformException catch (e) {
       print("Failed to open WebView: '${e.message}'.");
     }
@@ -53,7 +56,6 @@ class IosWebViewPlugin {
   }
 
   // Method to authenticate the webviewSession in iOS
-
   static Future<void> runJavaScript(String script) async {
     try {
       await _channel.invokeMethod('runJavaScript', {'script': script});
@@ -67,7 +69,6 @@ class IosWebViewPlugin {
   //       _eventChannel.receiveBroadcastStream().map<String>((event) => event as String);
   //   return _onPageLoadedStream!;
   // }
-
   static Future<String> getCurrentLoadedUrl() async {
     try {
       return await _channel.invokeMethod('getCurrentUrl');
@@ -88,5 +89,13 @@ class IosWebViewPlugin {
       print(event);
       callback(event);
     });
+  }
+
+  static Future<void> setUserInteractionEnabled(bool enabled) async {
+    try {
+      await _channel.invokeMethod('setUserInteractionEnabled', {'enabled': enabled});
+    } on PlatformException catch (e) {
+      print("Failed to set user interaction: '${e.message}'.");
+    }
   }
 }
