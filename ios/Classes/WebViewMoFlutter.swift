@@ -2,6 +2,7 @@ import Flutter
 import UIKit
 import WebKit
 
+// MARK: - Plugin Implementation
 public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHandler, WebViewControllerDelegate {
     private var webView: WKWebView?
     private var channel: FlutterMethodChannel?
@@ -13,13 +14,12 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
         registrar.addMethodCallDelegate(instance, channel: channel)
         eventChannel.setStreamHandler(instance)
 
-        // Initialize the view factory
         let factory = WebViewMoFlutterViewFactory(messenger: registrar.messenger(), delegate: instance)
         registrar.register(factory, withId: "web_view_mo_flutter")
     }
-    
+
     private var eventSink: FlutterEventSink?
-    
+
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "loadUrl":
@@ -27,31 +27,35 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
                let urlString = args["initialUrl"] as? String {
                 let javaScriptChannelName = args["javaScriptChannelName"] as? String
                 let isChart = args["isChart"] as? Bool ?? true
-                let backgroundColor = args["backgroundColor"] as? String ?? "#FF0000"
+                let backgroundColor = args["backgroundColor"] as? String ?? "#FFFFFF"
                 print("Received isChart: \(isChart)")
-                WebViewManager.shared.loadURL(urlString, isChart, withJavaScriptChannel: javaScriptChannelName, plugin: self,backgroundColor:backgroundColor)
+                WebViewManager.shared.loadURL(urlString, isChart, withJavaScriptChannel: javaScriptChannelName, plugin: self, backgroundColor: backgroundColor)
                 result(nil)
             } else {
                 result(FlutterError(code: "INVALID_ARGUMENT", message: "URL is required", details: nil))
             }
+
         case "runJavaScript":
             if let script = (call.arguments as? [String: Any])?["script"] as? String {
-                WebViewManager.shared.evaluateJavaScript(script, completionHandler: { (response, error) in
+                WebViewManager.shared.evaluateJavaScript(script) { (response, error) in
                     if let error = error {
                         result(FlutterError(code: "JAVASCRIPT_ERROR", message: error.localizedDescription, details: nil))
                     } else {
                         result(response)
                     }
-                })
+                }
             } else {
                 result(FlutterError(code: "INVALID_ARGUMENT", message: "JavaScript code is required", details: nil))
             }
+
         case "reloadUrl":
             WebViewManager.shared.webView?.reload()
             result(nil)
+
         case "resetCache":
             WebViewManager.shared.resetWebViewCache()
             result(nil)
+
         case "addJavascriptChannel":
             if let args = call.arguments as? [String: Any], let channelName = args["channelName"] as? String {
                 WebViewManager.shared.addJavascriptChannel(name: channelName)
@@ -59,25 +63,26 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
             } else {
                 result(FlutterError(code: "INVALID_ARGUMENT", message: "Channel name is required", details: nil))
             }
+
         case "getCurrentUrl":
             result(WebViewManager.shared.webView?.url?.absoluteString)
+
         default:
             result(FlutterMethodNotImplemented)
         }
     }
-    
+
     @objc public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         print("Received message: \(message.name) with body: \(message.body)")
         if let messageBody = message.body as? String {
-            print("Received message from JavaScript: \(messageBody)")
             eventSink?(messageBody)
         }
     }
-    
+
     func sendMessageBody(body: String) {
         eventSink?(body)
     }
-    
+
     func pageDidLoad(url: String) {
         eventSink?(["event": "pageFinished", "url": url])
     }
@@ -87,25 +92,15 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
     }
 
     func onJavascriptChannelMessageReceived(channelName: String, message: String) {
-        eventSink?(["event": "javascriptChannelMessageReceived",  "channelName" : channelName, "message": message])
+        eventSink?(["event": "javascriptChannelMessageReceived", "channelName": channelName, "message": message])
     }
 
-    func onNavigationRequest(url: String) {
-
-    }
-
+    func onNavigationRequest(url: String) {}
     func onPageFinished(url: String) {
         eventSink?(["event": "pageFinished", "url": url])
     }
-
-    func onReceivedError(message: String) {
-
-    }
-
-    func onJsAlert(url: String, message: String) {
-
-    }
-
+    func onReceivedError(message: String) {}
+    func onJsAlert(url: String, message: String) {}
 }
 
 extension WebViewMoFlutterPlugin: FlutterStreamHandler {
@@ -120,20 +115,9 @@ extension WebViewMoFlutterPlugin: FlutterStreamHandler {
         WebViewManager.shared.delegate = nil
         return nil
     }
-
 }
 
-protocol WebViewControllerDelegate: AnyObject {
-    func pageDidLoad(url: String)
-    func sendMessageBody(body: String)
-    func onPageLoadError()
-    func onJavascriptChannelMessageReceived(channelName: String, message: String)
-    func onNavigationRequest(url: String)
-    func onPageFinished(url: String)
-    func onReceivedError(message: String)
-    func onJsAlert(url: String, message: String)
-}
-
+// MARK: - WKWebView Manager
 class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     static let shared = WebViewManager()
     var webView: WKWebView!
@@ -147,40 +131,41 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         let configuration = WKWebViewConfiguration()
         configuration.preferences.javaScriptEnabled = true
         configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
+
         webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = self
         webView.isOpaque = false
         webView.scrollView.bounces = false
         addJavascriptChannel(name: "ChartAppDelegate")
     }
+    
+    func getWebView(frame: CGRect) -> WKWebView {
+        webView.frame = frame
+        return webView
+    }
 
-    func loadURL(_ urlString: String, _ isFromChart: Bool, withJavaScriptChannel javaScriptChannelName: String?, plugin: WKScriptMessageHandler,backgroundColor:String) {
+    func loadURL(_ urlString: String, _ isFromChart: Bool, withJavaScriptChannel javaScriptChannelName: String?, plugin: WKScriptMessageHandler, backgroundColor: String) {
         isChart = isFromChart
-        self.webView.scrollView.backgroundColor = UIColor(named: backgroundColor)
-        self.webView.backgroundColor = UIColor(named: backgroundColor)
-        print("Received loadURL isChart: \(isChart)")
+        StatusBarAppearanceUtility.updateStatusBar(for: backgroundColor)
+        if let uiColor = UIColor(hex: backgroundColor) {
+            webView.scrollView.backgroundColor = uiColor
+            webView.backgroundColor = uiColor
+        }
+
         guard let url = URL(string: urlString), isValidURL(url) else {
             delegate?.onPageLoadError()
-            print("Invalid URL provided, loading default URL.")
             loadDefaultURL()
             return
         }
 
-        if javaScriptChannelName != nil {
-            addJavascriptChannel(name: javaScriptChannelName ?? "ChartAppDelegate")
+        if let name = javaScriptChannelName {
+            addJavascriptChannel(name: name)
         }
 
         if webView.url != url {
             print("Loading URL: \(urlString)")
             webView.load(URLRequest(url: url))
-        } else {
-            print("Load URL skipped as it's the same as the current URL")
         }
-    }
-
-    func getWebView(frame: CGRect) -> WKWebView {
-        webView?.frame = frame
-        return webView!
     }
 
     func evaluateJavaScript(_ script: String, completionHandler: @escaping (Any?, Error?) -> Void) {
@@ -194,33 +179,13 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     }
 
     func addJavascriptChannel(name: String) -> Bool {
-        if configuredJavaScriptChannels.contains(name) {
-            return false
-        }
-        let wrapperSource = "window.\(name) = webkit.messageHandlers.\(name);"
-        let wrapperScript = WKUserScript(
-            source: wrapperSource,
-            injectionTime: .atDocumentStart,
-            forMainFrameOnly: false
-        )
-        webView.configuration.userContentController.addUserScript(wrapperScript)
+        if configuredJavaScriptChannels.contains(name) { return false }
+        let source = "window.\(name) = webkit.messageHandlers.\(name);"
+        let script = WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+        webView.configuration.userContentController.addUserScript(script)
         webView.configuration.userContentController.add(self, name: name)
         configuredJavaScriptChannels.insert(name)
         return true
-    }
-
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        handleLoadingError()
-    }
-
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        handleLoadingError()
-    }
-
-    private func handleLoadingError() {
-        delegate?.onPageLoadError()
-        print("Failed to load URL, navigating to default URL.")
-        loadDefaultURL()
     }
 
     private func loadDefaultURL() {
@@ -234,7 +199,6 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("Received pageDidLoad isChart: \(isChart)")
         if isChart {
             delegate?.pageDidLoad(url: webView.url?.absoluteString ?? "")
         } else {
@@ -242,12 +206,81 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         }
     }
 
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        delegate?.onPageLoadError()
+        loadDefaultURL()
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        delegate?.onPageLoadError()
+        loadDefaultURL()
+    }
+
     @objc public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print("Received message: \(message.name) with body: \(message.body)")
         if let messageBody = message.body as? String {
-            print("Received message from JavaScript: \(messageBody)")
-            let channelName = message.name
-            delegate?.onJavascriptChannelMessageReceived(channelName: channelName, message: messageBody)
+            delegate?.onJavascriptChannelMessageReceived(channelName: message.name, message: messageBody)
         }
+    }
+}
+
+protocol WebViewControllerDelegate: AnyObject {
+    func pageDidLoad(url: String)
+    func sendMessageBody(body: String)
+    func onPageLoadError()
+    func onJavascriptChannelMessageReceived(channelName: String, message: String)
+    func onNavigationRequest(url: String)
+    func onPageFinished(url: String)
+    func onReceivedError(message: String)
+    func onJsAlert(url: String, message: String)
+}
+
+
+// MARK: - Status Bar Utility
+class StatusBarAppearanceUtility {
+    static func updateStatusBar(for backgroundColorHex: String) {
+        guard let uiColor = UIColor(hex: backgroundColorHex) else { return }
+
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            window.backgroundColor = uiColor
+        }
+
+        let isLightBackground = uiColor.isLight
+        if let viewController = UIApplication.shared.windows.first?.rootViewController {
+            viewController.overrideUserInterfaceStyle = isLightBackground ? .light : .dark
+        }
+    }
+}
+
+// MARK: - UIColor Extensions
+extension UIColor {
+    convenience init?(hex: String) {
+        var hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        if hexString.hasPrefix("#") { hexString.remove(at: hexString.startIndex) }
+
+        guard let rgbValue = UInt64(hexString, radix: 16) else { return nil }
+
+        let r, g, b, a: CGFloat
+        switch hexString.count {
+        case 6: // RGB
+            r = CGFloat((rgbValue >> 16) & 0xFF) / 255
+            g = CGFloat((rgbValue >> 8) & 0xFF) / 255
+            b = CGFloat(rgbValue & 0xFF) / 255
+            a = 1.0
+        case 8: // ARGB
+            a = CGFloat((rgbValue >> 24) & 0xFF) / 255
+            r = CGFloat((rgbValue >> 16) & 0xFF) / 255
+            g = CGFloat((rgbValue >> 8) & 0xFF) / 255
+            b = CGFloat(rgbValue & 0xFF) / 255
+        default:
+            return nil
+        }
+        self.init(red: r, green: g, blue: b, alpha: a)
+    }
+
+    var isLight: Bool {
+        var white: CGFloat = 0
+        getWhite(&white, alpha: nil)
+        return white > 0.7
     }
 }
