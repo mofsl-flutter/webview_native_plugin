@@ -22,9 +22,9 @@ import io.flutter.plugin.platform.PlatformViewFactory
 import android.graphics.Color
 
 class WebViewMoFlutterViewFactory(
-        private val messenger: BinaryMessenger,
-        private val delegate: WebViewControllerDelegate?,
-        private val webViewManager: WebViewManager
+    private val messenger: BinaryMessenger,
+    private val delegate: WebViewControllerDelegate?,
+    private val webViewManager: WebViewManager
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
 
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
@@ -33,12 +33,12 @@ class WebViewMoFlutterViewFactory(
 }
 
 class WebViewMoFlutter(
-        context: Context,
-        viewId: Int,
-        args: Any?,
-        messenger: BinaryMessenger,
-        private val delegate: WebViewControllerDelegate?,
-        private val webViewManager: WebViewManager
+    context: Context,
+    viewId: Int,
+    args: Any?,
+    messenger: BinaryMessenger,
+    private val delegate: WebViewControllerDelegate?,
+    private val webViewManager: WebViewManager
 ) : PlatformView {
 
     private val webView: WebView = webViewManager.getOrCreateWebView()
@@ -53,8 +53,8 @@ class WebViewMoFlutter(
     override fun getView(): WebView = webView
 
     override fun dispose() {
-        Log.d("WebViewMoFlutterPlugin", "dispose")
-        webViewManager.destroyWebView()
+        Log.d("WebViewMoFlutterPlugin", "dispose - detaching WebView")
+        webViewManager.detachWebView()
     }
 }
 
@@ -70,14 +70,16 @@ class WebViewManager private constructor(private val context: Context) {
 
     fun getOrCreateWebView(): WebView {
         if (webView == null) {
+            Log.d("WebViewMoFlutterPlugin", "Creating new WebView instance")
             configuredJavaScriptChannels.clear()
             webView = WebView(context).apply {
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.cacheMode = WebSettings.LOAD_DEFAULT
                 settings.javaScriptCanOpenWindowsAutomatically = true
-                webView?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-                Log.d("WebViewMoFlutterPlugin", "Red Color Set")
+                setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                Log.d("WebViewMoFlutterPlugin", "WebView background set to transparent")
+
                 webChromeClient = object : WebChromeClient() {
                     override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
                         Log.d("WebViewMoFlutterPlugin", "WebViewConsole: ${consoleMessage.message()} at ${consoleMessage.sourceId()}:${consoleMessage.lineNumber()}")
@@ -102,11 +104,11 @@ class WebViewManager private constructor(private val context: Context) {
 
                         val dialog = AlertDialog.Builder(context)
                         dialog.setView(newWebView)
-                                .setPositiveButton("Close") { dialogInterface, i ->
-                                    (newWebView.parent as ViewGroup).removeView(newWebView)
-                                    dialogInterface.dismiss()
-                                }
-                                .show()
+                            .setPositiveButton("Close") { dialogInterface, i ->
+                                (newWebView.parent as ViewGroup).removeView(newWebView)
+                                dialogInterface.dismiss()
+                            }
+                            .show()
 
                         val transport = resultMsg!!.obj as WebView.WebViewTransport
                         transport.webView = newWebView
@@ -121,14 +123,13 @@ class WebViewManager private constructor(private val context: Context) {
                     }
 
                     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                    
                         return false
                     }
 
                     override fun onReceivedError(
-                            view: WebView?,
-                            request: WebResourceRequest?,
-                            error: WebResourceError?
+                        view: WebView?,
+                        request: WebResourceRequest?,
+                        error: WebResourceError?
                     ) {
                         super.onReceivedError(view, request, error)
                         delegate?.onReceivedError("error")
@@ -136,11 +137,11 @@ class WebViewManager private constructor(private val context: Context) {
                             loadDefaultURL()
                         }
                     }
-
-
                 }
-
             }
+        } else {
+            Log.d("WebViewMoFlutterPlugin", "Reusing existing WebView instance")
+            resumeWebView()
         }
         return webView!!
     }
@@ -156,7 +157,7 @@ class WebViewManager private constructor(private val context: Context) {
         } else {
             loadDefaultURL()
         }
-       resumeWebView()
+        resumeWebView()
     }
 
     fun evaluateJavaScript(script: String, completionHandler: (Any?, Throwable?) -> Unit) {
@@ -183,23 +184,33 @@ class WebViewManager private constructor(private val context: Context) {
         return true
     }
 
-
     private fun loadDefaultURL() {
         webView?.loadUrl(defaultURLString)
     }
 
-    fun destroyWebView() {
+    fun detachWebView() {
+        Log.d("WebViewMoFlutterPlugin", "detachWebView - pausing WebView")
         isWebViewPaused = true
-        Log.d("WebViewMoFlutterPlugin", "destroyWebView")
-       // webView?.onPause()
-       // webView?.pauseTimers()
+        webView?.onPause()
+        webView?.pauseTimers()
+        // Remove from parent if attached
+        (webView?.parent as? ViewGroup)?.removeView(webView)
+    }
+
+    fun destroyWebView() {
+        Log.d("WebViewMoFlutterPlugin", "destroyWebView - fully destroying WebView")
+        isWebViewPaused = true
         webView?.apply {
+            onPause()
+            pauseTimers()
             destroy()
         }
         webView = null
+        configuredJavaScriptChannels.clear()
     }
 
     fun resumeWebView() {
+        Log.d("WebViewMoFlutterPlugin", "resumeWebView")
         isWebViewPaused = false
         webView?.onResume()
         webView?.resumeTimers()
@@ -210,7 +221,10 @@ class WebViewManager private constructor(private val context: Context) {
 
         fun getInstance(context: Context): WebViewManager {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: WebViewManager(context.applicationContext).also { INSTANCE = it }
+                INSTANCE ?: WebViewManager(context.applicationContext).also {
+                    INSTANCE = it
+                    Log.d("WebViewMoFlutterPlugin", "Created new WebViewManager singleton instance")
+                }
             }
         }
     }
