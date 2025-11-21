@@ -84,20 +84,21 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
     }
 
     func pageDidLoad(url: String) {
-        eventSink?(["event": "pageFinished", "url": url])
+        eventSink?( ["event": "pageFinished", "url": url] )
     }
 
     func onPageLoadError() {
-        eventSink?(["event": "error", "message": "error"])
+        eventSink?( ["event": "error", "message": "error"] )
     }
 
     func onJavascriptChannelMessageReceived(channelName: String, message: String) {
-        eventSink?(["event": "javascriptChannelMessageReceived", "channelName": channelName, "message": message])
+        eventSink?( ["event": "javascriptChannelMessageReceived", "channelName": channelName, "message": message] )
     }
 
-    func onNavigationRequest(url: String) {}
+    func onNavigationRequest(url: String) {
+    }
     func onPageFinished(url: String) {
-        eventSink?(["event": "pageFinished", "url": url])
+        eventSink?( ["event": "pageFinished", "url": url] )
     }
     func onReceivedError(message: String) {}
     func onJsAlert(url: String, message: String) {}
@@ -120,84 +121,151 @@ extension WebViewMoFlutterPlugin: FlutterStreamHandler {
 // MARK: - WKWebView Manager
 class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     static let shared = WebViewManager()
-    var webView: WKWebView!
+    private(set) var webView: WKWebView?
     weak var delegate: WebViewControllerDelegate?
     private var configuredJavaScriptChannels: Set<String> = []
     private let defaultURLString = "https://tradingview.com/"
     private var isChart = true
-
-    override init() {
+    
+    private override init() {
         super.init()
-        let configuration = WKWebViewConfiguration()
-        configuration.preferences.javaScriptEnabled = true
-        configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
-
-        webView = WKWebView(frame: .zero, configuration: configuration)
-        webView.navigationDelegate = self
-        webView.isOpaque = false
-        webView.scrollView.bounces = false
-        addJavascriptChannel(name: "ChartAppDelegate")
+    }
+    
+    func getOrCreateWebView() -> WKWebView {
+        if webView == nil {
+            print("[WEBVIEW_PLUGIN] WebViewManager.resume - Creating new WebView instance")
+            configuredJavaScriptChannels.removeAll()
+            
+            let configuration = WKWebViewConfiguration()
+            configuration.preferences.javaScriptEnabled = true
+            configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
+            
+            webView = WKWebView(frame: .zero, configuration: configuration)
+            webView!.navigationDelegate = self
+            webView!.isOpaque = false
+            webView!.scrollView.bounces = false
+            addJavascriptChannel(name: "ChartAppDelegate")
+        } else {
+            print("[WEBVIEW_PLUGIN] WebViewManager.resume - Reusing existing WebView instance")
+        }
+        return webView!
     }
     
     func getWebView(frame: CGRect) -> WKWebView {
-        webView.frame = frame
-        return webView
+        let view = getOrCreateWebView()
+        view.frame = frame
+        return view
     }
-
-    func loadURL(_ urlString: String, _ isFromChart: Bool, withJavaScriptChannel javaScriptChannelName: String?, plugin: WKScriptMessageHandler, backgroundColor: String) {
-        isChart = isFromChart
-        StatusBarAppearanceUtility.updateStatusBar(for: backgroundColor)
-        if let uiColor = UIColor(hex: backgroundColor) {
-            webView.scrollView.backgroundColor = uiColor
-            webView.backgroundColor = uiColor
+    
+    // MARK: - ATTACH / DETACH
+    
+    func attach(to parent: UIView, frame: CGRect) {
+        print("[WEBVIEW_PLUGIN] WebViewManager.attach - Attaching WebView to parent, frame=\(frame)")
+        let view = getOrCreateWebView()
+        
+        // If WKWebView is already attached somewhere else, detach first
+        if view.superview != nil {
+            print("[WEBVIEW_PLUGIN] WebViewManager.attach - Removing from previous parent")
+            view.removeFromSuperview()
         }
 
+        // Set frame and use autoresizing mask for flexible sizing
+        if frame.width > 0 && frame.height > 0 {
+            view.frame = frame
+        } else {
+            // If frame is zero, use parent's bounds
+            view.frame = parent.bounds
+        }
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        parent.addSubview(view)
+        print("[WEBVIEW_PLUGIN] WebViewManager.attach - WebView attached, frame=\(view.frame)")
+    }
+
+    func detach() {
+        print("[WEBVIEW_PLUGIN] WebViewManager.detach - Detaching WebView from parent")
+        guard let view = webView else { return }
+        // Remove from parent if attached
+        if view.superview != nil {
+            view.removeFromSuperview()
+        }
+    }
+    
+    func destroyWebView() {
+        print("[WEBVIEW_PLUGIN] WebViewManager.destroy - Destroying WebView instance")
+        guard let view = webView else { return }
+        view.stopLoading()
+        view.removeFromSuperview()
+        view.configuration.userContentController.removeAllUserScripts()
+        webView = nil
+        configuredJavaScriptChannels.removeAll()
+    }
+    
+    // MARK: - URL Loading
+    
+    func loadURL(_ urlString: String, _ isFromChart: Bool, withJavaScriptChannel javaScriptChannelName: String?, plugin: WKScriptMessageHandler, backgroundColor: String) {
+        isChart = isFromChart
+        let view = getOrCreateWebView()
+        
+        StatusBarAppearanceUtility.updateStatusBar(for: backgroundColor)
+        if let uiColor = UIColor(hex: backgroundColor) {
+            view.scrollView.backgroundColor = uiColor
+            view.backgroundColor = uiColor
+        }
+        
         guard let url = URL(string: urlString), isValidURL(url) else {
             delegate?.onPageLoadError()
             loadDefaultURL()
             return
         }
-
+        
         if let name = javaScriptChannelName {
             addJavascriptChannel(name: name)
         }
-
-        if webView.url != url {
-            print("Loading URL: \(urlString)")
-            webView.load(URLRequest(url: url))
+        
+        if view.url != url {
+            view.load(URLRequest(url: url))
         }
     }
-
+    
     func evaluateJavaScript(_ script: String, completionHandler: @escaping (Any?, Error?) -> Void) {
-        webView.evaluateJavaScript(script, completionHandler: completionHandler)
+        guard let view = webView else {
+            completionHandler(nil, NSError(domain: "WebViewManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "WebView not initialized"]))
+            return
+        }
+        view.evaluateJavaScript(script, completionHandler: completionHandler)
     }
-
+    
     func resetWebViewCache() {
         let websiteDataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
         let date = Date(timeIntervalSince1970: 0)
         WKWebsiteDataStore.default().removeData(ofTypes: websiteDataTypes, modifiedSince: date, completionHandler: {})
     }
-
+    
     func addJavascriptChannel(name: String) -> Bool {
-        if configuredJavaScriptChannels.contains(name) { return false }
+        if configuredJavaScriptChannels.contains(name) {
+            return false
+        }
+        guard let view = webView else {
+            return false
+        }
         let source = "window.\(name) = webkit.messageHandlers.\(name);"
         let script = WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: false)
-        webView.configuration.userContentController.addUserScript(script)
-        webView.configuration.userContentController.add(self, name: name)
+        view.configuration.userContentController.addUserScript(script)
+        view.configuration.userContentController.add(self, name: name)
         configuredJavaScriptChannels.insert(name)
         return true
     }
-
+    
     private func loadDefaultURL() {
-        if let defaultURL = URL(string: defaultURLString) {
-            webView.load(URLRequest(url: defaultURL))
-        }
+        guard let view = webView, let defaultURL = URL(string: defaultURLString) else { return }
+        view.load(URLRequest(url: defaultURL))
     }
-
+    
     private func isValidURL(_ url: URL) -> Bool {
-        return UIApplication.shared.canOpenURL(url)
+        return url.scheme?.starts(with: "http") ?? false
     }
-
+    
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if isChart {
             delegate?.pageDidLoad(url: webView.url?.absoluteString ?? "")
@@ -205,23 +273,24 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
             delegate?.onPageFinished(url: webView.url?.absoluteString ?? "")
         }
     }
-
+    
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         delegate?.onPageLoadError()
         loadDefaultURL()
     }
-
+    
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         delegate?.onPageLoadError()
         loadDefaultURL()
     }
-
+    
     @objc public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if let messageBody = message.body as? String {
             delegate?.onJavascriptChannelMessageReceived(channelName: message.name, message: messageBody)
         }
     }
 }
+
 
 protocol WebViewControllerDelegate: AnyObject {
     func pageDidLoad(url: String)
@@ -246,7 +315,8 @@ class StatusBarAppearanceUtility {
         }
 
         let isLightBackground = uiColor.isLight
-        if let viewController = UIApplication.shared.windows.first?.rootViewController {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let viewController = windowScene.windows.first?.rootViewController {
             viewController.overrideUserInterfaceStyle = isLightBackground ? .light : .dark
         }
     }

@@ -24,66 +24,35 @@ class WebViewMoFlutterViewFactory: NSObject, FlutterPlatformViewFactory {
 }
 
 class WebViewMoFlutter: NSObject, FlutterPlatformView {
-    private var webView: WKWebView
-    private var url: URL?
+    private var containerView: UIView = UIView()
     private var delegate: WebViewControllerDelegate?
     private var isChart: Bool = true
 
     init(frame: CGRect, viewIdentifier: Int64, args: Any?, messenger: FlutterBinaryMessenger, delegate: WebViewControllerDelegate?) {
-        self.webView = WebViewManager.shared.getWebView(frame: frame)
         self.delegate = delegate
         super.init()
 
-         // Initialize isChart from args
-        if let argsDict = args as? [String: Any], let isChart = argsDict["isChart"] as? Bool {
-            self.isChart = isChart
-            self.webView.scrollView.backgroundColor = UIColor.clear
-        } else {
-            self.isChart = true
-        }
-        print("Received arg isChart: \(isChart)")
+        containerView.frame = frame
+        containerView.autoresizesSubviews = true
+        containerView.clipsToBounds = true
 
-        if let argsDict = args as? [String: Any], let _ = argsDict["initialUrl"] as? String {
+        // Read arguments
+        if let argsDict = args as? [String: Any] {
+            if let isChartArg = argsDict["isChart"] as? Bool {
+                self.isChart = isChartArg
+            }
+        }
 
-            // self.url = URL(string: urlString)
-            // loadUrl()
-        }
-        
-        if let argsDict = args as? [String: Any], let backgroundColor = argsDict["backgroundColor"] as? String {
-            self.webView.scrollView.backgroundColor = UIColor(named: backgroundColor)
-            self.webView.backgroundColor = UIColor(named: backgroundColor)
-        }
-        
-        self.webView.navigationDelegate = self
+        // ATTACH THE SINGLETON WEBVIEW TO THIS VIEW - use frame instead of bounds
+        WebViewManager.shared.attach(to: containerView, frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
     }
 
     func view() -> UIView {
-        webView.isOpaque = false
-        webView.scrollView.bounces = false
-        return webView
+        return containerView
     }
 
-   
-}
-
-extension WebViewMoFlutter: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("Received pageDidLoad2 isChart: \(isChart)")
-       if isChart {
-            delegate?.pageDidLoad(url: webView.url?.absoluteString ?? "")
-        } else {
-            delegate?.onPageFinished(url: webView.url?.absoluteString ?? "")
-        }
+    deinit {
+        // DETACH WHEN WIDGET IS REMOVED
+        WebViewManager.shared.detach()
     }
-
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        // handleLoadingError()
-        delegate?.onPageLoadError()
-    }
-
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        // handleLoadingError()
-        delegate?.onPageLoadError()
-    }
-    
 }

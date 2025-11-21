@@ -21,16 +21,16 @@ class IosWebViewPlugin {
         'backgroundColor': backgroundColor,
       });
     } on PlatformException catch (e) {
-      print("Failed to open WebView: '${e.message}'.");
+      print("[IOS_WEBVIEW_PLUGIN] Failed to open WebView: '${e.message}'.");
     }
   }
 
   static Future<void> addJavascriptChannel(String channelName) async {
     try {
-      print("addJavascriptChannel  $channelName");
+      print("[IOS_WEBVIEW_PLUGIN] addJavascriptChannel $channelName");
       await _channel.invokeMethod('addJavascriptChannel', {'channelName': channelName});
     } on PlatformException catch (e) {
-      print("Failed to add JavaScript channel: ${e.message}");
+      print("[IOS_WEBVIEW_PLUGIN] Failed to add JavaScript channel: ${e.message}");
       rethrow;
     }
   }
@@ -40,7 +40,7 @@ class IosWebViewPlugin {
     try {
       await _channel.invokeMethod('reloadUrl');
     } on PlatformException catch (e) {
-      print("Failed to reload URL: ${e.message}");
+      print("[IOS_WEBVIEW_PLUGIN] Failed to reload URL: ${e.message}");
       rethrow;
     }
   }
@@ -50,7 +50,7 @@ class IosWebViewPlugin {
     try {
       await _channel.invokeMethod('resetCache');
     } on PlatformException catch (e) {
-      print("Failed to reset cache: ${e.message}");
+      print("[IOS_WEBVIEW_PLUGIN] Failed to reset cache: ${e.message}");
       rethrow;
     }
   }
@@ -60,7 +60,7 @@ class IosWebViewPlugin {
     try {
       await _channel.invokeMethod('runJavaScript', {'script': script});
     } on PlatformException catch (e) {
-      print("Failed to run JavaScript: '${e.message}'.");
+      print("[IOS_WEBVIEW_PLUGIN] Failed to run JavaScript: '${e.message}'.");
     }
   }
 
