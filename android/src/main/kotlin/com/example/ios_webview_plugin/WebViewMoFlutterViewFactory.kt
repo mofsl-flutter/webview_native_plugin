@@ -20,6 +20,9 @@ import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 import android.graphics.Color
+import android.view.View
+import android.widget.FrameLayout
+import android.view.MotionEvent
 
 class WebViewMoFlutterViewFactory(
     private val messenger: BinaryMessenger,
@@ -41,20 +44,55 @@ class WebViewMoFlutter(
     private val webViewManager: WebViewManager
 ) : PlatformView {
 
-    private val webView: WebView = webViewManager.getOrCreateWebView()
+    private val container = FrameLayout(context)
+    private val webView = webViewManager.getOrCreateWebView()
 
     init {
-//        if (args is Map<*, *>) {
-//            val initialUrl = args["initialUrl"] as? String
-//            initialUrl?.let { webViewManager.loadURL(it, null, null) }
-//        }
+        attachWebViewToContainer()
     }
 
-    override fun getView(): WebView = webView
+    private fun attachWebViewToContainer() {
+        try {
+            val parent = webView.parent
+            if (parent is ViewGroup) {
+                parent.removeView(webView)
+            }
+
+            container.removeAllViews()
+            container.addView(
+                webView,
+                FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
+
+            webViewManager.resumeWebView()
+
+            Log.d("WebViewMoFlutterPlugin", "WebView attached")
+        } catch (e: Exception) {
+            Log.e("WebViewMoFlutterPlugin", "Error attaching WebView: ${e.message}")
+        }
+    }
+
+    override fun getView(): View {
+        attachWebViewToContainer()
+        return container
+    }
+
 
     override fun dispose() {
         Log.d("WebViewMoFlutterPlugin", "dispose - detaching WebView")
+
+        container.removeAllViews()
+
+        // This now ONLY detaches view, not pause/destroy timers
         webViewManager.detachWebView()
+
+        Log.d(
+            "WebViewMoFlutterPlugin",
+            "After dispose: isAttached=${webView.parent != null}"
+        )
     }
 }
 
@@ -161,7 +199,7 @@ class WebViewManager private constructor(private val context: Context) {
     }
 
     fun evaluateJavaScript(script: String, completionHandler: (Any?, Throwable?) -> Unit) {
-        if (isWebViewPaused) resumeWebView()
+        Log.d("WebViewMoFlutterPlugin", "evaluateJavaScript : $script ")
         webView?.evaluateJavascript(script) { result ->
             completionHandler(result, null)
         }
