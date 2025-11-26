@@ -113,7 +113,8 @@ class WebViewManager private constructor(private val context: Context) {
         private set
     private val configuredJavaScriptChannels: MutableSet<String> = mutableSetOf()
     private val defaultURLString = "https://tradingview.com/"
-    private var isWebViewPaused: Boolean = false
+    var isWebViewPaused: Boolean = false
+        private set
     private var isFromChart: Boolean = true
 
     fun getOrCreateWebView(): WebView {
