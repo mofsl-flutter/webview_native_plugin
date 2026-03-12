@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class IosWebViewPlugin {
@@ -21,16 +22,16 @@ class IosWebViewPlugin {
         'backgroundColor': backgroundColor,
       });
     } on PlatformException catch (e) {
-      print("Failed to open WebView: '${e.message}'.");
+      debugPrint("Failed to open WebView: '${e.message}'.");
     }
   }
 
   static Future<void> addJavascriptChannel(String channelName) async {
     try {
-      print("addJavascriptChannel  $channelName");
+      debugPrint("addJavascriptChannel  $channelName");
       await _channel.invokeMethod('addJavascriptChannel', {'channelName': channelName});
     } on PlatformException catch (e) {
-      print("Failed to add JavaScript channel: ${e.message}");
+      debugPrint("Failed to add JavaScript channel: ${e.message}");
       rethrow;
     }
   }
@@ -40,7 +41,7 @@ class IosWebViewPlugin {
     try {
       await _channel.invokeMethod('reloadUrl');
     } on PlatformException catch (e) {
-      print("Failed to reload URL: ${e.message}");
+      debugPrint("Failed to reload URL: ${e.message}");
       rethrow;
     }
   }
@@ -50,7 +51,7 @@ class IosWebViewPlugin {
     try {
       await _channel.invokeMethod('resetCache');
     } on PlatformException catch (e) {
-      print("Failed to reset cache: ${e.message}");
+      debugPrint("Failed to reset cache: ${e.message}");
       rethrow;
     }
   }
@@ -60,7 +61,7 @@ class IosWebViewPlugin {
     try {
       await _channel.invokeMethod('runJavaScript', {'script': script});
     } on PlatformException catch (e) {
-      print("Failed to run JavaScript: '${e.message}'.");
+      debugPrint("Failed to run JavaScript: '${e.message}'.");
     }
   }
 
@@ -73,7 +74,7 @@ class IosWebViewPlugin {
     try {
       return await _channel.invokeMethod('getCurrentUrl');
     } on PlatformException catch (e) {
-      print("Failed to get current URL: '${e.message}'.");
+      debugPrint("Failed to get current URL: '${e.message}'.");
       rethrow;
     }
   }
@@ -86,7 +87,7 @@ class IosWebViewPlugin {
 
   static void setWebViewLoadedCallback(Function(dynamic) callback) {
     _eventChannel.receiveBroadcastStream().listen((event) {
-      print(event);
+      debugPrint(event.toString());
       callback(event);
     });
   }
@@ -95,7 +96,7 @@ class IosWebViewPlugin {
     try {
       await _channel.invokeMethod('setUserInteractionEnabled', {'enabled': enabled});
     } on PlatformException catch (e) {
-      print("Failed to set user interaction: '${e.message}'.");
+      debugPrint("Failed to set user interaction: '${e.message}'.");
     }
   }
 }

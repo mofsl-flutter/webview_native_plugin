@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class WebViewMoFlutterController {
@@ -13,7 +14,7 @@ class WebViewMoFlutterController {
     try {
       await _methodChannel.invokeMethod('loadUrl', {'initialUrl': url});
     } on PlatformException catch (e) {
-      print("Failed to load URL: ${e.message}");
+      debugPrint("Failed to load URL: ${e.message}");
       rethrow;
     }
   }
@@ -23,7 +24,7 @@ class WebViewMoFlutterController {
     try {
       await _methodChannel.invokeMethod('reloadUrl');
     } on PlatformException catch (e) {
-      print("Failed to reload URL: ${e.message}");
+      debugPrint("Failed to reload URL: ${e.message}");
       rethrow;
     }
   }
@@ -33,7 +34,7 @@ class WebViewMoFlutterController {
     try {
       await _methodChannel.invokeMethod('resetCache');
     } on PlatformException catch (e) {
-      print("Failed to reset cache: ${e.message}");
+      debugPrint("Failed to reset cache: ${e.message}");
       rethrow;
     }
   }
@@ -44,7 +45,7 @@ class WebViewMoFlutterController {
       final result = await _methodChannel.invokeMethod('runJavaScript', {'script': script});
       return result;
     } on PlatformException catch (e) {
-      print("Failed to execute JavaScript: ${e.message}");
+      debugPrint("Failed to execute JavaScript: ${e.message}");
       rethrow;
     }
   }
@@ -56,7 +57,7 @@ class WebViewMoFlutterController {
       _onMessageReceivedStream ??=
           _eventChannel.receiveBroadcastStream().map<String>((event) => event.toString());
     } on PlatformException catch (e) {
-      print("Failed to add JavaScript channel: ${e.message}");
+      debugPrint("Failed to add JavaScript channel: ${e.message}");
       rethrow;
     }
   }
@@ -70,7 +71,7 @@ class WebViewMoFlutterController {
     try {
       await _methodChannel.invokeMethod('close');
     } on PlatformException catch (e) {
-      print("Failed to close web view: ${e.message}");
+      debugPrint("Failed to close web view: ${e.message}");
       rethrow;
     }
   }
