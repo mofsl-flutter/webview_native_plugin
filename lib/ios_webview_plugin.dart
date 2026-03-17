@@ -14,10 +14,10 @@ class IosWebViewPlugin {
 
   /// Opens the WebView in iOS with the given [url] and optional parameters.
   static Future<void> openWebView(
-    final String url, {
-    final String? javascriptChannelName,
-    final bool? isChart,
-    final String? backgroundColor,
+    String url, {
+    String? javascriptChannelName,
+    bool? isChart,
+    String? backgroundColor,
   }) async {
     try {
       await _channel.invokeMethod<void>("loadUrl", <String, Object?>{
@@ -32,7 +32,7 @@ class IosWebViewPlugin {
   }
 
   /// Adds a JavaScript channel with the given [channelName].
-  static Future<void> addJavascriptChannel(final String channelName) async {
+  static Future<void> addJavascriptChannel(String channelName) async {
     try {
       debugPrint("addJavascriptChannel  $channelName");
       await _channel.invokeMethod<void>(
@@ -66,7 +66,7 @@ class IosWebViewPlugin {
   }
 
   /// Executes the given JavaScript [script] in the web view.
-  static Future<void> runJavaScript(final String script) async {
+  static Future<void> runJavaScript(String script) async {
     try {
       await _channel.invokeMethod<void>(
         "runJavaScript",
@@ -89,16 +89,16 @@ class IosWebViewPlugin {
 
   /// Registers [callback] to receive messages from the JavaScript channel.
   static void getJavaScriptChannelStream(
-    final void Function(Object?) callback,
+    void Function(Object?) callback,
   ) {
     _eventChannel.receiveBroadcastStream().listen(callback);
   }
 
   /// Registers [callback] to be called when the web view finishes loading.
   static void setWebViewLoadedCallback(
-    final void Function(Object?) callback,
+    void Function(Object?) callback,
   ) {
-    _eventChannel.receiveBroadcastStream().listen((final Object? event) {
+    _eventChannel.receiveBroadcastStream().listen((Object? event) {
       debugPrint(event.toString());
       callback(event);
     });
@@ -106,7 +106,7 @@ class IosWebViewPlugin {
 
   /// Enables or disables user interaction with the web view.
   static Future<void> setUserInteractionEnabled({
-    required final bool enabled,
+    required bool enabled,
   }) async {
     try {
       await _channel.invokeMethod<void>(
