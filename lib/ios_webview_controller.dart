@@ -14,7 +14,7 @@ class WebViewMoFlutterController {
   late Stream<String> _onMessageReceivedStream;
 
   /// Loads a URL in the native web view.
-  Future<void> loadUrl(final String url) async {
+  Future<void> loadUrl(String url) async {
     try {
       await _methodChannel.invokeMethod<void>(
         "loadUrl",
@@ -47,9 +47,9 @@ class WebViewMoFlutterController {
   }
 
   /// Executes JavaScript in the native web view.
-  Future<dynamic> runJavaScript(final String script) async {
+  Future<dynamic> runJavaScript(String script) async {
     try {
-      final dynamic result = await _methodChannel.invokeMethod<dynamic>(
+      dynamic result = await _methodChannel.invokeMethod<dynamic>(
         "runJavaScript",
         <String, Object?>{"script": script},
       );
@@ -61,7 +61,7 @@ class WebViewMoFlutterController {
   }
 
   /// Adds a JavaScript channel to the web view.
-  Future<void> addJavascriptChannel(final String channelName) async {
+  Future<void> addJavascriptChannel(String channelName) async {
     try {
       await _methodChannel.invokeMethod<void>(
         "addJavascriptChannel",
@@ -69,7 +69,7 @@ class WebViewMoFlutterController {
       );
       _onMessageReceivedStream = _eventChannel
           .receiveBroadcastStream()
-          .map<String>((final Object? event) => event.toString());
+          .map<String>((Object? event) => event.toString());
     } on PlatformException catch (e) {
       debugPrint("Failed to add JavaScript channel: ${e.message}");
       rethrow;
