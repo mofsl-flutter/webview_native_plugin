@@ -89,25 +89,23 @@ class IosWebViewPlugin {
 
   /// Registers [callback] to receive messages from the JavaScript channel.
   static void getJavaScriptChannelStream(
-    void Function(Object?) callback,
+    void Function(dynamic) callback,
   ) {
     _eventChannel.receiveBroadcastStream().listen(callback);
   }
 
   /// Registers [callback] to be called when the web view finishes loading.
   static void setWebViewLoadedCallback(
-    void Function(Object?) callback,
+    void Function(dynamic) callback,
   ) {
-    _eventChannel.receiveBroadcastStream().listen((Object? event) {
+    _eventChannel.receiveBroadcastStream().listen((dynamic event) {
       debugPrint(event.toString());
       callback(event);
     });
   }
 
   /// Enables or disables user interaction with the web view.
-  static Future<void> setUserInteractionEnabled({
-    required bool enabled,
-  }) async {
+  static Future<void> setUserInteractionEnabled(bool enabled) async {
     try {
       await _channel.invokeMethod<void>(
         "setUserInteractionEnabled",
