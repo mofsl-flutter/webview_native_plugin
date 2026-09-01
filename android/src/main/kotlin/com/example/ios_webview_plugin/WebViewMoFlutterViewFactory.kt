@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Message
 import android.util.Log
+import android.view.MotionEvent
 import android.view.ViewGroup
 import android.webkit.ConsoleMessage
 import android.webkit.JavascriptInterface
@@ -76,8 +77,44 @@ class WebViewManager private constructor(private val context: Context) {
                 settings.domStorageEnabled = true
                 settings.cacheMode = WebSettings.LOAD_DEFAULT
                 settings.javaScriptCanOpenWindowsAutomatically = true
+
+                // Add touch event settings
+                settings.setSupportZoom(true)
+                settings.builtInZoomControls = false
+                settings.displayZoomControls = false
+                settings.useWideViewPort = true
+                settings.loadWithOverviewMode = true
+                settings.allowFileAccess = true
+                settings.allowContentAccess = true
+                settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+
                 webView?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 Log.d("WebViewMoFlutterPlugin", "Red Color Set")
+
+                // Enable touch events with logging
+                setOnTouchListener { _, event ->
+                    Log.d("WebViewMoFlutterPlugin", "Touch event detected: ${event.action}, isPaused: $isWebViewPaused")
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            Log.d("WebViewMoFlutterPlugin", "Touch DOWN at (${event.x}, ${event.y})")
+                            if (isWebViewPaused) {
+                                Log.d("WebViewMoFlutterPlugin", "Resuming WebView due to touch")
+                                resumeWebView()
+                            }
+                            false
+                        }
+                        MotionEvent.ACTION_MOVE -> {
+                            Log.d("WebViewMoFlutterPlugin", "Touch MOVE at (${event.x}, ${event.y})")
+                            false
+                        }
+                        MotionEvent.ACTION_UP -> {
+                            Log.d("WebViewMoFlutterPlugin", "Touch UP at (${event.x}, ${event.y})")
+                            false
+                        }
+                        else -> false
+                    }
+                }
+
                 webChromeClient = object : WebChromeClient() {
                     override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
                         Log.d("WebViewMoFlutterPlugin", "WebViewConsole: ${consoleMessage.message()} at ${consoleMessage.sourceId()}:${consoleMessage.lineNumber()}")
@@ -117,6 +154,7 @@ class WebViewManager private constructor(private val context: Context) {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
+                        Log.d("WebViewMoFlutterPlugin", "Page finished loading: $url")
                         delegate?.onPageFinished(url ?: "")
                     }
 
@@ -176,6 +214,7 @@ class WebViewManager private constructor(private val context: Context) {
         webView?.addJavascriptInterface(object : Any() {
             @JavascriptInterface
             fun postMessage(message: String) {
+                Log.d("WebViewMoFlutterPlugin", "JavaScript message received on channel $name: $message")
                 delegate?.onJavascriptChannelMessageReceived(name, message)
             }
         }, name)
@@ -200,9 +239,15 @@ class WebViewManager private constructor(private val context: Context) {
     }
 
     fun resumeWebView() {
-        isWebViewPaused = false
-        webView?.onResume()
-        webView?.resumeTimers()
+        Log.d("WebViewMoFlutterPlugin", "resumeWebView - isPaused: $isWebViewPaused")
+        if (isWebViewPaused) {
+            isWebViewPaused = false
+            webView?.onResume()
+            webView?.resumeTimers()
+            Log.d("WebViewMoFlutterPlugin", "WebView resumed")
+        } else {
+            Log.d("WebViewMoFlutterPlugin", "WebView already active")
+        }
     }
 
     companion object {
