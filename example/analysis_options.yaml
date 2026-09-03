@@ -1,0 +1,15 @@
+include: package:flutter_lints/flutter.yaml
+
+# Deliberately not the plugin's strict set. `public_member_api_docs`,
+# `always_specify_types` and `prefer_double_quotes` exist to protect a published
+# package's surface; this app publishes nothing and fighting them would mean
+# reformatting generated template code instead of building the harness.
+linter:
+  rules:
+    # This harness is entirely about await ordering: a dropped await is a
+    # measurement bug that yields plausible-looking wrong numbers.
+    unawaited_futures: true
+    # Timers, subscriptions and clients must be released on abort.
+    cancel_subscriptions: true
+    close_sinks: true
+    avoid_positional_boolean_parameters: true

@@ -3,15 +3,12 @@ import "dart:async";
 import "package:flutter/foundation.dart";
 import "package:flutter/services.dart";
 
+import "webview_events.dart";
+
 /// Controller for the native web view on iOS.
 class WebViewMoFlutterController {
   static const MethodChannel _methodChannel =
       MethodChannel("webview_mo_flutter");
-  static const EventChannel _eventChannel =
-      EventChannel("webview_plugin_events");
-
-  late Stream<String> _onPageLoadedStream;
-  late Stream<String> _onMessageReceivedStream;
 
   /// Loads a URL in the native web view.
   Future<void> loadUrl(String url) async {
@@ -67,9 +64,6 @@ class WebViewMoFlutterController {
         "addJavascriptChannel",
         <String, Object?>{"channelName": channelName},
       );
-      _onMessageReceivedStream = _eventChannel
-          .receiveBroadcastStream()
-          .map<String>((Object? event) => event.toString());
     } on PlatformException catch (e) {
       debugPrint("Failed to add JavaScript channel: ${e.message}");
       rethrow;
@@ -77,15 +71,25 @@ class WebViewMoFlutterController {
   }
 
   /// Stream of messages received from the web view.
-  Stream<String> get onMessageReceived => _onMessageReceivedStream;
+  ///
+  /// Backed by the library's single shared event subscription, so this is safe to read before
+  /// [addJavascriptChannel] and safe to listen to more than once.
+  Stream<String> get onMessageReceived => webViewEvents
+      .where((WebViewEvent e) => e is WebViewChannelMessageEvent)
+      .map((WebViewEvent e) => (e as WebViewChannelMessageEvent).message);
 
-  /// Close the web view (if supported by the native code).
+  /// Closes the web view, where the native side supports it.
+  ///
+  /// Neither platform implements `close` today, so this reports and returns rather than
+  /// throwing. Note [MissingPluginException] is not a [PlatformException], so it needs its own
+  /// clause or it escapes uncaught.
   Future<void> closeWebView() async {
     try {
       await _methodChannel.invokeMethod<void>("close");
     } on PlatformException catch (e) {
       debugPrint("Failed to close web view: ${e.message}");
-      rethrow;
+    } on MissingPluginException catch (e) {
+      debugPrint("closeWebView not implemented: ${e.message}");
     }
   }
 }
