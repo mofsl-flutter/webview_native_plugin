@@ -43,7 +43,7 @@ declare -a HOST_CASES=(
 # the tail of the list (F3 in particular) was never reached at all. Two launches give each half
 # its own full budget, so one slow case can no longer starve everything after it.
 declare -a INAPP_BATCH_1=(D0 I2 B2 B9 C2 C3 C4 C4b C5)
-declare -a INAPP_BATCH_2=(C9 C7 C13 E3 E4 D2 D2b D8 H3 F3)
+declare -a INAPP_BATCH_2=(C9 C7 C13 E3 E4 D2 D2b D8 H3 H4 F3)
 
 reset_network() {
   adb_ shell cmd connectivity airplane-mode disable >/dev/null 2>&1 || true

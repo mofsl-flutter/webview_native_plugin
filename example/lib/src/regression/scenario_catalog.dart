@@ -417,6 +417,29 @@ List<Scenario> buildCatalog() => <Scenario>[
         ],
       ),
 
+      // ---------------------------------------------------------------- H4
+      Scenario(
+        id: 'H4',
+        title: 'Load-free pre-warm still removes most of the navigation cost',
+        dimension: Dimension.rendering,
+        steps: const <ScenarioStep>[
+          // Deliberately loadUrl: false. H3 pre-warms *with* a load, so its figure folds in
+          // subresource cache priming; this isolates the WebView/Chromium construction share,
+          // which is the only part a production pre-warm can take without creating page state.
+          PreWarm(loadUrl: false),
+          Wait(Duration(seconds: 2)),
+          OpenChart(kEquityA),
+        ],
+        expectations: const <Expectation>[
+          // No navigation budget is asserted: the point of this case is the number, and the
+          // comparison that matters is cross-case (against A1 cold and H3 warm in the same run),
+          // which the expectation framework cannot express. A budget here would either be
+          // vacuous or flaky.
+          ExpectOutcome(TerminalOutcome.chartSuccess),
+          ExpectNoStrays(),
+        ],
+      ),
+
       // ---------------------------------------------------------------- F3
       Scenario(
         id: 'F3',
