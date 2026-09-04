@@ -223,6 +223,49 @@ final class Probe extends ScenarioStep {
   String get describe => 'probe "$label"';
 }
 
+/// Disposes the chart screen's `State` outright and rebuilds it from scratch.
+///
+/// Distinct from [NavigateAway]/[NavigateBack], which only unmount the child platform view and
+/// leave the hosting `State` — and therefore all Dart-side tracking — alive. This step pushes a
+/// real route whose own `State` attaches to `ChartSession` with nothing carried over, which is the
+/// only way to exercise the widget-scoped-state-over-process-scoped-WebView mismatch.
+final class RecreateHost extends ScenarioStep {
+  /// Creates the step.
+  const RecreateHost(this.label);
+
+  /// Probe label the rebuilt screen's observed session state is recorded under.
+  final String label;
+
+  @override
+  String get describe => 'recreate host -> "$label"';
+}
+
+/// Injects a script through `ChartSession.runOperation` and records its typed outcome.
+///
+/// Unlike [Operate], which relies on the page's own `__hb` reporter and treats a missing
+/// acknowledgement as an expected silence, this records `ok`, `threw` or `timeout` — so an
+/// operation that vanishes is a reported failure rather than an absence.
+final class OperateTracked extends ScenarioStep {
+  /// Creates the step.
+  const OperateTracked(
+    this.label,
+    this.script, {
+    this.timeout = const Duration(seconds: 5),
+  });
+
+  /// Probe label the result is recorded under.
+  final String label;
+
+  /// JavaScript statement body. `return` a promise to have it awaited.
+  final String script;
+
+  /// How long to wait for an acknowledgement.
+  final Duration timeout;
+
+  @override
+  String get describe => 'tracked op "$label"';
+}
+
 /// Waits a fixed period, for settling or deliberate races.
 final class Wait extends ScenarioStep {
   /// Creates the step.

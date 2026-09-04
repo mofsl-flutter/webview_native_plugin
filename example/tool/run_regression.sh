@@ -37,8 +37,13 @@ declare -a HOST_CASES=(
   "A5:vmCrash"
   "G2:offline"
 )
-# Everything else runs in one batch.
-declare -a INAPP_CASES=(D0 I2 B2 C2 C3 C4 C4b C5 C9 C7 E3 E4 D2 D2b D8 H3 F3)
+# Everything else runs without host involvement, split across two launches.
+#
+# Split deliberately: a single batch of every case has hit its budget on every run so far, and
+# the tail of the list (F3 in particular) was never reached at all. Two launches give each half
+# its own full budget, so one slow case can no longer starve everything after it.
+declare -a INAPP_BATCH_1=(D0 I2 B2 B9 C2 C3 C4 C4b C5)
+declare -a INAPP_BATCH_2=(C9 C7 C13 E3 E4 D2 D2b D8 H3 F3)
 
 reset_network() {
   adb_ shell cmd connectivity airplane-mode disable >/dev/null 2>&1 || true
@@ -118,16 +123,24 @@ echo
 
 reset_network
 
-# In-app batch: no external precondition, one launch, all cases sequentially.
+# In-app batches: no external precondition, each launch runs its whole list sequentially.
 #
-# Must be a single `am start` for the whole list, not one per case: `singleTop` means every
-# launch after the first is delivered to the already-running instance's `onNewIntent`, so a
-# per-case loop here would run only the first case and silently drop the rest.
-IFS=','; INAPP_CSV="${INAPP_CASES[*]}"; unset IFS
-_TIMEOUT_SAVED="$TIMEOUT"
-TIMEOUT="$BATCH_TIMEOUT"
-run_launch "in-app batch (${#INAPP_CASES[@]} cases)" --es scenario "$INAPP_CSV" --ez autorun true
-TIMEOUT="$_TIMEOUT_SAVED"
+# Each batch must be a single `am start` for its whole list, not one per case: `singleTop` means
+# every launch after the first is delivered to the already-running instance's `onNewIntent`, so a
+# per-case loop would run only the first case and silently drop the rest. A per-*batch* launch is
+# fine — the Dart side handles onNewIntent by pushing a fresh regression screen.
+run_inapp_batch() {
+  local label="$1"; shift
+  local -a cases=("$@")
+  IFS=','; local csv="${cases[*]}"; unset IFS
+  local saved="$TIMEOUT"
+  TIMEOUT="$BATCH_TIMEOUT"
+  run_launch "$label (${#cases[@]} cases)" --es scenario "$csv" --ez autorun true
+  TIMEOUT="$saved"
+}
+
+run_inapp_batch "in-app batch 1" "${INAPP_BATCH_1[@]}"
+run_inapp_batch "in-app batch 2" "${INAPP_BATCH_2[@]}"
 
 # Host-driven cases, each in its own launch.
 for entry in "${HOST_CASES[@]}"; do

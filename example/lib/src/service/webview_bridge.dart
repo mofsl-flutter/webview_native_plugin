@@ -66,6 +66,10 @@ class LoggedEvent {
         WebViewHttpErrorEvent(:final int statusCode) => 'httpError:$statusCode',
         WebViewConsoleEvent() => 'console',
         WebViewVisualStateEvent() => 'visualState',
+        WebViewAttachedEvent(:final bool wasReparented) =>
+          wasReparented ? 'viewAttached:reparented' : 'viewAttached',
+        WebViewAttachFailedEvent() => 'viewAttachFailed',
+        WebViewDetachedEvent() => 'viewDetached',
         WebViewRawStringEvent(:final String value) => 'rawString:$value',
         WebViewUnknownEvent(:final String name) => name.isEmpty ? 'unknown' : name,
       };

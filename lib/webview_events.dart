@@ -153,6 +153,32 @@ sealed class WebViewEvent {
           tsMono: tsMono,
           loadId: loadId,
         );
+      case "viewAttached":
+        return WebViewAttachedEvent(
+          raw: raw,
+          viewId: _asInt(map["viewId"]) ?? -1,
+          wasReparented: map["wasReparented"] as bool? ?? false,
+          ts: ts,
+          tsMono: tsMono,
+          loadId: loadId,
+        );
+      case "viewAttachFailed":
+        return WebViewAttachFailedEvent(
+          raw: raw,
+          viewId: _asInt(map["viewId"]) ?? -1,
+          message: map["message"]?.toString() ?? "",
+          ts: ts,
+          tsMono: tsMono,
+          loadId: loadId,
+        );
+      case "viewDetached":
+        return WebViewDetachedEvent(
+          raw: raw,
+          viewId: _asInt(map["viewId"]) ?? -1,
+          ts: ts,
+          tsMono: tsMono,
+          loadId: loadId,
+        );
       default:
         return WebViewUnknownEvent(
           raw: raw,
@@ -354,6 +380,64 @@ final class WebViewVisualStateEvent extends WebViewEvent {
 
   /// URL that reached the state.
   final String? url;
+}
+
+/// The singleton WebView was parented into a platform view's container.
+///
+/// [wasReparented] is the signal that the WebView moved from one platform view to another rather
+/// than being attached for the first time — i.e. the page survived the previous view's disposal.
+final class WebViewAttachedEvent extends WebViewEvent {
+  /// Creates a view-attached event.
+  const WebViewAttachedEvent({
+    required super.raw,
+    required this.viewId,
+    required this.wasReparented,
+    super.ts,
+    super.tsMono,
+    super.loadId,
+  });
+
+  /// Platform view the WebView was attached to.
+  final int viewId;
+
+  /// Whether the WebView was moved from a different container rather than attached fresh.
+  final bool wasReparented;
+}
+
+/// Parenting the singleton WebView into a platform view's container threw.
+final class WebViewAttachFailedEvent extends WebViewEvent {
+  /// Creates a view-attach-failed event.
+  const WebViewAttachFailedEvent({
+    required super.raw,
+    required this.viewId,
+    required this.message,
+    super.ts,
+    super.tsMono,
+    super.loadId,
+  });
+
+  /// Platform view the attach was attempted for.
+  final int viewId;
+
+  /// Native exception message.
+  final String message;
+}
+
+/// A platform view was disposed and released the singleton WebView.
+///
+/// The WebView itself is only detached, never destroyed, so its loaded page outlives this event.
+final class WebViewDetachedEvent extends WebViewEvent {
+  /// Creates a view-detached event.
+  const WebViewDetachedEvent({
+    required super.raw,
+    required this.viewId,
+    super.ts,
+    super.tsMono,
+    super.loadId,
+  });
+
+  /// Platform view that was disposed.
+  final int viewId;
 }
 
 /// A bare string payload, as iOS emits for some messages.

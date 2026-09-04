@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:ios_webview_plugin/chart_session.dart';
 import 'package:ios_webview_plugin/ios_webview_plugin.dart';
 import 'package:ios_webview_plugin/webview_events.dart';
 
@@ -195,6 +196,9 @@ class BenchRunner extends ChangeNotifier {
       await IosWebViewPlugin.openWebView(
         _buildUrl(runId, config),
         javascriptChannelName: kChartChannel,
+        // A channel only takes effect on the next navigation, so the session's ack channel has
+        // to be registered here or a promise-returning operation can never be acknowledged.
+        javascriptChannels: const <String>[kChartSessionAckChannel],
         // Never leave this defaulted for a measurement: with the legacy default a failed load
         // silently navigates to a fallback page and reports a second completion.
         isChart: false,

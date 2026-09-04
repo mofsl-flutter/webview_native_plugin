@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:ios_webview_plugin/chart_session.dart';
+import 'package:ios_webview_plugin/webview_events.dart';
 import 'package:ios_webview_plugin/webview_mo_flutter_view.dart';
 
 import '../regression/autorun.dart';
@@ -55,6 +57,7 @@ class _RegressionScreenState extends State<RegressionScreen> {
         awaitViewMounted: () => _viewReady.future,
         navigateAway: _navigateAway,
         navigateBack: _navigateBack,
+        recreateChartScreen: _recreateChartScreen,
       ),
     );
     final List<Scenario>? auto = widget.autorunScenarios;
@@ -83,6 +86,32 @@ class _RegressionScreenState extends State<RegressionScreen> {
   Future<void> _navigateBack() async {
     setState(() => _viewMounted = true);
     await Future<void>.delayed(const Duration(milliseconds: 200));
+  }
+
+  /// Pushes a real route so a brand-new `State` attaches to the session from scratch.
+  ///
+  /// This screen's own platform view is unmounted first, so the pushed route's view is the only
+  /// one contending for the singleton WebView. What comes back is the rebuilt screen's own read of
+  /// the session, taken before it has seen a single event of its own.
+  Future<Map<String, Object?>> _recreateChartScreen() async {
+    // Resolved before the first await: the context must not be touched across an async gap.
+    final NavigatorState navigator = Navigator.of(context);
+    _viewReady = Completer<void>();
+    setState(() => _viewMounted = false);
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+
+    final Map<String, Object?>? observed =
+        await navigator.push<Map<String, Object?>>(
+      MaterialPageRoute<Map<String, Object?>>(
+        builder: (BuildContext _) => const RecreatedChartRoute(),
+      ),
+    );
+
+    if (!mounted) return observed ?? <String, Object?>{};
+    setState(() => _viewMounted = true);
+    await _viewReady.future;
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    return observed ?? <String, Object?>{};
   }
 
   Future<void> _runAll() => _runner.runAll(_catalog);
@@ -306,6 +335,88 @@ class _CaseTile extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A chart host built from scratch, used to prove a rebuilt `State` inherits the real page state.
+///
+/// Nothing is passed in and nothing is carried over: this `State` learns everything it knows about
+/// the page from `ChartSession`. If the session were widget-scoped, this screen would believe it
+/// were looking at a blank page while the singleton WebView sits fully loaded behind it.
+class RecreatedChartRoute extends StatefulWidget {
+  /// Creates the route.
+  const RecreatedChartRoute({super.key});
+
+  @override
+  State<RecreatedChartRoute> createState() => _RecreatedChartRouteState();
+}
+
+class _RecreatedChartRouteState extends State<RecreatedChartRoute> {
+  ChartSessionHandle? _handle;
+  final List<String> _seen = <String>[];
+  bool _reported = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // The session owns the subscription, so nothing can land on this State after it detaches.
+    _handle = ChartSession.instance.attach(onEvent: _onEvent);
+  }
+
+  @override
+  void dispose() {
+    _handle?.detach();
+    super.dispose();
+  }
+
+  void _onEvent(WebViewEvent event) {
+    if (_seen.length < 20) _seen.add(event.runtimeType.toString());
+  }
+
+  Future<void> _reportAndPop() async {
+    if (_reported) return;
+    _reported = true;
+    // Let the reparent settle so the attach event has landed.
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+    final ChartSessionSnapshot snapshot = ChartSession.instance.snapshot;
+    Navigator.of(context).pop(<String, Object?>{
+      'loadId': snapshot.loadId,
+      'pageStarted': snapshot.pageStarted,
+      'pageFinished': snapshot.pageFinished,
+      'isPageLoaded': snapshot.isPageLoaded,
+      'isAttached': snapshot.isAttached,
+      'livePlatformViews': snapshot.livePlatformViews,
+      'url': snapshot.url,
+      'eventsSeenByNewState': _seen.length,
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF16182C),
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 140,
+              child: WebViewMoFlutterView(
+                backgroundColor: const Color(0xFF16182C),
+                onPlatformViewCreated: (int _) => _reportAndPop(),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(12),
+              child: Text(
+                'rebuilt chart host',
+                style: TextStyle(fontSize: 11, color: Colors.white38),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:ios_webview_plugin/chart_session.dart';
 import 'package:ios_webview_plugin/ios_webview_plugin.dart';
 import 'package:ios_webview_plugin/webview_events.dart';
 
@@ -26,6 +27,7 @@ class ScenarioHost {
     required this.awaitViewMounted,
     required this.navigateAway,
     required this.navigateBack,
+    required this.recreateChartScreen,
   });
 
   /// Completes once the platform view reports creation.
@@ -36,6 +38,13 @@ class ScenarioHost {
 
   /// Pops back to the chart, recreating the platform view.
   final Future<void> Function() navigateBack;
+
+  /// Disposes the chart screen's `State` and rebuilds it, returning what the rebuilt screen
+  /// observed of the session on attach.
+  ///
+  /// The returned map is the fresh `State`'s own read of `ChartSession.instance.snapshot`, which
+  /// is what pins whether a rebuilt widget inherits the true page state or assumes a blank one.
+  final Future<Map<String, Object?>> Function() recreateChartScreen;
 }
 
 /// Outcome of one regression case.
@@ -214,7 +223,7 @@ class ScenarioRunner extends ChangeNotifier {
     switch (step) {
       case PreWarm(:final bool loadUrl):
         await IosWebViewPlugin.prewarm(
-          javascriptChannels: <String>[kChartChannel],
+          javascriptChannels: <String>[kChartChannel, kChartSessionAckChannel],
           url: loadUrl ? kChartUrl : null,
         );
         obs.notes.add('pre-warmed${loadUrl ? ' with load' : ''}');
@@ -313,11 +322,49 @@ class ScenarioRunner extends ChangeNotifier {
         await IosWebViewPlugin.runJavaScript(hbBootstrapJs);
         await IosWebViewPlugin.runJavaScript(buildProbeJs(runId, label));
         final Map<String, Object?>? p = await _ack.awaitProbe(runId);
-        if (p != null) obs.probes[label] = p;
+        // Seed with the session's own view first: it is available even when the page cannot
+        // answer, so a probe never comes back wholly empty.
+        obs.probes[label] = <String, Object?>{
+          ..._sessionFields(),
+          ...?p,
+        };
+
+      case RecreateHost(:final String label):
+        final Map<String, Object?> observed = await host.recreateChartScreen();
+        obs.probes[label] = observed;
+        obs.notes.add(
+          'host State rebuilt; rebuilt screen saw '
+          'isPageLoaded=${observed['isPageLoaded']} loadId=${observed['loadId']}',
+        );
+
+      case OperateTracked(
+          :final String label,
+          :final String script,
+          :final Duration timeout
+        ):
+        final OperationResult result =
+            await ChartSession.instance.runOperation(script, timeout: timeout);
+        obs.probes[label] = <String, Object?>{
+          'status': result.status.name,
+          'elapsedMs': result.elapsedMs,
+          'error': result.error,
+        };
+        obs.notes.add('tracked op $label -> ${result.status.name} in ${result.elapsedMs} ms');
 
       case Wait(:final Duration duration):
         await Future<void>.delayed(duration);
     }
+  }
+
+  /// The session's own state, recorded alongside every probe.
+  Map<String, Object?> _sessionFields() {
+    final ChartSessionSnapshot s = ChartSession.instance.snapshot;
+    return <String, Object?>{
+      'sessionLoadId': s.loadId,
+      'sessionPageLoaded': s.isPageLoaded,
+      'sessionAttached': s.isAttached,
+      'sessionLiveViews': s.livePlatformViews,
+    };
   }
 
   Future<void> _operate(String op, Object? arg, ScenarioObservations obs) async {

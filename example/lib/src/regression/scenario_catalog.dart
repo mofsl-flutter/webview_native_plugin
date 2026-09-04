@@ -9,6 +9,22 @@ const String kEquityB = '0:3045';
 const String kIndex = 'IDX:0:NIFTY 50';
 const String kMalformedIndex = '0:NIFTY 50';
 
+bool _loadIdSurvivedRecreate(ScenarioObservations o) {
+  final Object? before = o.probes['beforeRecreate']?['sessionLoadId'];
+  final Object? after = o.probes['afterRecreate']?['loadId'];
+  return before != null && after != null && before == after;
+}
+
+bool _atLeastOneLiveView(ScenarioObservations o) {
+  final Object? views = o.probes['afterRecreate']?['livePlatformViews'];
+  return views is int && views >= 1;
+}
+
+bool _vanishedOperationWasReported(ScenarioObservations o) {
+  final Object? status = o.probes['ackTimeout']?['status'];
+  return status == 'timeout' || status == 'threw';
+}
+
 /// The regression cases, in the order they should be run.
 ///
 /// The first group pins **suspected live defects**. Those cases are written so that the
@@ -84,6 +100,79 @@ List<Scenario> buildCatalog() => <Scenario>[
           ExpectChartSource('changeSymbol'),
           ExpectProbe('afterBack', 'widgetReady', true),
           ExpectNoStrays(),
+        ],
+      ),
+
+      // ---------------------------------------------------------------- B9
+      Scenario(
+        id: 'B9',
+        title: 'Chart screen rebuilt from scratch inherits the real page state',
+        dimension: Dimension.view,
+        steps: const <ScenarioStep>[
+          OpenChart(kEquityA),
+          Probe('beforeRecreate'),
+          RecreateHost('afterRecreate'),
+          // The reuse assertion needs a load issued *after* the rebuild: ExpectMarkAbsent reads
+          // the last record, and the opening navigation legitimately carries pageStarted.
+          ChangeSymbol(kEquityB),
+        ],
+        expectations: const <Expectation>[
+          ExpectOutcome(TerminalOutcome.chartSuccess),
+          // The whole point: a State built from nothing must not believe the page is blank.
+          ExpectProbe('afterRecreate', 'isPageLoaded', true),
+          ExpectProbe('afterRecreate', 'pageStarted', true),
+          ExpectProbe('afterRecreate', 'isAttached', true),
+          // Deliberately not asserting livePlatformViews == 1. Measured at 2 in a batch run:
+          // the harness handles onNewIntent by pushing a *new* regression screen, and the
+          // screens below stay in the tree with their platform views still mounted. That count
+          // is therefore a property of how many launches stacked, not of the session — and the
+          // session correctly reports the newest view as the attached one either way.
+          ExpectCustom(
+            'the session tracks at least one live platform view',
+            _atLeastOneLiveView,
+          ),
+          // Same document, not a re-navigation: persistence across disposal is what makes the
+          // inherited state meaningful in the first place.
+          ExpectCustom(
+            'loadId unchanged across the host rebuild',
+            _loadIdSurvivedRecreate,
+          ),
+          ExpectMarkAbsent(
+            'pageStarted',
+            because: 'rebuilding the host State must not re-navigate the page',
+          ),
+        ],
+      ),
+
+      // ---------------------------------------------------------------- C13
+      Scenario(
+        id: 'C13',
+        title: 'Unacknowledged operation reports a timeout, not silence',
+        dimension: Dimension.operation,
+        steps: const <ScenarioStep>[
+          OpenChart(kEquityA),
+          // A function that does not exist on any page. The plain runJavaScript path discards
+          // this outcome entirely; the tracked path must name it.
+          OperateTracked(
+            'ackTimeout',
+            'return window.__noSuchChartFunction__();',
+            timeout: Duration(seconds: 3),
+          ),
+          OperateTracked(
+            'ackOk',
+            'return 1;',
+            timeout: Duration(seconds: 3),
+          ),
+        ],
+        expectations: const <Expectation>[
+          // `threw` is also an acceptable report — what must never happen is silence.
+          ExpectCustom(
+            'a vanished operation is reported, not silent',
+            _vanishedOperationWasReported,
+          ),
+          // The negative control for the control: a trivially valid script must report ok, or
+          // the ack channel is simply not wired up and the assertion above is vacuous.
+          ExpectProbe('ackOk', 'status', 'ok'),
         ],
       ),
 

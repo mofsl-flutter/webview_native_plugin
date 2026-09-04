@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ios_webview_plugin/chart_session.dart';
 import 'package:ios_webview_plugin/ios_webview_plugin.dart';
 
 import 'src/regression/autorun.dart';
@@ -19,6 +20,9 @@ void main() {
   // and console forwarding off so they cannot perturb a timed run. Turn them on from the log
   // screen only for diagnostic passes.
   WebViewBridge.instance.start();
+  // Must start here, not on first attach: a screen built after the page has loaded has to be
+  // able to read the real page state, which means the session cannot have missed the load.
+  ChartSession.instance.start();
   IosWebViewPlugin.setProgressForwarding(enabled: false);
   IosWebViewPlugin.setConsoleForwarding(enabled: false);
 
