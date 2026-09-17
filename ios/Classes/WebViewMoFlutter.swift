@@ -237,17 +237,18 @@ protocol WebViewControllerDelegate: AnyObject {
 
 // MARK: - Status Bar Utility
 class StatusBarAppearanceUtility {
+    // Only tints the window background behind the WebView. This MUST NOT touch
+    // overrideUserInterfaceStyle on the app's root view controller: doing so pins
+    // FlutterViewController's traitCollection, which permanently stops iOS from
+    // delivering userInterfaceStyle changes to the Flutter engine — breaking
+    // "follow system theme" for the rest of the process, app-wide, after the
+    // first chart open. See: theme stops following the device after opening charts.
     static func updateStatusBar(for backgroundColorHex: String) {
         guard let uiColor = UIColor(hex: backgroundColorHex) else { return }
 
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first {
             window.backgroundColor = uiColor
-        }
-
-        let isLightBackground = uiColor.isLight
-        if let viewController = UIApplication.shared.windows.first?.rootViewController {
-            viewController.overrideUserInterfaceStyle = isLightBackground ? .light : .dark
         }
     }
 }
