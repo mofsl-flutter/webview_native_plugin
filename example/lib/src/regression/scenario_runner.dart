@@ -5,6 +5,7 @@ import 'package:ios_webview_plugin/chart_session.dart';
 import 'package:ios_webview_plugin/ios_webview_plugin.dart';
 import 'package:ios_webview_plugin/webview_events.dart';
 
+import '../config/chart_lib_urls.dart';
 import '../config/endpoints.dart';
 import '../model/bench_models.dart';
 import '../model/chart_messages.dart';
@@ -12,6 +13,7 @@ import '../model/stats.dart';
 import '../service/bench_runner.dart';
 import '../service/js_snippets.dart';
 import '../service/webview_bridge.dart';
+import 'cache_census.dart';
 import 'expectation.dart';
 import 'harness_ack.dart';
 import 'mirrored_host_gate.dart';
@@ -105,9 +107,14 @@ String _metricsSummary(RunRecord? r) {
       : 'req=${nt['count']} xfer=${formatBytes(nt['bytesTransfer'])} '
           'dec=${formatBytes(nt['bytesDecoded'])} '
           'docXfer=${formatBytes(nt['docTransfer'])} docDec=${formatBytes(nt['docDecoded'])}';
+  final Object? libSummary = nt?['libSummary'];
+  // Counts only: the per-file list is long and lives on the separate evidence lines.
+  final String lib = libSummary is Map
+      ? ' ${formatLibCache(<String, Object?>{'summary': libSummary})}'
+      : '';
   return 'metrics: nav=${ms('navigation')} doc=${ms('documentLoad')} jsBoot=${ms('jsBoot')} '
       'gate=${ms('gateWait')} authRtt=${ms('authorizeRtt')} render=${ms('chartRender')} '
-      'e2e=${ms('endToEnd')} $resources tail=${r.tailEvents} stray=${r.strayEvents}';
+      'e2e=${ms('endToEnd')} $resources$lib tail=${r.tailEvents} stray=${r.strayEvents}';
 }
 
 /// Executes scenarios and evaluates their expectations.
@@ -127,6 +134,9 @@ class ScenarioRunner extends ChangeNotifier {
   /// actually observe it.
   final MirroredHostGate _gate = MirroredHostGate();
   final Map<String, ScenarioResult> _results = <String, ScenarioResult>{};
+
+  /// Warm-ups started in the background, awaiting an `AwaitWarm` step.
+  final Map<String, Future<void>> _pendingWarms = <String, Future<void>>{};
 
   Scenario? _current;
   String? _currentStep;
@@ -166,6 +176,7 @@ class ScenarioRunner extends ChangeNotifier {
     _current = scenario;
     _ack.reset();
     _gate.reset();
+    _pendingWarms.clear();
     final ScenarioObservations obs = ScenarioObservations();
     String? error;
 
@@ -232,7 +243,8 @@ class ScenarioRunner extends ChangeNotifier {
           :final String symbol,
           :final bool authorizeFirst,
           :final bool neverAuthorize,
-          :final String chartMode
+          :final String chartMode,
+          :final double budgetScale
         ):
         final BenchRunner runner = BenchRunner(token: token);
         await runner.runBatch(
@@ -242,6 +254,7 @@ class ScenarioRunner extends ChangeNotifier {
               authorizeFirst: authorizeFirst,
               neverAuthorize: neverAuthorize,
               chartMode: chartMode,
+              budgetScale: budgetScale,
             ),
           ],
           repeats: 1,
@@ -351,9 +364,136 @@ class ScenarioRunner extends ChangeNotifier {
         };
         obs.notes.add('tracked op $label -> ${result.status.name} in ${result.elapsedMs} ms');
 
+      case CacheCensus(:final String label):
+        final Map<String, Object?> raw = await IosWebViewPlugin.getWebCacheStats();
+        final Map<String, Object?> summary = summarizeCacheStats(raw);
+        obs.probes[label] = summary;
+        obs.summaries[label] = formatCensus(summary);
+
+      case LibCacheProbe(:final String label):
+        final String runId = _runId();
+        await IosWebViewPlugin.runJavaScript(hbBootstrapJs);
+        await IosWebViewPlugin.runJavaScript(buildLibCacheJs(runId, label));
+        final HarnessMessage? m = await _ack.waitForAny(runId, <String>{'libCache'});
+        final Object? d = m?.detail;
+        final Map<String, Object?> detail =
+            d is Map ? Map<String, Object?>.from(d) : <String, Object?>{'error': 'no reply'};
+        final Object? summary = detail['summary'];
+        final Object? key = detail['key'];
+        obs.probes[label] = summary is Map
+            ? <String, Object?>{
+                ...Map<String, Object?>.from(summary),
+                // Names of the heavy files, so an assertion can require the library bundle itself.
+                'files': key is Map
+                    ? key.keys.map((Object? k) => k.toString()).toList()
+                    : <String>[],
+              }
+            : <String, Object?>{'error': detail['error']};
+        obs.summaries[label] = formatLibCache(detail);
+
+      case WarmLibCache(
+          :final WarmMode mode,
+          :final String label,
+          :final String? manifestPath,
+          :final bool background
+        ):
+        Future<void> warm() async {
+          final Map<String, Object?> report = await IosWebViewPlugin.warmWebCache(
+            baseUrl: kChartUrl,
+            // The captured list stands in for a manifest unless the case wants the manifest path.
+            urls: manifestPath == null ? kChartLibUrls : null,
+            manifestPath: manifestPath ?? 'chart-lib-manifest.json',
+            mode: mode,
+            timeout: const Duration(minutes: 5),
+          );
+          obs.probes[label] = report;
+          obs.summaries[label] = formatWarmReport(report);
+        }
+
+        if (background) {
+          _pendingWarms[label] = warm();
+        } else {
+          await warm();
+        }
+
+      case AwaitWarm(:final String label):
+        await _pendingWarms.remove(label);
+
+      case CaptureLibUrls():
+        final String runId = _runId();
+        await IosWebViewPlugin.runJavaScript(hbBootstrapJs);
+        await IosWebViewPlugin.runJavaScript(buildLibUrlsJs(runId));
+        final HarnessMessage? m = await _ack.waitForAny(
+          runId,
+          <String>{'libUrls'},
+          timeout: const Duration(seconds: 8),
+        );
+        final Object? d = m?.detail;
+        final List<String> urls = d is Map && d['urls'] is List
+            ? (d['urls'] as List<Object?>).map((Object? u) => u.toString()).toList()
+            : <String>[];
+        obs.probes['libUrls'] = <String, Object?>{
+          'count': urls.length,
+          'error': d is Map ? d['error'] : 'no reply',
+        };
+        obs.summaries['urls.count'] = '${urls.length}';
+        // A long log line is split by the platform, so the list goes out in short numbered lines.
+        int chunk = 0;
+        final List<String> line = <String>[];
+        int chars = 0;
+        void flush() {
+          if (line.isEmpty) return;
+          obs.summaries['urls.${(chunk++).toString().padLeft(3, '0')}'] = line.join(' ');
+          line.clear();
+          chars = 0;
+        }
+        for (final String u in urls) {
+          if (chars + u.length > 600) flush();
+          line.add(u);
+          chars += u.length + 1;
+        }
+        flush();
+
+      case WaitForLibQuiet(:final Duration quiet, :final Duration max, :final Duration poll):
+        final Stopwatch sw = Stopwatch()..start();
+        int? last;
+        Duration stableFor = Duration.zero;
+        int polls = 0;
+        while (sw.elapsed < max) {
+          final int? count = await _libEntryCount();
+          polls++;
+          if (count != null && count == last) {
+            stableFor += poll;
+          } else {
+            stableFor = Duration.zero;
+          }
+          last = count ?? last;
+          if (stableFor >= quiet) break;
+          await Future<void>.delayed(poll);
+        }
+        final bool settled = stableFor >= quiet;
+        obs.summaries['settle'] = settled
+            ? 'entries=$last stable ${quiet.inSeconds}s, waited ${sw.elapsed.inSeconds}s'
+            : 'NOT SETTLED after ${sw.elapsed.inSeconds}s (entries=$last, $polls polls)';
+        if (!settled) obs.notes.add('library files were still arriving when the wait gave up');
+
       case Wait(:final Duration duration):
         await Future<void>.delayed(duration);
     }
+  }
+
+  /// Number of static files the page has loaded under `/chart/`, or null when the page did not
+  /// answer (mid-navigation, or not loaded).
+  Future<int?> _libEntryCount() async {
+    final String runId = _runId();
+    await IosWebViewPlugin.runJavaScript(hbBootstrapJs);
+    await IosWebViewPlugin.runJavaScript(buildLibCacheJs(runId, 'poll'));
+    final HarnessMessage? m =
+        await _ack.waitForAny(runId, <String>{'libCache'}, timeout: const Duration(seconds: 8));
+    final Object? d = m?.detail;
+    final Object? summary = d is Map ? d['summary'] : null;
+    final Object? entries = summary is Map ? summary['entries'] : null;
+    return entries is num ? entries.toInt() : null;
   }
 
   /// The session's own state, recorded alongside every probe.

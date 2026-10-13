@@ -60,6 +60,9 @@ class WebViewMoFlutterPlugin :
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        // Unlike the chart WebView below, a warm-up belongs to the engine that asked for it and
+        // nobody else can use its result, so it goes with that engine.
+        CacheWarmer.cancel(this)
         methodChannel.setMethodCallHandler(null)
         eventChannel.setStreamHandler(null)
         webViewManager.delegate = null
@@ -286,6 +289,46 @@ class WebViewMoFlutterPlugin :
             "getClockSync" -> result.success(webViewManager.clockSync())
 
             "getDiagnostics" -> result.success(webViewManager.diagnostics())
+
+            "warmWebCache" -> {
+                val baseUrl = call.argument<String>("baseUrl")
+                val html = call.argument<String>("html")
+                val script = call.argument<String>("script")
+                val navigateUrl = call.argument<String>("navigateUrl")
+                if (baseUrl.isNullOrEmpty() || html == null || script == null || navigateUrl == null) {
+                    result.error("INVALID_ARGUMENT", "baseUrl, html, script and navigateUrl are required", null)
+                } else {
+                    CacheWarmer.start(
+                        context,
+                        CacheWarmer.Args(
+                            mode = call.argument<String>("mode") ?: "baseUrl",
+                            baseUrl = baseUrl,
+                            html = html,
+                            script = script,
+                            navigateUrl = navigateUrl,
+                            timeoutMs = call.argument<Number>("timeoutMs")?.toLong() ?: 180_000L
+                        ),
+                        this
+                    ) { report -> result.success(report) }
+                }
+            }
+
+            "stopWarmWebCache" -> {
+                CacheWarmer.stop()
+                result.success(null)
+            }
+
+            "getWebCacheStats" -> {
+                // Filesystem walk: off the main thread, which is busy parsing the chart bundle
+                // for exactly the interval a caller is likely to be measuring.
+                Thread({
+                    val stats = runCatching { WebCacheStats.collect(context) }
+                    uiThreadHandler.post {
+                        stats.onSuccess { result.success(it) }
+                            .onFailure { result.error("CACHE_STATS_FAILED", it.message, null) }
+                    }
+                }, "webcache-stats").start()
+            }
 
             "destroyWebView" -> {
                 webViewManager.destroyWebView()

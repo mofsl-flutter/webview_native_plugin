@@ -1,3 +1,5 @@
+import 'package:ios_webview_plugin/ios_webview_plugin.dart' show WarmMode;
+
 import '../model/bench_models.dart';
 import 'expectation.dart';
 
@@ -60,7 +62,16 @@ enum ExternalPrecondition {
   offline,
 
   /// Backgrounded via HOME, then resumed.
-  backgrounded;
+  backgrounded,
+
+  /// `am force-stop` — the process dies and the OS also drops its pending state, which is what
+  /// some OEM "clear all" gestures do. Disk cache survives.
+  forceStop,
+
+  /// `am force-stop` then `pm trim-caches` — what the OS does when storage runs low: the app's
+  /// cache directory (Chromium's HTTP cache lives there) is deleted, but cookies and DOM storage
+  /// under the data directory survive.
+  cacheTrimmed;
 
   /// Whether this needs the host script rather than the app.
   bool get needsHost => this != ExternalPrecondition.backgrounded;
@@ -94,10 +105,15 @@ final class OpenChart extends ScenarioStep {
     this.authorizeFirst = true,
     this.neverAuthorize = false,
     this.chartMode = 'FullChart',
+    this.budgetScale = 1.0,
   });
 
   /// Symbol to load.
   final String symbol;
+
+  /// Stretches the run's phase budgets and cap, for deliberately slow networks. See
+  /// [RunConfig.budgetScale].
+  final double budgetScale;
 
   /// When false, deliberately loads before authorising.
   final bool authorizeFirst;
@@ -111,7 +127,8 @@ final class OpenChart extends ScenarioStep {
   @override
   String get describe => 'open $symbol'
       '${neverAuthorize ? ' (no authorize)' : (authorizeFirst ? '' : ' (inverted order)')}'
-      '${chartMode == 'FullChart' ? '' : ' mode=$chartMode'}';
+      '${chartMode == 'FullChart' ? '' : ' mode=$chartMode'}'
+      '${budgetScale == 1.0 ? '' : ' budget x$budgetScale'}';
 }
 
 /// Calls loadChart on the already-loaded page.
@@ -264,6 +281,117 @@ final class OperateTracked extends ScenarioStep {
 
   @override
   String get describe => 'tracked op "$label"';
+}
+
+/// Records what the WebView currently holds on disk.
+///
+/// Taken before and after an external precondition, it is also the proof the precondition did what
+/// it claims: a `trim-caches` that silently freed nothing would otherwise look like a cache hit.
+final class CacheCensus extends ScenarioStep {
+  /// Creates the step.
+  const CacheCensus(this.label);
+
+  /// Label the census is recorded under.
+  final String label;
+
+  @override
+  String get describe => 'cache census "$label"';
+}
+
+/// Records how the charting library's files were served to the page, by reading the resource
+/// timeline of the top window and of the library's iframe.
+final class LibCacheProbe extends ScenarioStep {
+  /// Creates the step.
+  const LibCacheProbe(this.label);
+
+  /// Label the classification is recorded under.
+  final String label;
+
+  @override
+  String get describe => 'library cache probe "$label"';
+}
+
+/// Runs the plugin's cache warm-up against the chart's library files.
+///
+/// Uses the captured file list in `config/chart_lib_urls.dart`. The result lands in the `warm`
+/// probe and on the case's evidence lines.
+final class WarmLibCache extends ScenarioStep {
+  /// Creates the step.
+  const WarmLibCache({
+    this.mode = WarmMode.baseUrl,
+    this.label = 'warm',
+    this.manifestPath,
+    this.background = false,
+  });
+
+  /// How the throwaway WebView is given the chart origin.
+  final WarmMode mode;
+
+  /// Probe and evidence name the result is recorded under.
+  final String label;
+
+  /// When set, the warm-up reads this manifest instead of using the captured file list. Used to
+  /// exercise the manifest path, including a manifest that does not exist.
+  final String? manifestPath;
+
+  /// Start the warm-up and carry on; join it with [AwaitWarm]. This is how a warm-up that races a
+  /// chart open is expressed.
+  final bool background;
+
+  @override
+  String get describe => 'warm library cache "$label" (${mode.name}'
+      '${manifestPath == null ? '' : ', manifest $manifestPath'}'
+      '${background ? ', in background' : ''})';
+}
+
+/// Waits for a warm-up started with `WarmLibCache(background: true)`.
+final class AwaitWarm extends ScenarioStep {
+  /// Creates the step.
+  const AwaitWarm(this.label);
+
+  /// Label of the warm-up to join.
+  final String label;
+
+  @override
+  String get describe => 'await warm-up "$label"';
+}
+
+/// Captures the full URL of every static file the page has loaded under `/chart/`, and emits them
+/// on evidence lines so a host script can write them into `config/chart_lib_urls.dart`.
+final class CaptureLibUrls extends ScenarioStep {
+  /// Creates the step.
+  const CaptureLibUrls();
+
+  @override
+  String get describe => 'capture library urls';
+}
+
+/// Waits until the set of library files the page has loaded stops growing.
+///
+/// A fixed wait cannot be right across network speeds: the library loads some chunks lazily after
+/// the chart reports a terminal, and how long that takes depends on the link. This polls the
+/// page's resource timeline and returns once the count has not changed for [quiet], or gives up at
+/// [max]. Giving up is recorded, because a cache census taken while files are still arriving
+/// would understate what the page eventually holds.
+final class WaitForLibQuiet extends ScenarioStep {
+  /// Creates the step.
+  const WaitForLibQuiet({
+    this.quiet = const Duration(seconds: 45),
+    this.max = const Duration(minutes: 6),
+    this.poll = const Duration(seconds: 5),
+  });
+
+  /// How long the file count must hold still.
+  final Duration quiet;
+
+  /// Longest the step will wait.
+  final Duration max;
+
+  /// Interval between polls.
+  final Duration poll;
+
+  @override
+  String get describe => 'wait until library files stop arriving (${quiet.inSeconds}s quiet)';
 }
 
 /// Waits a fixed period, for settling or deliberate races.

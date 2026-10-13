@@ -67,9 +67,45 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
         case "getCurrentUrl":
             result(WebViewManager.shared.webView?.url?.absoluteString)
 
+        case "warmWebCache":
+            guard let args = call.arguments as? [String: Any],
+                  let baseUrl = args["baseUrl"] as? String, !baseUrl.isEmpty,
+                  let html = args["html"] as? String,
+                  let script = args["script"] as? String,
+                  let navigateUrl = args["navigateUrl"] as? String
+            else {
+                result(FlutterError(code: "INVALID_ARGUMENT",
+                                    message: "baseUrl, html, script and navigateUrl are required",
+                                    details: nil))
+                return
+            }
+            let timeoutMs = (args["timeoutMs"] as? NSNumber)?.doubleValue ?? 180_000
+            CacheWarmer.start(
+                CacheWarmer.Args(
+                    mode: args["mode"] as? String ?? "baseUrl",
+                    baseUrl: baseUrl,
+                    html: html,
+                    script: script,
+                    navigateUrl: navigateUrl,
+                    timeout: timeoutMs / 1000),
+                owner: self
+            ) { report in result(report) }
+
+        case "stopWarmWebCache":
+            CacheWarmer.stop()
+            result(nil)
+
+        case "getWebCacheStats":
+            WebCacheStats.collect { stats in result(stats) }
+
         default:
             result(FlutterMethodNotImplemented)
         }
+    }
+
+    public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
+        // A warm-up belongs to the engine that asked for it; nobody else can use its result.
+        CacheWarmer.cancel(owner: self)
     }
 
     @objc public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {

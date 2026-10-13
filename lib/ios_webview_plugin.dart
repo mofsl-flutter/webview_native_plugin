@@ -4,7 +4,25 @@ import "dart:convert";
 import "package:flutter/foundation.dart";
 import "package:flutter/services.dart";
 
+import "src/cache_warmer_js.dart";
 import "webview_events.dart";
+
+/// How the throwaway warm-up WebView is given the chart page's origin.
+///
+/// The warm-up only helps if its requests are cached under the same origin the chart later reads
+/// from, so this is the one thing worth being able to switch if a platform disagrees.
+enum WarmMode {
+  /// Load generated HTML with the chart URL as its base URL. No extra request is made to start.
+  baseUrl,
+
+  /// Navigate to a real document on the chart origin (the manifest URL), then run the script.
+  /// Costs one request but leaves no doubt about the document's origin.
+  ///
+  /// The document must exist. If the manifest URL answers 404 the platform shows a built-in error
+  /// page whose origin is opaque, every fetch then fails, and the report's `origin` is `null`.
+  /// Prefer [baseUrl], which was verified to land in the chart's cache on Android.
+  navigate,
+}
 
 /// Plugin for interacting with the native WebView.
 class IosWebViewPlugin {
@@ -109,6 +127,84 @@ class IosWebViewPlugin {
       return <String, Object?>{};
     } on MissingPluginException {
       return <String, Object?>{};
+    }
+  }
+
+  /// Downloads the chart's JavaScript library into the WebView's HTTP cache, so the first chart
+  /// open does not pay for it.
+  ///
+  /// Runs in a throwaway WebView on the chart origin and never touches the chart's own WebView.
+  /// [baseUrl] is the chart page's URL; files are read from the manifest at [manifestPath]
+  /// (relative to it) unless [urls] is given. Fetches are capped at [concurrency] at a time and the
+  /// whole run is abandoned after [timeout].
+  ///
+  /// Never throws. The result always has `ok`, and when it is false a `reason`: `busy` (a warm-up
+  /// is already running), `unsupported` (no native implementation), `timeout`,
+  /// `manifest missing`, `stopped`, among others. A successful report also carries `origin`, per
+  /// file `counts`, `bytesTransfer` and `durationMs`.
+  ///
+  /// Only the network cache is filled. The compiled-code cache is not, so the first run of the
+  /// library after this still has to parse and compile it.
+  static Future<Map<String, Object?>> warmWebCache({
+    required String baseUrl,
+    String manifestPath = "chart-lib-manifest.json",
+    List<String>? urls,
+    int concurrency = 3,
+    Duration timeout = const Duration(minutes: 3),
+    WarmMode mode = WarmMode.baseUrl,
+  }) async {
+    try {
+      final String script = buildWarmerScript(
+        baseUrl: baseUrl,
+        manifestPath: manifestPath,
+        urls: urls,
+        concurrency: concurrency,
+      );
+      // Parsed inside the try: the URL comes from a server-supplied config value, and a malformed
+      // one must come back as a reason, not an exception.
+      final String navigateUrl = Uri.parse(baseUrl).resolve(manifestPath).toString();
+      final Map<Object?, Object?>? res = await _channel
+          .invokeMethod<Map<Object?, Object?>>(
+        "warmWebCache",
+        <String, Object?>{
+          "baseUrl": baseUrl,
+          "mode": mode.name,
+          "html": buildWarmerHtml(script),
+          "script": script,
+          // Used by WarmMode.navigate: any document on the chart origin will do.
+          "navigateUrl": navigateUrl,
+          "timeoutMs": timeout.inMilliseconds,
+        },
+      )
+          // Native enforces its own timeout; this only guards a native side that never replies.
+          .timeout(timeout + const Duration(seconds: 5));
+      return res == null
+          ? <String, Object?>{"ok": false, "reason": "no reply"}
+          : Map<String, Object?>.from(res);
+    } on FormatException catch (e) {
+      return <String, Object?>{"ok": false, "reason": "bad url", "error": e.message};
+    } on TimeoutException {
+      return <String, Object?>{"ok": false, "reason": "timeout"};
+    } on PlatformException catch (e) {
+      debugPrint("Failed to warm web cache: '${e.message}'.");
+      return <String, Object?>{"ok": false, "reason": "platform error", "error": e.message};
+    } on MissingPluginException {
+      return <String, Object?>{"ok": false, "reason": "unsupported"};
+    }
+  }
+
+  /// Asks a running [warmWebCache] to start no new fetches.
+  ///
+  /// Fetches already in flight finish, so their cache entries stay valid. Call it when the chart is
+  /// about to load, so the warm-up yields bandwidth to the critical path. Does nothing when no
+  /// warm-up is running, and never throws.
+  static Future<void> stopWarmWebCache() async {
+    try {
+      await _channel.invokeMethod<Object?>("stopWarmWebCache");
+    } on PlatformException {
+      // Best effort.
+    } on MissingPluginException {
+      // Best effort.
     }
   }
 
@@ -292,6 +388,25 @@ class IosWebViewPlugin {
     try {
       final Map<Object?, Object?>? res =
           await _channel.invokeMethod<Map<Object?, Object?>>("getDiagnostics");
+      return res == null ? <String, Object?>{} : Map<String, Object?>.from(res);
+    } on PlatformException {
+      return <String, Object?>{};
+    } on MissingPluginException {
+      return <String, Object?>{};
+    }
+  }
+
+  /// Reports what the WebView currently holds on disk, so "is the charting library still on the
+  /// device?" can be answered by looking rather than inferred from load timings.
+  ///
+  /// Read-only. Returns per-directory byte and file counts plus oldest/newest file mtimes (epoch
+  /// millis). An mtime is when an entry was *stored*, not when it was last read, so `newestMtime`
+  /// bounds how long ago the cache was last written to. Android only for now: on any other
+  /// platform, or on failure, this returns an empty map.
+  static Future<Map<String, Object?>> getWebCacheStats() async {
+    try {
+      final Map<Object?, Object?>? res =
+          await _channel.invokeMethod<Map<Object?, Object?>>("getWebCacheStats");
       return res == null ? <String, Object?>{} : Map<String, Object?>.from(res);
     } on PlatformException {
       return <String, Object?>{};

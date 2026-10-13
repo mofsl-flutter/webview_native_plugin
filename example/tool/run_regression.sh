@@ -17,6 +17,9 @@ TIMEOUT="${TIMEOUT:-180}"
 # a longer budget than a single case does.
 BATCH_TIMEOUT="${BATCH_TIMEOUT:-420}"
 OUT="${OUT:-regression-results.tsv}"
+# Space-separated host-driven case ids to run (e.g. ONLY="K1 K3"). When set, the in-app batches are
+# skipped too, so a single study can be repeated without paying for the whole suite.
+ONLY="${ONLY:-}"
 RESULT_TAG="HBRESULT"
 
 # logcat output is not guaranteed to be valid UTF-8; without this, sed/grep abort with
@@ -31,11 +34,23 @@ command -v adb >/dev/null || die "adb not on PATH"
 adb_ get-state >/dev/null 2>&1 || die "no device (set DEVICE=<serial> if several are attached)"
 
 # Cases needing a host-set precondition, and which lever each needs.
+#
+# Entry format is `id:precondition[:primer]`. A case with a primer is first preceded by a full wipe
+# and a launch of the primer case, so the precondition acts on a cache that was just populated;
+# without that, "does the library survive a process kill" would be asked of an empty cache.
 declare -a HOST_CASES=(
   "A1:fullCold"
   "A3:backgrounded"
   "A5:vmCrash"
   "G2:offline"
+  "K1:processDeath:K0"
+  "K2:forceStop:K0"
+  "K3:cacheTrimmed:K0"
+  "W1:fullCold"
+  "W2:processDeath:W0"
+  "W3:fullCold"
+  "W4:fullCold"
+  "W5:fullCold"
 )
 # Everything else runs without host involvement, split across two launches.
 #
@@ -65,6 +80,23 @@ apply_precondition() {
       [ -z "$(adb_ shell pidof "$PKG" 2>/dev/null)" ] \
         && echo "    process confirmed dead" \
         || echo "    warning: process still alive; result may not reflect a cold start"
+      ;;
+    forceStop)
+      echo "  · am force-stop"
+      adb_ shell am force-stop "$PKG" >/dev/null
+      sleep 2
+      ;;
+    cacheTrimmed)
+      # Stop first: a live process keeps Chromium's cache index in memory and would keep serving
+      # entries whose files were just deleted, which is not what a low-storage eviction looks like.
+      echo "  · am force-stop, then pm trim-caches"
+      adb_ shell am force-stop "$PKG" >/dev/null
+      sleep 2
+      # Needs no root, but not every device honours it. The case's own `atLaunch` census is what
+      # shows whether the cache was in fact emptied, so a no-op here is detected, not assumed.
+      adb_ shell pm trim-caches 999G >/dev/null 2>&1 \
+        || echo "    warning: pm trim-caches failed; check K3's atLaunch census before trusting it"
+      sleep 2
       ;;
     vmCrash)
       echo "  · am crash"
@@ -139,12 +171,20 @@ run_inapp_batch() {
   TIMEOUT="$saved"
 }
 
-run_inapp_batch "in-app batch 1" "${INAPP_BATCH_1[@]}"
-run_inapp_batch "in-app batch 2" "${INAPP_BATCH_2[@]}"
+if [ -z "$ONLY" ]; then
+  run_inapp_batch "in-app batch 1" "${INAPP_BATCH_1[@]}"
+  run_inapp_batch "in-app batch 2" "${INAPP_BATCH_2[@]}"
+fi
 
 # Host-driven cases, each in its own launch.
 for entry in "${HOST_CASES[@]}"; do
-  id="${entry%%:*}"; pre="${entry##*:}"
+  IFS=: read -r id pre primer <<< "$entry"
+  if [ -n "$ONLY" ] && [[ " $ONLY " != *" $id "* ]]; then continue; fi
+  if [ -n "$primer" ]; then
+    echo "→ $id: priming the cache with $primer"
+    apply_precondition fullCold
+    run_launch "$primer (primer for $id)" --es scenario "$primer" --ez autorun true
+  fi
   echo "→ $id (precondition: $pre)"
   apply_precondition "$pre"
   run_launch "$id" --es scenario "$id" --ez autorun true

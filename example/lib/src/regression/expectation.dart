@@ -18,6 +18,12 @@ class ScenarioObservations {
   /// Free-form notes a step wanted to record (e.g. "platform view recreated").
   final List<String> notes = <String>[];
 
+  /// Short evidence strings, keyed by label, that are emitted on the case's result line.
+  ///
+  /// Probes carry structured data for assertions; this is for facts that exist only to be read
+  /// back out of the log (e.g. how the library was served after a process kill).
+  final Map<String, String> summaries = <String, String>{};
+
   /// Error messages the **page** reported over its channel.
   ///
   /// Separate from a run's terminal outcome: the point of some cases is that the page reports

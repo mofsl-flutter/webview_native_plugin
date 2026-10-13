@@ -94,6 +94,17 @@ void listenForNewLaunch(void Function(LaunchArgs args) onNewLaunch) {
 /// than stdout, so it never reaches logcat in a profile build — verified the hard way.
 void emitResult(ScenarioResult result) {
   debugPrintSynchronously('$kResultTag\t${result.line}');
+  // Evidence goes on its own lines. A long log line is split by the platform and every piece after
+  // the first loses the tag the host script greps for, so one long line silently dropped its tail
+  // (including the post-open cache census).
+  for (final MapEntry<String, String> e in result.observations.summaries.entries) {
+    debugPrintSynchronously('$kResultTag\t${result.scenario.id}\tEVIDENCE\t${e.key}\t${e.value}');
+  }
+}
+
+/// Reports that a case could not start, so the host script shows why instead of silence.
+void emitBootError(String id, String message) {
+  debugPrintSynchronously('$kResultTag\t$id\tERROR\t$message');
 }
 
 /// Emits a line marking the end of a batch, so the script knows when to stop polling.

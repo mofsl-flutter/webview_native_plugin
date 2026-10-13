@@ -177,7 +177,10 @@ class BenchRunner extends ChangeNotifier {
     _terminal = Completer<void>();
     _startedAt = DateTime.now();
     _clock = Stopwatch()..start();
-    _capTimer = Timer(kGlobalRunCap, () => _finish(TerminalOutcome.timeout));
+    _capTimer = Timer(
+      kGlobalRunCap * config.budgetScale,
+      () => _finish(TerminalOutcome.timeout),
+    );
 
     if (config.changeSymbolOnWarmPage && _pageAlive) {
       // No navigation: reuse the live page and only switch symbol. This is the arm that
@@ -256,7 +259,7 @@ class BenchRunner extends ChangeNotifier {
   void _setPhase(RunPhase next) {
     _phase = next;
     _phaseTimer?.cancel();
-    _phaseTimer = Timer(next.budget, () {
+    _phaseTimer = Timer(next.budget * (_activeConfig?.budgetScale ?? 1.0), () {
       if (_phase == next) _finish(TerminalOutcome.timeout, timedOutPhase: next);
     });
     notifyListeners();

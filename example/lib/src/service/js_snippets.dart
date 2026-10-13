@@ -102,18 +102,118 @@ const String hbClearAllStorageJs = '(function(){'
     'try{sessionStorage.clear();}catch(e){}'
     '})();';
 
+/// JavaScript declaring `hbLib()`, which classifies every static asset the chart page loaded from
+/// under `/chart/` as `hit`, `revalidated` or `download`.
+///
+/// The charting library does not load its bundles into the top window: it builds an iframe and
+/// writes the bundle `<script>` tags into that, so the entries live on the *iframe's* performance
+/// timeline and a top-window-only harvest never sees the multi-megabyte library at all. This walks
+/// the top window and every same-origin iframe; a cross-origin frame throws and is counted in
+/// `blockedFrames` rather than silently dropped.
+///
+/// Classification, per entry:
+/// * `hit` — `deliveryType == "cache"`, or nothing transferred yet a body was delivered. (A
+///   cross-origin entry without `Timing-Allow-Origin` also reports 0 transferred, but it reports a
+///   0 decoded size too, which is why the decoded check is there.)
+/// * `revalidated` — headers only were transferred (< 1 KB) for a body of at least 2 KB: a `304`.
+///   The 2 KB floor stops a tiny file that was fully downloaded being misread as a `304`.
+/// * `opaque` — no size information at all, so it cannot be classified either way.
+/// * `download` — anything else.
+///
+/// `capped` is set when any frame's timeline reached the default 250-entry buffer, since entries
+/// past that are dropped by the browser and the counts would then be a lower bound.
+const String _hbLibFnJs = 'function hbLib(){try{'
+    'var out=[],blocked=0,frames=0,capped=false;'
+    'var take=function(w,tag){'
+    'var rs=w.performance.getEntriesByType("resource")||[];'
+    'if(rs.length>=250)capped=true;'
+    'for(var i=0;i<rs.length;i++){'
+    'var e=rs[i],u;'
+    // The chart API lives under the same /chart/ prefix; only static assets are of interest.
+    'if(e.initiatorType==="xmlhttprequest"||e.initiatorType==="fetch")continue;'
+    'try{u=new URL(e.name);}catch(x){continue;}'
+    'var at=u.pathname.indexOf("/chart/");'
+    'if(at<0)continue;'
+    'var t=e.transferSize||0,enc=e.encodedBodySize||0,dec=e.decodedBodySize||0;'
+    'var c=(e.deliveryType==="cache"||(t===0&&dec>0))?"hit"'
+    ':((t>0&&t<1024&&enc>=2048)?"revalidated"'
+    // No size information at all: a cross-origin entry without Timing-Allow-Origin. Counting it as
+    // a download would manufacture evidence either way, so it is kept apart.
+    ':((t===0&&dec===0&&enc===0)?"opaque":"download"));'
+    'out.push({f:tag,p:u.pathname.slice(at+7),h:u.href,st:e.startTime,c:c,transfer:t,encoded:enc,decoded:dec,'
+    'd:Math.round(e.duration),'
+    'status:(typeof e.responseStatus==="number"?e.responseStatus:null)});'
+    '}};'
+    'take(window,"top");frames++;'
+    'var fs=document.querySelectorAll("iframe");'
+    'for(var j=0;j<fs.length;j++){'
+    'try{take(fs[j].contentWindow,"lib");frames++;}catch(x){blocked++;}'
+    '}'
+    'var s={hit:0,revalidated:0,download:0,opaque:0,bytesTransfer:0,bytesDecoded:0,'
+    'entries:out.length,frames:frames,blockedFrames:blocked,capped:capped};'
+    // Compact name -> class map for the heavy files only, so it survives a one-line logcat
+    // record; the full list stays in `list`.
+    'var key={};'
+    'for(var k=0;k<out.length;k++){var o=out[k];s[o.c]++;'
+    's.bytesTransfer+=o.transfer;s.bytesDecoded+=o.decoded;'
+    'if(o.decoded>=30000)key[o.p.split("/").pop()]=o.c;}'
+    'return{list:out.slice(0,150),all:out,summary:s,key:key};'
+    '}catch(x){return{error:String((x&&x.message)||x)};}}';
+
+/// Reports how the charting library's files were served, without the rest of the navigation
+/// harvest, so it can be taken more than once in a run.
+///
+/// Taken a second time well after chart render it catches the lazily-loaded chunks that a
+/// harvest at the terminal event misses.
+String buildLibCacheJs(String runId, String label) {
+  final String r = jsonEncode(runId);
+  final String l = jsonEncode(label);
+  return '(function(){'
+      '$_hbLibFnJs'
+      'try{var L=hbLib();'
+      '__hb($r,"libCache",{label:$l,summary:L.summary||null,key:L.key||null,'
+      'error:L.error||null});'
+      '}catch(e){__hb($r,"libCache",{label:$l,error:String(e)});}'
+      '})();';
+}
+
+/// Reports the full URL of every static file the chart page loaded under `/chart/`, query string
+/// included, in the order they were requested.
+///
+/// The query string is part of the HTTP cache key, so a warm-up has to request `main.js?v=6`, not
+/// `main.js`. This is how that list is captured from a real run, rather than guessed from the
+/// page's source: the lazy chunks only show up once the chart is actually used.
+String buildLibUrlsJs(String runId) {
+  final String r = jsonEncode(runId);
+  return '(function(){'
+      '$_hbLibFnJs'
+      'try{var L=hbLib();'
+      'var all=(L.all||[]).slice().sort(function(a,b){return a.st-b.st;});'
+      'var seen={},urls=[];'
+      'for(var i=0;i<all.length;i++){var h=all[i].h;if(!seen[h]){seen[h]=1;urls.push(h);}}'
+      '__hb($r,"libUrls",{urls:urls,error:L.error||null});'
+      '}catch(e){__hb($r,"libUrls",{urls:[],error:String(e)});}'
+      '})();';
+}
+
 /// Harvests navigation and resource timings from inside the page.
 ///
 /// This is what settles the caching question per asset rather than by inference:
 /// `transfer == 0` is a cache hit, a small `transfer` against a large `decoded` is a conditional
 /// revalidation, and `transfer ~= encoded` is a full download. Aggregated in JavaScript before
 /// returning, because the raw entry list is large and must not cross the channel mid-run.
+///
+/// The top-window fields (`top`, `count`, `bytes*`) are unchanged. `lib`, `libSummary` and
+/// `libKey` are added from [_hbLibFnJs] so the charting library, which loads in an iframe, is
+/// finally visible.
 String buildNavTimingJs(String runId) {
   final String r = jsonEncode(runId);
   return '(function(){'
+      '$_hbLibFnJs'
       'try{'
       'var n=(performance.getEntriesByType("navigation")||[])[0]||{};'
       'var rs=performance.getEntriesByType("resource")||[];'
+      'var L=hbLib();'
       'var top=rs.map(function(e){return{'
       'n:String(e.name).split("/").pop().split("?")[0],'
       'd:Math.round(e.duration),'
@@ -137,6 +237,7 @@ String buildNavTimingJs(String runId) {
       'docTransfer:n.transferSize||0,'
       'docDecoded:n.decodedBodySize||0,'
       'docEncoded:n.encodedBodySize||0,'
+      'lib:L.list||null,libSummary:L.summary||null,libKey:L.key||null,libError:L.error||null,'
       'top:top'
       '});'
       '}catch(e){__hb($r,"navTimingFailed",String(e));}'

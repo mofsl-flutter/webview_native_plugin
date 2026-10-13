@@ -1,3 +1,4 @@
+import '../config/endpoints.dart';
 import '../model/bench_models.dart';
 import 'expectation.dart';
 import 'harness_ack.dart';
@@ -499,6 +500,197 @@ List<Scenario> buildCatalog() => <Scenario>[
         ],
       ),
 
+      // ---------------------------------------------------------------- K0..K3
+      // Cache-lifetime study. Each case opens the chart, lets the page settle long enough for the
+      // library's lazy chunks to load, then records (a) how the library's files were served and
+      // (b) what Chromium holds on disk. K0 primes; K1-K3 are launched by the host script *after*
+      // it has primed with K0 and applied a precondition, so their `atLaunch` census doubles as
+      // proof the precondition did what it claims.
+      //
+      // They assert that the measurement is valid, not that the chart drew data: the question is
+      // how the library was served, which does not depend on the market-data backend answering.
+      Scenario(
+        id: 'K0',
+        title: 'Library cache baseline after a cold open',
+        dimension: Dimension.storage,
+        hypothesis: 'Run straight after a full data wipe, every library file should classify as a '
+            'download; run on a warm app, as hit or revalidated. Used by the host script as the '
+            'priming launch for K1-K3.',
+        steps: _cacheStudySteps,
+        expectations: const <Expectation>[
+          ExpectCustom('the library bundle was observed and classified', _libraryObserved),
+        ],
+      ),
+      Scenario(
+        id: 'K1',
+        title: 'Library cache after the process is killed',
+        dimension: Dimension.process,
+        precondition: ExternalPrecondition.processDeath,
+        hypothesis: 'The HTTP cache is on disk, so a swiped-away app should relaunch with the '
+            'library served from cache. Whether that is a pure hit or a 304 per file depends on '
+            'the heuristic freshness window, which is what the classification shows.',
+        steps: _cacheStudySteps,
+        expectations: const <Expectation>[
+          ExpectCustom('the library bundle was observed and classified', _libraryObserved),
+        ],
+      ),
+      Scenario(
+        id: 'K2',
+        title: 'Library cache after a force-stop',
+        dimension: Dimension.process,
+        precondition: ExternalPrecondition.forceStop,
+        hypothesis: 'Some OEMs implement swipe-from-recents as a force-stop. The disk cache '
+            'should survive that too, so this should match K1.',
+        steps: _cacheStudySteps,
+        expectations: const <Expectation>[
+          ExpectCustom('the library bundle was observed and classified', _libraryObserved),
+        ],
+      ),
+      Scenario(
+        id: 'K3',
+        title: 'Library cache after the OS trims the app cache',
+        dimension: Dimension.storage,
+        precondition: ExternalPrecondition.cacheTrimmed,
+        hypothesis: 'Low-storage eviction empties the HTTP cache but leaves cookies and DOM '
+            'storage, so the library should be downloaded again while the user stays signed in. '
+            'This is the case a bundled library fixes. If `atLaunch` shows the cache not '
+            'actually emptied, the trim did nothing on this device and the result is void.',
+        steps: _cacheStudySteps,
+        expectations: const <Expectation>[
+          ExpectCustom('the library bundle was observed and classified', _libraryObserved),
+        ],
+      ),
+
+      // ---------------------------------------------------------------- W0..W2, WC
+      // Cache warm-up. The question is whether a fetch made from a throwaway WebView on the chart
+      // origin fills the same HTTP cache entries the chart's library iframe later reads. W1 asks it
+      // within one process (the new-install case); W2 asks it across a process kill, which rules
+      // out the renderer's in-memory cache standing in for the disk cache.
+      Scenario(
+        id: 'W0',
+        title: 'Warm-up fills the HTTP cache from the chart origin',
+        dimension: Dimension.storage,
+        hypothesis: 'The warm-up page must report the chart origin, or its requests land in a '
+            'different cache partition and every later chart request misses. Also the primer '
+            'for W2.',
+        steps: const <ScenarioStep>[
+          CacheCensus('atLaunch'),
+          WarmLibCache(),
+          CacheCensus('afterWarm'),
+        ],
+        expectations: const <Expectation>[
+          ExpectCustom('the warm-up ran on the chart origin and succeeded', _warmedFromChartOrigin),
+          ExpectCustom('the warm-up wrote to the HTTP cache', _warmFilledDiskCache),
+        ],
+      ),
+      Scenario(
+        id: 'W1',
+        title: 'New install: warm-up first, then the chart opens from cache',
+        dimension: Dimension.storage,
+        precondition: ExternalPrecondition.fullCold,
+        hypothesis: 'After a warm-up on an empty cache, opening the chart should classify the '
+            'library as cache hits and transfer almost nothing. JS boot is not asserted: the '
+            'warm-up fills the network cache, not the compiled-code cache.',
+        steps: const <ScenarioStep>[
+          CacheCensus('atLaunch'),
+          WarmLibCache(),
+          CacheCensus('afterWarm'),
+          OpenChart(kEquityA, budgetScale: 12),
+          WaitForLibQuiet(),
+          LibCacheProbe('settled'),
+          CacheCensus('afterOpen'),
+        ],
+        expectations: const <Expectation>[
+          ExpectCustom('the warm-up ran on the chart origin and succeeded', _warmedFromChartOrigin),
+          ExpectCustom('the library was served from the warmed cache', _libraryServedFromCache),
+        ],
+      ),
+      Scenario(
+        id: 'W2',
+        title: 'Warm-up survives a process kill',
+        dimension: Dimension.process,
+        precondition: ExternalPrecondition.processDeath,
+        hypothesis: 'The warmed entries are on disk, so a relaunch after the process dies should '
+            'read the library from cache exactly as it does after a normal open (K1).',
+        steps: _cacheStudySteps,
+        expectations: const <Expectation>[
+          ExpectCustom('the library was served from the warmed cache', _libraryServedFromCache),
+        ],
+      ),
+      Scenario(
+        id: 'W3',
+        title: 'A second warm-up is nearly free',
+        dimension: Dimension.storage,
+        precondition: ExternalPrecondition.fullCold,
+        hypothesis: 'Everything the first warm-up fetched is now cached, so a second should '
+            'classify as hits and transfer almost nothing. This is what makes re-triggering on '
+            'every login and app start cheap.',
+        steps: const <ScenarioStep>[
+          WarmLibCache(label: 'warm1'),
+          WarmLibCache(label: 'warm2'),
+          CacheCensus('afterWarm'),
+        ],
+        expectations: const <Expectation>[
+          ExpectCustom('the first warm-up succeeded on the chart origin', _warm1Ok),
+          ExpectCustom('the second warm-up was served from cache', _warm2Cached),
+        ],
+      ),
+      Scenario(
+        id: 'W4',
+        title: 'A warm-up racing the chart open does not double the download',
+        dimension: Dimension.storage,
+        precondition: ExternalPrecondition.fullCold,
+        hypothesis: 'The warm-up and the chart ask for the same files at the same time. Chromium '
+            'can attach a second request to an in-progress cache write, so the total over the '
+            'wire should stay near one cold load (1.74 MB), not two.',
+        steps: const <ScenarioStep>[
+          WarmLibCache(background: true),
+          OpenChart(kEquityA, budgetScale: 12),
+          AwaitWarm('warm'),
+          WaitForLibQuiet(),
+          LibCacheProbe('settled'),
+        ],
+        expectations: const <Expectation>[
+          ExpectCustom('the warm-up finished on the chart origin', _warmedFromChartOrigin),
+          ExpectCustom('the library bundle was observed and classified', _libraryObserved),
+          ExpectCustom('the combined download stayed under 130% of one cold load', _noDoubleDownload),
+        ],
+      ),
+      Scenario(
+        id: 'W5',
+        title: 'A missing manifest does nothing and says so',
+        dimension: Dimension.storage,
+        precondition: ExternalPrecondition.fullCold,
+        hypothesis: 'The web team has not published the manifest yet. The warm-up must report '
+            '`manifest missing` and leave the cache alone, so shipping the app first is safe.',
+        steps: const <ScenarioStep>[
+          // A path that can never exist, so the case keeps meaning "missing" once a real manifest
+          // is published.
+          WarmLibCache(manifestPath: 'no-such-manifest-for-this-test.json'),
+          CacheCensus('afterWarm'),
+        ],
+        expectations: const <Expectation>[
+          ExpectCustom('the warm-up reported the manifest missing', _manifestMissing),
+          ExpectCustom('nothing was downloaded', _cacheStillEmpty),
+        ],
+      ),
+      // Not a regression: captures the file list the warm-up cases use. Run by
+      // tool/capture_chart_lib_urls.sh, not by the suite.
+      Scenario(
+        id: 'WC',
+        title: 'Capture the chart library URLs for the warm-up fixture',
+        dimension: Dimension.storage,
+        precondition: ExternalPrecondition.fullCold,
+        steps: const <ScenarioStep>[
+          OpenChart(kEquityA, budgetScale: 12),
+          WaitForLibQuiet(),
+          CaptureLibUrls(),
+        ],
+        expectations: const <Expectation>[
+          ExpectCustom('library URLs were captured', _urlsCaptured),
+        ],
+      ),
+
       // ---------------------------------------------------------------- G2
       Scenario(
         id: 'G2',
@@ -526,6 +718,23 @@ List<Scenario> buildCatalog() => <Scenario>[
       ),
     ];
 
+/// Steps shared by the cache-lifetime cases.
+///
+/// The wait matters: the library loads some chunks lazily, after the chart reports a terminal, and
+/// a probe taken at the terminal event would classify only the eager ones. It polls rather than
+/// sleeping a fixed time so the same cases are valid on a fast link and on a throttled one.
+///
+/// The 12x budget is for slow networks: a cold load at GPRS speed takes minutes, against the
+/// ~11 s the budgets were sized for. It only raises the ceiling, so a fast run still ends when the
+/// chart does.
+const List<ScenarioStep> _cacheStudySteps = <ScenarioStep>[
+  CacheCensus('atLaunch'),
+  OpenChart(kEquityA, budgetScale: 12),
+  WaitForLibQuiet(),
+  LibCacheProbe('settled'),
+  CacheCensus('afterOpen'),
+];
+
 // Predicates kept top-level so the scenarios can stay `const`.
 
 bool _symbolUnchanged(ScenarioObservations o) {
@@ -547,3 +756,92 @@ bool _unresolvedSymbolNotCached(ScenarioObservations o) {
 }
 
 bool _terminated(ScenarioObservations o) => o.records.isNotEmpty;
+
+/// The warm-up succeeded and its page really had the chart's origin.
+///
+/// Checking the origin is the point: a `loadDataWithBaseURL` page that ended up with an opaque
+/// origin would still fetch every file and report success, while filling a cache partition the
+/// chart never reads.
+bool _warmedFromChartOrigin(ScenarioObservations o) {
+  final Map<String, Object?>? p = o.probes['warm'];
+  return p != null && p['ok'] == true && p['origin'] == Uri.parse(kChartUrl).origin;
+}
+
+/// The census after the warm-up shows the HTTP cache actually holds data now.
+bool _warmFilledDiskCache(ScenarioObservations o) {
+  final Object? bytes = o.probes['afterWarm']?['httpBytes'];
+  return bytes is num && bytes > 1000000;
+}
+
+/// After a warm-up the chart open was served from cache: nearly everything a hit or a
+/// revalidation, and almost nothing transferred.
+///
+/// The thresholds are the plan's: at most 5% downloads, and no more than 175 KB over the wire,
+/// against 1.74 MB for the cold open this is meant to avoid.
+bool _libraryServedFromCache(ScenarioObservations o) {
+  if (!_libraryObserved(o)) return false;
+  final Map<String, Object?> p = o.probes['settled']!;
+  final Object? entries = p['entries'];
+  final Object? downloads = p['download'];
+  final Object? transferred = p['bytesTransfer'];
+  return entries is num &&
+      downloads is num &&
+      transferred is num &&
+      downloads <= entries * 0.05 &&
+      transferred <= 175000;
+}
+
+bool _warm1Ok(ScenarioObservations o) {
+  final Map<String, Object?>? p = o.probes['warm1'];
+  return p != null && p['ok'] == true && p['origin'] == Uri.parse(kChartUrl).origin;
+}
+
+bool _warm2Cached(ScenarioObservations o) {
+  final Map<String, Object?>? p = o.probes['warm2'];
+  final Object? counts = p?['counts'];
+  final Object? files = p?['files'];
+  final Object? transferred = p?['bytesTransfer'];
+  if (p == null || p['ok'] != true || counts is! Map || files is! num || transferred is! num) {
+    return false;
+  }
+  final Object? downloads = counts['download'];
+  return downloads is num && downloads <= files * 0.05 && transferred <= 175000;
+}
+
+/// One cold load is 1.74 MB over the wire. A warm-up and a chart open that each fetched
+/// everything would be about twice that, so 130% leaves room for the few files that overlap
+/// without hiding a real duplicate.
+bool _noDoubleDownload(ScenarioObservations o) {
+  final Object? warmed = o.probes['warm']?['bytesTransfer'];
+  final Object? opened = o.probes['settled']?['bytesTransfer'];
+  return warmed is num && opened is num && warmed + opened <= 1740000 * 1.3;
+}
+
+bool _manifestMissing(ScenarioObservations o) {
+  final Map<String, Object?>? p = o.probes['warm'];
+  return p != null && p['ok'] == false && p['reason'] == 'manifest missing';
+}
+
+bool _cacheStillEmpty(ScenarioObservations o) {
+  final Object? bytes = o.probes['afterWarm']?['httpBytes'];
+  return bytes is num && bytes < 100000;
+}
+
+bool _urlsCaptured(ScenarioObservations o) {
+  final Object? count = o.probes['libUrls']?['count'];
+  return count is num && count > 20 && o.probes['libUrls']?['error'] == null;
+}
+
+/// The post-settle probe saw the library bundle itself, not merely some page script.
+///
+/// "Saw any resource" is too weak: on a link too slow to finish loading, the page's own small
+/// scripts arrive and the multi-megabyte library never starts, which would still pass and read as
+/// a measurement of nothing. An empty, errored or bundle-less probe must fail loudly rather than
+/// record a confident-looking result.
+bool _libraryObserved(ScenarioObservations o) {
+  final Map<String, Object?>? p = o.probes['settled'];
+  if (p == null || p['error'] != null) return false;
+  final Object? files = p['files'];
+  return files is List &&
+      files.any((Object? f) => f is String && f.startsWith('library.') && f.endsWith('.js'));
+}

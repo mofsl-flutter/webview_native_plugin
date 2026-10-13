@@ -73,11 +73,20 @@ class _AutorunBootstrapState extends State<_AutorunBootstrap> {
       clientCode: widget.session.clientCode,
       userType: widget.session.userType,
       appId: widget.session.appId,
+      // Nobody is watching an unattended run, and the same launch may be on a throttled network
+      // (the cache-lifetime cases are). A tight limit here ends the run before any case starts.
+      connectionTimeout: const Duration(seconds: 120),
     );
     if (!mounted) return;
     widget.session.applyTokenResult(r);
     if (!r.ok) {
-      setState(() => _status = 'token failed: ${r.error ?? r.statusCode}');
+      final String why = 'token failed: ${r.error ?? r.statusCode}';
+      setState(() => _status = why);
+      // One line per case, so the host script reports ERROR with the reason rather than a bare
+      // "0/N passed" and an empty results file.
+      for (final Scenario s in widget.scenarios) {
+        emitBootError(s.id, why);
+      }
       emitDone(widget.scenarios.length, 0);
       return;
     }

@@ -106,14 +106,18 @@ class JwtClaims {
 /// exposes connect time separately from the response wait, which the harness reports.
 class TokenApi {
   /// Requests a token for [clientCode].
+  ///
+  /// [connectionTimeout] bounds DNS, the TCP connect and the TLS handshake together. The default
+  /// suits a normal connection; an unattended run on a throttled link needs far longer, because a
+  /// certificate exchange at GPRS speed can by itself exceed 10 s.
   Future<TokenResult> fetch({
     required String clientCode,
     required String userType,
     required String appId,
+    Duration connectionTimeout = const Duration(seconds: 10),
   }) async {
     final Stopwatch sw = Stopwatch()..start();
-    final HttpClient client = HttpClient()
-      ..connectionTimeout = const Duration(seconds: 10);
+    final HttpClient client = HttpClient()..connectionTimeout = connectionTimeout;
     try {
       final Uri uri = Uri.parse(kTokenBase).replace(
         queryParameters: <String, String>{

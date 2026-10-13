@@ -108,6 +108,7 @@ class RunConfig {
     this.cacheBustUrl = true,
     this.hybridComposition = false,
     this.chartMode = 'FullChart',
+    this.budgetScale = 1.0,
   });
 
   /// Symbol to load.
@@ -155,6 +156,14 @@ class RunConfig {
   /// document was initialised with is refused inside the page.
   final String chartMode;
 
+  /// Multiplier applied to the per-phase budgets and the global run cap.
+  ///
+  /// The budgets are tuned to catch a hung page on a normal connection, so on a throttled link
+  /// (a cold load of the charting library at GPRS speed takes minutes) they would end every run in
+  /// a timeout with a half-filled cache. Left at 1 for everything that is not deliberately run on
+  /// a slow network. It stretches how long a run may take; it does not change what is measured.
+  final double budgetScale;
+
   /// Short identifier for grouping results by arm.
   String get armKey => 'pw=${preWarm ? 1 : 0},cm=$cacheMode,'
       'rm=${resetMode.name},af=${authorizeFirst ? 1 : 0},na=${neverAuthorize ? 1 : 0},'
@@ -173,6 +182,7 @@ class RunConfig {
         cacheBustUrl: cacheBustUrl,
         hybridComposition: hybridComposition,
         chartMode: chartMode,
+        budgetScale: budgetScale,
       );
 }
 
