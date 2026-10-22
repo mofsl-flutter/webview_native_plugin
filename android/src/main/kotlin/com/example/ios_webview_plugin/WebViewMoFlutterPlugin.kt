@@ -15,25 +15,38 @@ private const val TAG = "WebViewMoFlutterPlugin"
 /** Maximum events retained while no Dart subscriber is attached. */
 private const val REPLAY_BUFFER_CAPACITY = 512
 
-class WebViewMoFlutterPlugin :
-    FlutterPlugin,
+/** Runs work on the platform thread. Created lazily so the plugin can be built off-device. */
+private class MainLooperPoster : (Runnable) -> Unit {
+    private val handler: Handler by lazy { Handler(Looper.getMainLooper()) }
+    override fun invoke(runnable: Runnable) {
+        handler.post(runnable)
+    }
+}
+
+class WebViewMoFlutterPlugin internal constructor(
+    private val managerProvider: (Context) -> WebViewManager,
+    private val postToMain: (Runnable) -> Unit
+) : FlutterPlugin,
     MethodChannel.MethodCallHandler,
     EventChannel.StreamHandler,
     WebViewControllerDelegate {
+
+    /** The constructor the generated plugin registrant uses. */
+    constructor() : this({ WebViewManager.getInstance(it) }, MainLooperPoster())
 
     private lateinit var methodChannel: MethodChannel
     private lateinit var eventChannel: EventChannel
     private var eventSink: EventChannel.EventSink? = null
     private lateinit var context: Context
     private lateinit var webViewManager: WebViewManager
-    private val uiThreadHandler: Handler = Handler(Looper.getMainLooper())
+    private val uiThreadHandler: Handler by lazy { Handler(Looper.getMainLooper()) }
 
     /**
      * Events captured before Dart subscribed.
      *
-     * The delegate is wired in [onAttachedToEngine] so pre-warm works before any subscriber
-     * exists; without this buffer the page's first `PageReady` would be discarded and a
-     * consumer waiting on it would hang. Only ever touched from the main thread, because every
+     * The delegate is claimed by the first `prewarm`/`loadUrl` call, which can happen before any
+     * subscriber exists; without this buffer the page's first `PageReady` would be discarded and
+     * a consumer waiting on it would hang. Only ever touched from the main thread, because every
      * append happens inside the posted lambda.
      */
     private val replayBuffer = ArrayDeque<Map<String, Any?>>()
@@ -49,10 +62,13 @@ class WebViewMoFlutterPlugin :
             EventChannel(flutterPluginBinding.binaryMessenger, "webview_plugin_events").apply {
                 setStreamHandler(this@WebViewMoFlutterPlugin)
             }
-        webViewManager = WebViewManager.getInstance(context)
-        // Wired here, not in onListen, so events raised before Dart subscribes are buffered
-        // rather than dropped.
-        webViewManager.delegate = this
+        webViewManager = managerProvider(context)
+        // Deliberately NOT claiming the delegate here. The WebView manager is process-wide but
+        // this plugin is instantiated once per FlutterEngine, and a host app can have more than
+        // one: firebase_messaging starts a headless engine for background pushes, and it registers
+        // every plugin. Claiming on attach let that engine take the delegate away from the engine
+        // showing the chart, after which page -> Dart events (`loadRequested`, `PageReady`,
+        // `Chart`) never reached it again. Ownership follows use instead: see [claimDelegate].
         flutterPluginBinding.platformViewRegistry.registerViewFactory(
             "web_view_mo_flutter",
             WebViewMoFlutterViewFactory(webViewManager)
@@ -65,7 +81,11 @@ class WebViewMoFlutterPlugin :
         CacheWarmer.cancel(this)
         methodChannel.setMethodCallHandler(null)
         eventChannel.setStreamHandler(null)
-        webViewManager.delegate = null
+        // Only the owner gives the delegate up; a headless engine detaching must not silence the
+        // engine that is actually driving the WebView.
+        if (webViewManager.delegate === this) {
+            webViewManager.delegate = null
+        }
         eventSink = null
         replayBuffer.clear()
         // Deliberately does NOT destroy the WebView. It is a process-wide singleton: a hot
@@ -74,9 +94,24 @@ class WebViewMoFlutterPlugin :
         // `destroyWebView` method instead.
     }
 
+    /**
+     * Routes the manager's events to this engine. Called from the paths that mean "this engine is
+     * driving the WebView": a Dart subscriber appearing, or a navigation/lifecycle method call.
+     * A headless engine never does either, so it can never take the delegate. Idempotent.
+     */
+    private fun claimDelegate(reason: String) {
+        if (webViewManager.delegate === this) return
+        webViewManager.delegate = this
+        webViewManager.emit(
+            "delegateClaimed",
+            "owner" to System.identityHashCode(this),
+            "reason" to reason
+        )
+    }
+
     override fun onWebViewEvent(event: Map<String, Any?>) {
         // Already timestamped at the point of capture by WebViewManager.emit().
-        uiThreadHandler.post {
+        postToMain {
             val sink = eventSink
             if (sink != null) {
                 sink.success(event)
@@ -93,6 +128,7 @@ class WebViewMoFlutterPlugin :
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
         eventSink = events
         if (events == null) return
+        claimDelegate("listen")
         if (droppedEvents > 0) {
             events.success(
                 mapOf(
@@ -118,6 +154,7 @@ class WebViewMoFlutterPlugin :
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "loadUrl" -> {
+                claimDelegate("loadUrl")
                 val urlString = call.argument<String>("initialUrl")
                 if (urlString == null) {
                     result.error("INVALID_ARGUMENT", "URL is required", null)
@@ -138,6 +175,7 @@ class WebViewMoFlutterPlugin :
             }
 
             "prewarm" -> {
+                claimDelegate("prewarm")
                 val info = webViewManager.prewarm(
                     url = call.argument<String>("url"),
                     channels = call.argument<List<String>>("javaScriptChannels"),
@@ -166,6 +204,7 @@ class WebViewMoFlutterPlugin :
             }
 
             "reloadUrl" -> {
+                claimDelegate("reloadUrl")
                 val view = webViewManager.webView
                 if (view == null) {
                     result.error("NO_WEBVIEW", "WebView does not exist", null)
@@ -331,6 +370,7 @@ class WebViewMoFlutterPlugin :
             }
 
             "destroyWebView" -> {
+                claimDelegate("destroyWebView")
                 webViewManager.destroyWebView()
                 result.success(null)
             }

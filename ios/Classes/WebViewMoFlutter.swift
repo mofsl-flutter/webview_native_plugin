@@ -29,6 +29,8 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
                 let isChart = args["isChart"] as? Bool ?? true
                 let backgroundColor = args["backgroundColor"] as? String ?? "#FFFFFF"
                 print("Received isChart: \(isChart)")
+                // The engine that navigates owns the events (mirrors the Android plugin).
+                WebViewManager.shared.delegate = self
                 WebViewManager.shared.loadURL(urlString, isChart, withJavaScriptChannel: javaScriptChannelName, plugin: self, backgroundColor: backgroundColor)
                 result(nil)
             } else {
@@ -148,7 +150,11 @@ extension WebViewMoFlutterPlugin: FlutterStreamHandler {
 
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
         self.eventSink = nil
-        WebViewManager.shared.delegate = nil
+        // Only the owner gives the delegate up; another engine cancelling must not silence the
+        // engine that is driving the WebView (mirrors the Android plugin).
+        if WebViewManager.shared.delegate === self {
+            WebViewManager.shared.delegate = nil
+        }
         return nil
     }
 }
