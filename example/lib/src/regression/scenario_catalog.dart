@@ -703,7 +703,7 @@ List<Scenario> buildCatalog() => <Scenario>[
       // slow or empty (a `204`) leaves them driving a blank chart, and their zero counts then mean
       // nothing. A request only shows up in a trace once its response completes, so each step
       // waits long enough for its own calls to finish (the interval change gets 35 s, because
-      // the API was seen answering in 20-30 s). The 11 s after `panZoom` lets its 40 steps,
+      // UAT's HistoryV3 was seen answering in 20-30 s). The 11 s after `panZoom` lets its 40 steps,
       // 250 ms apart, finish.
       // Run with `--es scenario T0 --ez autorun true` on an explicitly chosen device.
       Scenario(

@@ -45,9 +45,10 @@ final List<Scenario> localBundleScenarios = <Scenario>[
         'where files came from; this proves the library still draws candles from the API data.',
     steps: const <ScenarioStep>[
       OpenChart(kEquityB, budgetScale: 6),
-      // The chart reports ready before its data arrives. The API answers in about 10 s when the
-      // requested range reaches "now", so wait that out before looking for bars. No interval is
-      // changed: the page saves it to the server, and a probe taken mid-load reads zero bars.
+      // The chart reports ready before its data arrives. UAT's HistoryV3 takes about 10 s when the
+      // requested range reaches "now" (production answers in about 0.25 s), so wait long enough for
+      // UAT before looking for bars. No interval is changed: the page saves it to the server, and a
+      // probe taken mid-load reads zero bars.
       Wait(Duration(seconds: 22)),
       TraceApi('candles'),
       Probe('candles'),
@@ -73,7 +74,8 @@ final Scenario saveTrafficScenario = Scenario(
       'second pan after adding an indicator should save more than the first for the same movement.',
   steps: const <ScenarioStep>[
     OpenChart(kEquityB, budgetScale: 6),
-    // Wait out the API's ~10 s so there is data to pan over, then drop the load-time requests.
+    // Wait out UAT's ~10 s HistoryV3 (production: ~0.25 s) so there is data to pan over, then drop
+    // the load-time requests.
     Wait(Duration(seconds: 22)),
     TraceApi('load'),
     // What the chart carries on open. Indicators this case adds are saved to the server's copy of
