@@ -31,3 +31,6 @@ build/
 
 # tokensave MCP server local cache
 .tokensave/
+
+# Upstream copies of the owned chart page, written by tool/sync_chart_bundle.dart for a manual diff and merge
+assets/chart/upstream/

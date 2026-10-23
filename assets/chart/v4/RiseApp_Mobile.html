@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Chart</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <script type="text/javascript" src="../v1/Libraries/Paid_libraries/TT_v29_1_0/charting_library.standalone.js"></script>
+    <script type="text/javascript" src="js/libs/loglevel.min.js"></script>
+    <script type="text/javascript" src="js/libs/loglevel-plugin-prefix.min.js"></script>
+    <script type="text/javascript">
+        window.ChartApp = window.ChartApp || {};
+        (function (window, chartApp) {
+            const config = {};
+            config.libPath = '../v1/Libraries/Paid_libraries/TT_v29_1_0/';
+            config.logLevel = 'info';
+            config.tvDebug = false;
+            config.version = '20260724_01';
+            config.page = 'RiseApp_Mobile.html'
+            config.ShowRefreshPagePopUp = false
+            config.showBuySellButton = false
+            config.disableThemeButton = true
+
+            chartApp.config = config;
+
+        })(window, ChartApp);
+    </script>
+    <script type="text/javascript" src="js/core/static_config.js?v=5"></script>
+    <script type="text/javascript" src="js/core/stream.js?v=6"></script>
+    <script type="text/javascript" src="js/datafeeds/datafeed.js?v=6"></script>
+    <script type="text/javascript" src="js/main.js?v=6"></script>
+
+                                <!-- Akamai mPulse snippet removed by sync_chart_bundle --></head>
+<body style="margin:0">
+<div>
+    <div id="tv_chart_container"></div>
+</div>
+</body>
+</html>

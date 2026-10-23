@@ -217,6 +217,10 @@ final class _File {
 final class _Plan {
   final Map<String, _File> files = <String, _File>{};
   final List<String> warnings = <String>[];
+
+  /// Script chunks the runtime table lists that are absent from the server and requested by
+  /// nothing. Recorded so the bundle's completeness check can tell them from a real omission.
+  final List<Map<String, String>> skippedChunks = <Map<String, String>>[];
   final List<String> externals = <String>[];
   late Uri pageUri;
   late Uri libBase;
@@ -447,6 +451,7 @@ Future<_Plan> _collect(_Fetcher fetcher, _Options o) async {
       if (r.status == 404 && !RegExp("\\.e\\(${chunk.id}\\)").hasMatch(scripts)) {
         plan.warnings.add("chunk ${chunk.id} (${chunk.file}) is in the runtime table but is not "
             "on the server, and no library script requests it; skipped");
+        plan.skippedChunks.add(<String, String>{"id": chunk.id, "file": chunk.file});
       } else {
         needed.add(r);
       }
@@ -619,6 +624,7 @@ void _writeManifest(
     "pageVersion": plan.appVersion,
     "language": o.language,
     "strippedMpulse": strippedMpulse,
+    "skippedChunks": plan.skippedChunks,
     "unresolved": plan.warnings,
     "external": plan.externals,
     "fileCount": entries.length,

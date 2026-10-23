@@ -1,0 +1,5 @@
+# The mirrored chart bundle is vendored third-party output. Keep it byte-exact: assets/chart/manifest.json
+# pins a SHA-256 for every file, so line-ending conversion would silently break it. Minified one-line
+# scripts also make `git diff` unreadable, so they are treated as binary for diffs.
+assets/chart/v1/**    -text -diff
+assets/chart/Icons/** -text -diff

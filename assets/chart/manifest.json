@@ -1,0 +1,3126 @@
+{
+  "generatedAt": "2026-10-23T18:50:05.447043Z",
+  "host": "https://tradingapi.motilaloswaluat.com",
+  "page": "/chart/v4/RiseApp_Mobile.html",
+  "library": "TT_v29_1_0",
+  "pageVersion": "20260724_01",
+  "language": "en",
+  "strippedMpulse": false,
+  "skippedChunks": [
+    {
+      "id": "3",
+      "file": "3.6cf8fdd19c9e5055cd36.js"
+    }
+  ],
+  "unresolved": [
+    "chunk 3 (3.6cf8fdd19c9e5055cd36.js) is in the runtime table but is not on the server, and no library script requests it; skipped"
+  ],
+  "external": [],
+  "fileCount": 515,
+  "files": [
+    {
+      "path": "v1/Icons/Dark/ExitFullScreen.png",
+      "bytes": 344,
+      "sha256": "3f26269a7787ed7ba330438395f707908553807f77000537600adfeeea62ca5a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Icons/Dark/ExitFullScreen.png"
+    },
+    {
+      "path": "v1/Icons/Dark/FullScreen.png",
+      "bytes": 355,
+      "sha256": "6a26cc32b9c47a8c448a3cc63ae6d84de0759a174f6d8db3fd4c722b8925d12b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Icons/Dark/FullScreen.png"
+    },
+    {
+      "path": "v1/Icons/Dark/MarketDepth.png",
+      "bytes": 343,
+      "sha256": "8e9526526af2fad64a5fe1fadbde54fe53011d603034820dc96c7af1c4722716",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Icons/Dark/MarketDepth.png"
+    },
+    {
+      "path": "v1/Icons/Light/ExitFullScreen.png",
+      "bytes": 362,
+      "sha256": "87868136fa21d7530c5e1c048540cdf8f9631500fba80f80c23501a7d748a5b9",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Icons/Light/ExitFullScreen.png"
+    },
+    {
+      "path": "v1/Icons/Light/FullScreen.png",
+      "bytes": 361,
+      "sha256": "8a9f3864758ac649dcbd72f21cbe52bacbae061e7793c00a35ceb4132b10ff1a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Icons/Light/FullScreen.png"
+    },
+    {
+      "path": "v1/Icons/Light/MarketDepth.png",
+      "bytes": 371,
+      "sha256": "1ffec107a07955d50b13210e3b58c61881bbec5a54126a544256bbb75bc12b3b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Icons/Light/MarketDepth.png"
+    },
+    {
+      "path": "v1/Icons/Moon.png",
+      "bytes": 297,
+      "sha256": "1853a52e90f4b78cea94047ca4a3440e846bd9ac8237c6c5f7fa4f18895ac7f7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Icons/Moon.png"
+    },
+    {
+      "path": "v1/Icons/Sun.png",
+      "bytes": 312,
+      "sha256": "a7a7c96fe7121fab21860ceabd43de800afaa76cfcef2be9609d91ced5e130f2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Icons/Sun.png"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1013.7a29c300c9788022d8a3.css",
+      "bytes": 2222,
+      "sha256": "68cf0a5b678a25ee3f0418da67d970adb0de9534c9e443c0b7a9137fa1d6e7eb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1013.7a29c300c9788022d8a3.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1072.67a2846c0506e2e592be.css",
+      "bytes": 2490,
+      "sha256": "3319b6d1115da123d97ace07e86108e06537ddc5bb66d13f030dbc3f893ed07d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1072.67a2846c0506e2e592be.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1119.c7e5832b1ea2d19f420e.js",
+      "bytes": 28974,
+      "sha256": "ea863762a6062f9540964a62fc3f43d30b19f49cafe1f1641deb6d3111445dce",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1119.c7e5832b1ea2d19f420e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1135.a33c76f5549cc7102e61.css",
+      "bytes": 32,
+      "sha256": "02392cb348576ae4401ed04ea67dc7a708f88cf080b321001192ee8fdfbee047",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1135.a33c76f5549cc7102e61.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1191.7eaa73b7c4e196f5e964.js",
+      "bytes": 35693,
+      "sha256": "e3a6cacd5bc76396ef4244ad4d1abbaefc684d2f11d09c857b279cd84edc8d07",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1191.7eaa73b7c4e196f5e964.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1249.7f5f09a1d671819fafa9.css",
+      "bytes": 5439,
+      "sha256": "6a4a4e4e5412dc2d83b8e365afbc9b91045255ef22881af7d86640bd85c8b66f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1249.7f5f09a1d671819fafa9.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1252.788a58021829bdae27fc.css",
+      "bytes": 5950,
+      "sha256": "bcdc86ae65324ca608c63f2a6b2a66a2b61b460a8a3a283e11a69640507cc394",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1252.788a58021829bdae27fc.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1298.ef9292896ac7193ea04a.js",
+      "bytes": 36977,
+      "sha256": "50cba1cd052dff483b7ebb28fddc0c5230952fdfeb56c12c148a1398d45cbb7f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1298.ef9292896ac7193ea04a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1356.e2248aecf1ad4e148d65.css",
+      "bytes": 994,
+      "sha256": "ad3aa4b8d0a86777465b765216b103d2c706e84371d749ab6536feab61c2bfb6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1356.e2248aecf1ad4e148d65.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1369.55535c8c5abd6cb2ce32.js",
+      "bytes": 12208,
+      "sha256": "99bae1c92aa9214b78100a41c0b7822a853fec9a8aacf84a5aaa0e7afb7a1d9d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1369.55535c8c5abd6cb2ce32.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1380.5ba7850c7061f2d26173.css",
+      "bytes": 4102,
+      "sha256": "18e885730db375c0d70aeba3ac2641c02ddaed6929b0afcc53f474225f74c277",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1380.5ba7850c7061f2d26173.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1389.9ce134321e5f7ed1c4ad.css",
+      "bytes": 390,
+      "sha256": "0d86f8d898eadd5474e95eb88236cad4371819f433c109cb51775d8afe54db99",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1389.9ce134321e5f7ed1c4ad.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1390.626f0a194297d6d23002.css",
+      "bytes": 1093,
+      "sha256": "3dff91c411f7acbe1bfb38ea26df9377c9222a8fc14ba93d1252abd19ca982a2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1390.626f0a194297d6d23002.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1442.b2c013cd0d71ae9198e7.js",
+      "bytes": 16563,
+      "sha256": "84944c0d10061fb60003fd502a1e77bdb0527324b731821d98ef8e6e815cb785",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1442.b2c013cd0d71ae9198e7.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1456.b82a647336b03fd9960f.js",
+      "bytes": 15547,
+      "sha256": "02912c34a18fc5ed1fdc849d38cdd772ed82b28259aee08a59445b1df6f8ca31",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1456.b82a647336b03fd9960f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1551.0163412c2c2bbec3323e.css",
+      "bytes": 397,
+      "sha256": "1131d05821cd13581554bb98e64eb4c4572e2ea94095cb2e9cbe22575ec70709",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1551.0163412c2c2bbec3323e.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1553.eaf0cb371a2c4fa90bbf.js",
+      "bytes": 20156,
+      "sha256": "e6a222d7a3a71ad6db3eec84e8e26c4bc474b72561e98cfd9ccbbc29e1c44cc3",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1553.eaf0cb371a2c4fa90bbf.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1575.60bc11558d66aa690217.css",
+      "bytes": 5695,
+      "sha256": "e056fff6e98c64c3e4a42154898dc692d65eaf58e9468c042a46721ba861b8f8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1575.60bc11558d66aa690217.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1707.fbb750fd312778403036.css",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1707.fbb750fd312778403036.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1728.f5824899227309b419bc.css",
+      "bytes": 42904,
+      "sha256": "fccd512fb6cb932659a089c9da6afd02e4d1a8899800ecf745b5f56ca9722a91",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1728.f5824899227309b419bc.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1737.51511f925000b99093e3.css",
+      "bytes": 2532,
+      "sha256": "5f160e530956d1365a5f8f2665c629dc329512fa481f5e3654389d42dee0225c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1737.51511f925000b99093e3.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1818.eb704f72062b07c6506d.css",
+      "bytes": 18653,
+      "sha256": "4cec381039ef1552a43f9f0d5b060f9fb9fae360b3f79368654b6c47129e4486",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1818.eb704f72062b07c6506d.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1833.1e1cad103085069c69fc.css",
+      "bytes": 1969,
+      "sha256": "8f9077a3f6120452349c20c5c8d9f2d12b1e22651afa608d39783efc117ea66a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1833.1e1cad103085069c69fc.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1880.48440da13e05c4d67c22.js",
+      "bytes": 89368,
+      "sha256": "ff7bf24d3d1f1220f96fea4bba1de2c198b73c0d5dc30689a4896b8718293031",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1880.48440da13e05c4d67c22.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1906.40ce159ad2a7f4f15d5c.css",
+      "bytes": 5067,
+      "sha256": "da4bed925fde16f6d00a896941f91e6cb81f43430543e8a5e26e5dcf42d853cf",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1906.40ce159ad2a7f4f15d5c.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1933.a40665ade21837a1b5e2.css",
+      "bytes": 6796,
+      "sha256": "b77d128d25d6cf04cdca0dd7d060d3d0b9b67bd104d0cc0666816694f855ebad",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/1933.a40665ade21837a1b5e2.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/195.949d4976aef94aeb9c1a.js",
+      "bytes": 21241,
+      "sha256": "33f7465396ef063b9aa2a770b1cb66906914a4fe5859bb12825b3d1f7d62f59a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/195.949d4976aef94aeb9c1a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2082.acf5e91ffffdb18a2cf1.css",
+      "bytes": 11856,
+      "sha256": "c652f906aba0d03d078663ad4f280d82fe43103100afe2f9adcfb5f13aebf41d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2082.acf5e91ffffdb18a2cf1.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2092.4b97d1e084a7f81e17f2.css",
+      "bytes": 36741,
+      "sha256": "a6658b0eae2e8b6f760c14eb18efa1d80023e7c4c05258c2c80f15d2b9602052",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2092.4b97d1e084a7f81e17f2.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2106.3418d3509b4f6a41c2eb.css",
+      "bytes": 347,
+      "sha256": "1b18a8d5a80ddf1d0ef47bcb07918aa8f832ec068acaef6a953882d5f299e884",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2106.3418d3509b4f6a41c2eb.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2115.d4ce023e54009adf69b3.css",
+      "bytes": 2193,
+      "sha256": "4eacdbc8f96237a0efd15a074d579873a95fffc2e5f43c996826d1f5cd4448c4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2115.d4ce023e54009adf69b3.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/218.5f3e0e6cd93fad5e3d2e.js",
+      "bytes": 28103,
+      "sha256": "0215606b262db63fdda6d0f6a3c83d4b6e61ce32a95ad966657d677c50b25413",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/218.5f3e0e6cd93fad5e3d2e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2197.3c275591170ccafa3bbe.css",
+      "bytes": 289,
+      "sha256": "4287f2e16654c246faa044e234099fb29cb9e78520169ca46a715615ebd3d421",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2197.3c275591170ccafa3bbe.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2227.b3ce716bc6a1eebf1a92.js",
+      "bytes": 139336,
+      "sha256": "1a32067f4edbdd6167166d31fcad039901fd3756c54ec363c4707ab4c561d6e4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2227.b3ce716bc6a1eebf1a92.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2234.be3e2002889c3507ea77.css",
+      "bytes": 705,
+      "sha256": "37df4a91ef34e66ae8e43ceb2090ab9de1825a60f64b57a7b4827b843718ef8f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2234.be3e2002889c3507ea77.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2371.3fc94a1aa7a1e03d91e4.css",
+      "bytes": 3735,
+      "sha256": "48147a710ccbb253ac63c60163faa7bfa9d2e2d2e2891c63098c1f40bc1a98f2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2371.3fc94a1aa7a1e03d91e4.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2433.06b575c44f467c97bacf.js",
+      "bytes": 31657,
+      "sha256": "81feae1340ca35f941561e9c4db7db98b4b9dca951c642621f795675e5bd4fba",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2433.06b575c44f467c97bacf.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2440.8620e9f557ec49b4b3d7.css",
+      "bytes": 2662,
+      "sha256": "972777f74122a8ed2581849cc3b7e55f54a468f54711cb71179269b8063980c7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2440.8620e9f557ec49b4b3d7.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2444.3360c6e677bffb470a53.css",
+      "bytes": 471,
+      "sha256": "3a96b2d5a20451c8864a58672fcf62bae45d02af96e8984dcafa2d9862154e4b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2444.3360c6e677bffb470a53.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2520.884e337706189fe0160c.css",
+      "bytes": 1333,
+      "sha256": "f3218730c9c4149765dbb5c3121786ee4b7470d78e2d00a18eb7a4bb7a659e38",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2520.884e337706189fe0160c.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2538.13f4bc31d9a146bc25c4.js",
+      "bytes": 46737,
+      "sha256": "9bd174af0e4f0bc46fb191a0acc83f7b7aaf8c2ae7ef1e1848e518008fc22c86",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2538.13f4bc31d9a146bc25c4.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2564.cac75529a7aa17227aa7.css",
+      "bytes": 88516,
+      "sha256": "f0115d79ecae1e3983678447a7f460b7dc546a7281725ed32d2a79b8be214a90",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2564.cac75529a7aa17227aa7.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2568.3586586cffe61c1d9c0f.css",
+      "bytes": 28429,
+      "sha256": "cdf388927aaa62d867451781893efa21b85e582a344fc25c1a6cea2a6a1a960d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2568.3586586cffe61c1d9c0f.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2590.4a004f1a3b71d5105cb2.css",
+      "bytes": 3452,
+      "sha256": "079e804868567ebd662b2dd6806f7428272cf9dd5d11e2c2a9b2ae984f76bc98",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2590.4a004f1a3b71d5105cb2.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2645.768a1ffd7fc8890420df.css",
+      "bytes": 1723,
+      "sha256": "2b2de8d9805f07ce1c09816c035e5b32226390813cfafbb05e6d06a07eb5a243",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2645.768a1ffd7fc8890420df.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2666.d7dd4a59f33a2f52cf86.css",
+      "bytes": 44338,
+      "sha256": "7eb51bd8d609effd8657f3a84fedf322ac3a780d2a693ebacec0fb2bef73752e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2666.d7dd4a59f33a2f52cf86.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2736.c88f0ff04a966a2fb2df.css",
+      "bytes": 4725,
+      "sha256": "f61c01b267fea6c6da9c85d3caac9fe7578b2d6a44331f0079dd4f05f06b8c61",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2736.c88f0ff04a966a2fb2df.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2743.a9087bf79796576ba8f5.css",
+      "bytes": 537,
+      "sha256": "5e7810bccdc2c02c82ef2b8bfd989bedd336394630ad127a003ebbbc760d92dd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2743.a9087bf79796576ba8f5.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2849.d2135536510367775ff1.css",
+      "bytes": 752,
+      "sha256": "76ff44f29f2cae96efd5a981cae96bea280921139b543f1ebe26d0c3734bddcb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2849.d2135536510367775ff1.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2864.f4dde91fd09337ffbc3c.css",
+      "bytes": 1962,
+      "sha256": "ae28526981e2149e1dd281ba44eb9ba5043b10e76af11649aeea7dcb17f0f829",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2864.f4dde91fd09337ffbc3c.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2882.79e0c6817a49cfff8476.css",
+      "bytes": 1087,
+      "sha256": "20bbdb6a22a5731ca83e77113a86c68ba63075cc8cf45b739614b036559a6757",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2882.79e0c6817a49cfff8476.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2947.22749f163c00ada76842.js",
+      "bytes": 33457,
+      "sha256": "7ae5e3d1c17b8a3c91e7fab30684d88d40d40ff4a56b7a08471f02903244507a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/2947.22749f163c00ada76842.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3010.b6767e7ba0734f8ea43b.js",
+      "bytes": 59653,
+      "sha256": "4790b5c66a7c20130a4245e13b53181c22c5d49fd76dd9513e31483e0453a395",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3010.b6767e7ba0734f8ea43b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/303.e9b6e523eb66dacf92bd.css",
+      "bytes": 1526,
+      "sha256": "6f73df85fd2fd65e488d54f1931771e64d1fbbb9411ae2892a6bcc5bc0fd9d6b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/303.e9b6e523eb66dacf92bd.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3054.6323f377d9660accde3b.js",
+      "bytes": 13485,
+      "sha256": "d53c60d190c2fcf1eaed24d64b996341479e00cc696f08b358537346abbe6f01",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3054.6323f377d9660accde3b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3062.553fc65e7c6f62255d16.css",
+      "bytes": 8578,
+      "sha256": "d6c6666414f7dfe89deb6dc37211294da389c7922c388f4a420a413e73aa1b37",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3062.553fc65e7c6f62255d16.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3251.3c8acb079b74b035c388.js",
+      "bytes": 51511,
+      "sha256": "dc1aa4ec066a2a79a97a612b0c9410ae8505bfb9551b1c3e5e0bc865341880f7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3251.3c8acb079b74b035c388.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3285.152d712e7a2875eeb239.js",
+      "bytes": 12036,
+      "sha256": "c7d7c26ed9f537059981822bd20b1ad53f895f349590044392703d03e845bf36",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3285.152d712e7a2875eeb239.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3362.2476428ae07d34323af5.css",
+      "bytes": 472,
+      "sha256": "5679bd069dea8268cfa86a11989f03b0d4a2b147981fd9e94efab6e5f14aeef0",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3362.2476428ae07d34323af5.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3368.a16ef892e23997d1eec3.css",
+      "bytes": 275,
+      "sha256": "23d248731d7c20ce6903d649fe45d8d80eebfe47f3c8ef9654d3566806e76aff",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3368.a16ef892e23997d1eec3.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3420.0353e321d943562b4486.css",
+      "bytes": 1439,
+      "sha256": "d1ef0626946efe6381f4629316d6ec5375c9b9aec168d727d308c025157f5f5f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3420.0353e321d943562b4486.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3450.1bf33425bcbf0515d44b.js",
+      "bytes": 16275,
+      "sha256": "5d8f501f9cb30c88ec6cddf93ce1973e92880dfb6b2eef7cdfa070ae55867705",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3450.1bf33425bcbf0515d44b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3473.e93220a4080eb191e0fd.css",
+      "bytes": 84301,
+      "sha256": "dcf19ea7ca5c2a6df2682a3c1b382210f3027b57ecd9ddb3def07ee5e6fa90dc",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3473.e93220a4080eb191e0fd.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3524.ad0b2bd39908845c1ac9.css",
+      "bytes": 21927,
+      "sha256": "ee44babd31f661f4b1282685283f8812e6796a0753463f92bf086ed313e84ba9",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3524.ad0b2bd39908845c1ac9.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3565.f3d891b275768e3e0a5f.css",
+      "bytes": 15186,
+      "sha256": "2ab5c1448b0b8a034dbf08c87c5482f336d28d03e60154aff6966a5d769f8089",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3565.f3d891b275768e3e0a5f.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3693.44308eb6167ec63939d4.css",
+      "bytes": 899,
+      "sha256": "3cc9514b1f468256495280ec3b8628b270e335883d929e683d8e14b60a8ba787",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3693.44308eb6167ec63939d4.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3703.fbb750fd312778403036.css",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3703.fbb750fd312778403036.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3782.f5f264bb4298497c0f97.css",
+      "bytes": 248,
+      "sha256": "afec4eea93654c674622a8144d3721d9bd840022423552e2ad2c630463a7fbe1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3782.f5f264bb4298497c0f97.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3799.8fe69f925e501b5d9dea.css",
+      "bytes": 13413,
+      "sha256": "ad40157fa4617e557d856f47eb2ca4b4e0b530166cb59db41f050aa6dd2c7e8b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3799.8fe69f925e501b5d9dea.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3805.42495629e38f02c4d148.js",
+      "bytes": 46767,
+      "sha256": "c20366761d7c143261116d606cf8fd8a1b0d0fab62617bebfd8e8648c8804a78",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3805.42495629e38f02c4d148.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3828.b87cd06c9d4e7baa6eda.css",
+      "bytes": 12558,
+      "sha256": "d0069af75f067c583c6a3725d62770a9b48ee0e254f885485ffad467c82ba8d9",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3828.b87cd06c9d4e7baa6eda.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3847.4a2226b0147b5a279dee.js",
+      "bytes": 26296,
+      "sha256": "10fdfb7651aa3b8c3bde28cc4d45910b3ad7a89de38b900c390b382af29b8838",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3847.4a2226b0147b5a279dee.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3905.5e651f8ebf55269e0eda.js",
+      "bytes": 33064,
+      "sha256": "fb3b5db26a727661587b2e8ac7ce22e9463254558676a1f1d02808dacbb5d425",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3905.5e651f8ebf55269e0eda.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3953.7146f14703227db023af.css",
+      "bytes": 1447,
+      "sha256": "d84a746a0540d41df48365aae5ddf6ce642581444adabfd296cee30c2c6a6602",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/3953.7146f14703227db023af.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4057.400f57042c58b6946a7c.css",
+      "bytes": 1423,
+      "sha256": "63c3e18d897e827555119ce96e1782881d6dc4a379e91e46ce39b9729d1be077",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4057.400f57042c58b6946a7c.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4066.eba4ddabfe5309662e8a.css",
+      "bytes": 4550,
+      "sha256": "257b68f26badf0bc8c8e559a5bdea305394d38321a6f5aa9851e2e4d5fbc64e5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4066.eba4ddabfe5309662e8a.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4106.8577632fdab29ee53ddf.css",
+      "bytes": 49,
+      "sha256": "efe71be95be3672f79552c1e97a78c4802144f663cb11a4fb939cc4b57a915a6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4106.8577632fdab29ee53ddf.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4125.839d0d8af876d7e15703.css",
+      "bytes": 14368,
+      "sha256": "9904d240dee4c22dcbf30819cb7f17dc8741f2f35124eb978d72d5da2fc9e9c2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4125.839d0d8af876d7e15703.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/422.bc23975c348a4f41dea4.css",
+      "bytes": 221,
+      "sha256": "42ca8678fc25ef123dc3a3be95596bd4624cc00b79a6852dcd6923c4e1e575a0",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/422.bc23975c348a4f41dea4.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4256.1d39c3c8dc435b82e4c6.css",
+      "bytes": 8534,
+      "sha256": "d52f0ed4824bd0a0eb11dd4028599f05fff77cc78fcc905f6db85f9d8c547cf6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4256.1d39c3c8dc435b82e4c6.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/427.8e4ad2884751c78b5ebd.js",
+      "bytes": 73250,
+      "sha256": "0a56c8ee83367324e1a16ef61d9aa04c64b717c42de36e98dfcb4e0b88f3697e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/427.8e4ad2884751c78b5ebd.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4333.5833c0eb2dffcbc3ab13.js",
+      "bytes": 9955,
+      "sha256": "b89956b286b86804f9d7af56493cd70e274920498704e9fa258f21e626f57c3d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4333.5833c0eb2dffcbc3ab13.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4353.9eade1db5c4beb02071a.css",
+      "bytes": 877,
+      "sha256": "3ee360a9d75a45e46939f441240dfff3f03c929aec2b1b67253fce59b66618c7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4353.9eade1db5c4beb02071a.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4510.35411b67165343bc4949.css",
+      "bytes": 4151,
+      "sha256": "85ac2bdcebc7fcdb18ff20ea4412aeb1fe87018beabcc6db75e0bb501f9b81db",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4510.35411b67165343bc4949.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4524.d6f97e44b70e5e01f7d4.css",
+      "bytes": 5424,
+      "sha256": "d819ad614cb62339d5ad4d34b96ca7397d618704b2b464d21f7cb92f59c2166b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4524.d6f97e44b70e5e01f7d4.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4556.cff39ef77f0827e16b81.css",
+      "bytes": 1309,
+      "sha256": "8feb88ba1bfefeac3cfd75c1c73676c4cd82930e7f838185c5d62009a35efaec",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4556.cff39ef77f0827e16b81.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4570.2c8d882e1ef1f67d91f4.js",
+      "bytes": 24042,
+      "sha256": "5dd6fb442edd3063e8989076c71205694501288f7d4fbf59feb960a74c951885",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4570.2c8d882e1ef1f67d91f4.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4582.e8408ec9a76ca48745ba.css",
+      "bytes": 171,
+      "sha256": "eed324a029f2bd1c27b736edb28973a735a84ed81577224384ab3bd01d5772da",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4582.e8408ec9a76ca48745ba.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4590.36be502561204866828e.js",
+      "bytes": 11120,
+      "sha256": "73981b6efd5c8a154c36d65a4246feb73497300c00d6f9f62085e926f6ef0f88",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4590.36be502561204866828e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4600.362fa6a7ab1f3e3b06c4.css",
+      "bytes": 255,
+      "sha256": "2f94484cd1057fc73cb048449644cd3fe4f8d9d9e91eaa07e44c5c7523ee275a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4600.362fa6a7ab1f3e3b06c4.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4752.e86f4005171a6af35829.css",
+      "bytes": 309,
+      "sha256": "4214319e25459d421c923b04acc1b3608ad372e3656e8f711be4025d35fee3b4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4752.e86f4005171a6af35829.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4797.ecf541f2301446a3089c.css",
+      "bytes": 1227,
+      "sha256": "7f0cc63c73a693c15bf6b17fab6d9b49e8e7cf9b41d2affe4d7be4d55686c9b4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4797.ecf541f2301446a3089c.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4920.d7c8574fa306aeadd297.css",
+      "bytes": 612,
+      "sha256": "765bcc40d45decc6b2793d66679f7a4990f19b1237e6bbf60a17ec33d2009389",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4920.d7c8574fa306aeadd297.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4938.a07e1da10e414c329264.css",
+      "bytes": 3043,
+      "sha256": "85f41aabffb824f4a939edd8c9285e8a48d9e3e5eb3f4d52f367dc37be190de2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4938.a07e1da10e414c329264.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4952.1e54c133b22993b96a57.js",
+      "bytes": 11108,
+      "sha256": "6989ede678605602e01479428e788b657339f0810e993545a67a2d75be72242c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4952.1e54c133b22993b96a57.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4986.8b484bfeff805649f879.css",
+      "bytes": 52431,
+      "sha256": "344d3eee93042e65bcbe0f252f74b8349df7810c3d8e25c4b77ae0b6f42ac51a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/4986.8b484bfeff805649f879.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5008.0c0c7a9db0a3b15c8103.css",
+      "bytes": 575,
+      "sha256": "d6a2a4a8f4be27ad7996e1e92f9ebac51ec8d205bf562d43af7aafa08ab642c8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5008.0c0c7a9db0a3b15c8103.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5058.2776c62444167c12b233.css",
+      "bytes": 4036,
+      "sha256": "ae3853b9445c1a6977cd679e0b3510bb5154fb0e2dfa4bef61e164fa8870cc48",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5058.2776c62444167c12b233.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5083.a9187278de5ab079b6d2.css",
+      "bytes": 657,
+      "sha256": "8d2c4de918ab91b52096f1904fa85182d43f4c0c11b375a61cd39eb869f1e98e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5083.a9187278de5ab079b6d2.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5234.86778413e5ab5c5b97f7.js",
+      "bytes": 14855,
+      "sha256": "b00712a29f5ec2d4dd7148ab79a243fee2b7f466cc8c7e93da26b17df1dac8f4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5234.86778413e5ab5c5b97f7.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5299.dfdc35657b863723458e.css",
+      "bytes": 51023,
+      "sha256": "8b641054507e05f799db275a63f6a61fd47948e64f568dbd22d48ab3bdc68b00",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5299.dfdc35657b863723458e.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5323.05b152d9c203bbe1e861.css",
+      "bytes": 6660,
+      "sha256": "a35df277c5badb7f8879841308e773b62209efc181e12d177aefa5ab493c3f59",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5323.05b152d9c203bbe1e861.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5375.132067dc73c5743d825f.css",
+      "bytes": 4044,
+      "sha256": "cb5754c2ab4b5a01230ca9a055346fe8de83a304a7a50c5416c2013e77d6de56",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5375.132067dc73c5743d825f.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5387.6dc6a5ec31f9d97dc855.css",
+      "bytes": 1816,
+      "sha256": "13007facb656cbdaab8957005082a7e130f9c281f51e98f1a8e458d6db12b1bc",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5387.6dc6a5ec31f9d97dc855.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5446.1f5883a75f4d7d613e20.css",
+      "bytes": 2758,
+      "sha256": "854cef72533c3578c940a1852c17e6f248f7879117d209c0b18ecad39ed44442",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5446.1f5883a75f4d7d613e20.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5476.778f33a85e34c613bb7e.js",
+      "bytes": 26307,
+      "sha256": "c80476193467f797f234e2029609f5ff3a22f63f58206b8fbc45ca93ef425860",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5476.778f33a85e34c613bb7e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5480.62c8085685951c0bc278.css",
+      "bytes": 7254,
+      "sha256": "659eb3bcf4f2cd2ee5ce94d60af67d12b7ffecbba6b62a58e4a0841e7be65a79",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5480.62c8085685951c0bc278.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5579.30bff8dc3806b9475644.js",
+      "bytes": 16631,
+      "sha256": "87ec02d8ef27617c472c9d66fc0ed7a05fd69f93839f2006e412b0aeaf03f55d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5579.30bff8dc3806b9475644.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5621.1dd4b4462472082c1269.css",
+      "bytes": 134,
+      "sha256": "d9fb8ab11b178b51968740a0c4252d1af5d5c980df9aec6186e19454106e3a97",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5621.1dd4b4462472082c1269.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5758.7723043bc419795133c2.css",
+      "bytes": 555,
+      "sha256": "f9dffd1f4f3821b3a6cd268bda72336140960febe2be6a19b1254d97f290b114",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5758.7723043bc419795133c2.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5789.f84eb4cc44a8ece5086b.js",
+      "bytes": 39274,
+      "sha256": "94134f6cf3d89bf28ea504ca42e51831339425500d3526681d8b150976c58155",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5789.f84eb4cc44a8ece5086b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/579.50ef343d165189abd0ba.css",
+      "bytes": 6808,
+      "sha256": "39030933a66240099780ef4a7d50d4b2fb83d724cb68622be64f8e059b4ed60f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/579.50ef343d165189abd0ba.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5816.44efac501e6cf354a70b.css",
+      "bytes": 1164,
+      "sha256": "56f6d51a25160f372678b33e34b4ca1620813af33cc493d836e734db0e392842",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5816.44efac501e6cf354a70b.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5826.c70dad3fc1bd0fd0f22d.css",
+      "bytes": 1258,
+      "sha256": "d17c420abbb4ff0b2df0ee85df0fbace611d2c19d66e1716a8b3fcdc365eb2fc",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5826.c70dad3fc1bd0fd0f22d.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5881.429d5b055ce817909b34.css",
+      "bytes": 1829,
+      "sha256": "3707bbae0d8e24c7cee2870458af96a13e779ae4a8949d7cc9818968fbf0ad5c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5881.429d5b055ce817909b34.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5891.24783caa1cacf6c87546.css",
+      "bytes": 3680,
+      "sha256": "735c99314cc37ee949df53a855b0a37bb9d8244343f1d27da855930a8b263693",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5891.24783caa1cacf6c87546.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5975.a3e49a7b95404261d4eb.css",
+      "bytes": 747,
+      "sha256": "72a2d8f7daa30e6ae3eea438692bbaecd3e8d840aadbdea5aaed36e71da959ca",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/5975.a3e49a7b95404261d4eb.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/601.b6bc31b7ce369908d97d.css",
+      "bytes": 4488,
+      "sha256": "f7a90736ed12b4b808adb04ac38459fe21062411d984bb352f3a1ea53a516656",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/601.b6bc31b7ce369908d97d.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6050.bd16be8a5be7241a9d50.js",
+      "bytes": 94176,
+      "sha256": "c60f707e83c6eaee07c6cb9148e0a38341d1dd00714661fa2a88c98001ff78bd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6050.bd16be8a5be7241a9d50.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6161.97f40643ac01a1419c9d.js",
+      "bytes": 139466,
+      "sha256": "ebab21f3f8eebce4b3a8af3f599f246e3a463f93a8a246431082fbe009047d51",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6161.97f40643ac01a1419c9d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6164.3d692610247dc24d7b64.css",
+      "bytes": 1219,
+      "sha256": "63121d1163e38e1e7d6ed2ee691916b49f8b2e4b68904544b027c935221b63a9",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6164.3d692610247dc24d7b64.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6190.ef0bd3010b1c05e755bc.css",
+      "bytes": 52,
+      "sha256": "31d7ff80474bf92c9caa252cc3827621718df5b13fc44b59c7dd19389314fd74",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6190.ef0bd3010b1c05e755bc.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6212.f2b0954f9876e5dbec45.js",
+      "bytes": 10307,
+      "sha256": "412629575fa1d791fea531238c0fbbce4c707e8243ddf76c1ad8b406d015532c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6212.f2b0954f9876e5dbec45.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6243.1cbe83f8e15217dddb9b.css",
+      "bytes": 5243,
+      "sha256": "fdefbe9cb19f05dc77c4936595d715286e9f88d8fe27ce8aeb262c103a300dd9",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6243.1cbe83f8e15217dddb9b.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6262.cce9c2d0878310b9ee03.css",
+      "bytes": 1806,
+      "sha256": "9fbacb093d3fcbd01f1b81651baefb71a581c48162dcbf18f07ad04a5c8f1be8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6262.cce9c2d0878310b9ee03.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6316.4c1aab38ac483c2022bb.css",
+      "bytes": 1201,
+      "sha256": "223dcce170a98cf178dd35a2861dfca3702fe08cd42301a46635d709736615f0",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6316.4c1aab38ac483c2022bb.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/643.5e08138e265dd49437ea.css",
+      "bytes": 9528,
+      "sha256": "6b152d32dc5bf5be7420cbd0052b73350ba0dfe24d150caad2855434f99c3c25",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/643.5e08138e265dd49437ea.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6445.d2b2f28850f8c828a4d7.css",
+      "bytes": 39910,
+      "sha256": "06b08f25311f8895fb54f4f86ae08efcf9d58dab701550096b995bfcdaea16d8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6445.d2b2f28850f8c828a4d7.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6489.9070beae9e8cef21670a.css",
+      "bytes": 2051,
+      "sha256": "9146b0d87722b74b5e7732321f11d434e779678f03fcc2dd40161dd5f46d4661",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6489.9070beae9e8cef21670a.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6524.6b06e3c46a3a62c62d7c.css",
+      "bytes": 11395,
+      "sha256": "f99cb565b058e6b5027cc6ee8f76bce8dbaa72676757913fee691997912ff8e7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6524.6b06e3c46a3a62c62d7c.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6605.487abc54552f72e14d11.css",
+      "bytes": 4562,
+      "sha256": "4c510b16bf1519e1c12236b74a2839d48c2d7b74ef121b2c8a07c76727c551f4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6605.487abc54552f72e14d11.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6710.9171de773f9f829118f4.css",
+      "bytes": 2521,
+      "sha256": "019f2556af4dd1d7b12dec5b697c37ca5c7ac545e297eed69db11850b3460f04",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6710.9171de773f9f829118f4.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6750.de7185fa4470c6688792.css",
+      "bytes": 1527,
+      "sha256": "a3bc42689ffd6b7b1bfe5ccabda9eafb30bbf47f8ee64a1a29d852c5924ab3bb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6750.de7185fa4470c6688792.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6752.a496d8cf9d524daacf28.css",
+      "bytes": 621,
+      "sha256": "c860f851db482758542dd17cfc7aea1ade4e7d2cb6254815185d5aa8d07861b2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6752.a496d8cf9d524daacf28.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6821.bc3c30c395044c25b76b.css",
+      "bytes": 351,
+      "sha256": "2b605a5494deb641588716f9b01f1d4b5844a2d430f094da0b4334eb0a764b42",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6821.bc3c30c395044c25b76b.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6828.3bcf3e2b04d67b8ca804.css",
+      "bytes": 400,
+      "sha256": "07c8e36fdd814f15e0cd665192344386b8c08d1a3da15e6eddc3907d8e0f8633",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6828.3bcf3e2b04d67b8ca804.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6842.f6f5a9b5ab991d9de920.css",
+      "bytes": 9338,
+      "sha256": "c31b9f23c3455668021ced759d5c322133c5d8fb47a88182564802558d62fb84",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6842.f6f5a9b5ab991d9de920.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6847.f6b63c197359a8b78abb.css",
+      "bytes": 867,
+      "sha256": "1b19ba4fba5439232aa545fdf54fa87edb77fe4892672536838554cc3e3cf71e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6847.f6b63c197359a8b78abb.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6881.de5786533f6aff42cbab.js",
+      "bytes": 16565,
+      "sha256": "6b36031b932e9c8c9add06f7d5681436195ef545a2a5ef4f5ba5bc1f7dd78e81",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6881.de5786533f6aff42cbab.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6898.f753c8c58a80d1e8b237.js",
+      "bytes": 10307,
+      "sha256": "221d2e944aa6d3445000d0e7e1ffe7d5ef6bd830adb5f25722ce81b974092cd8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6898.f753c8c58a80d1e8b237.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6983.cadd6c828bd2c0930e97.css",
+      "bytes": 324,
+      "sha256": "f3304db0c140197a1450017b8c2f8e0dfde2cf6cf88200c0117bfc6624cfb8c1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/6983.cadd6c828bd2c0930e97.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7001.d167a8793031fa802176.css",
+      "bytes": 11291,
+      "sha256": "04ab24b30abfbb09491e57f628c2fa16583ec6f8f7f5e06462172153527b9776",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7001.d167a8793031fa802176.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7125.f506fee64d0fbd3aac4a.js",
+      "bytes": 24095,
+      "sha256": "22e3a245811e1c09cccddec6847f392a27fa8dfcafad535756a67e1eeee961fa",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7125.f506fee64d0fbd3aac4a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7159.27d77fe8d8dff58ceb0a.css",
+      "bytes": 982,
+      "sha256": "625e4e04ea1e137aae7b67d7bd843b3eafce2f4b23a058f9a9b2cbc425d81ae8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7159.27d77fe8d8dff58ceb0a.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7204.b3dcbd58906265276dd8.css",
+      "bytes": 2462,
+      "sha256": "a001ff10d9fc74d895e6c17806b3a32e3fb30b817401c2be4a70bd01c8a7e46b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7204.b3dcbd58906265276dd8.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7259.c51f432500f7e107aa27.js",
+      "bytes": 21773,
+      "sha256": "7dd2f61972725b80e33b4dc671b9b09cd6148327701cb86c107399c3bd600bfd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7259.c51f432500f7e107aa27.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7280.7c6e45398eccc266b2a0.css",
+      "bytes": 1966,
+      "sha256": "6d61cc3eab7381e22eac5b11083305f013a44c13e14923dee520ef008e315422",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7280.7c6e45398eccc266b2a0.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7335.e65ea6f8676b400dd7a2.js",
+      "bytes": 79371,
+      "sha256": "ba8f42eb9a225296bdb6b957cee4de339505e6536bd1596be2ede5b6999ee9c4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7335.e65ea6f8676b400dd7a2.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7384.aefeb9db8e938fbfb1dc.css",
+      "bytes": 11100,
+      "sha256": "1f6a2b0d66d2fb2c6826dd03734805c520a636ed034af6665d4900334e956b4e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7384.aefeb9db8e938fbfb1dc.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7403.9a5d289733609ece1fe7.js",
+      "bytes": 31382,
+      "sha256": "77b1e3061bfa678a81b39b2b6c0ef24a060234e8122d8ecf1a317d3dabe330df",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7403.9a5d289733609ece1fe7.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7414.8b6b93d5fc5e20706c25.css",
+      "bytes": 116,
+      "sha256": "9e93914dc82b0e81c203f0322bc152891fac39643c25de100a33b3c5375d28b6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7414.8b6b93d5fc5e20706c25.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7415.6d9e5497dea3ae9ce05b.js",
+      "bytes": 60889,
+      "sha256": "e4723c4781914d38a50362b0c6642c21c6fab65f1f7fda23b86871ad71904fa4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7415.6d9e5497dea3ae9ce05b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7431.ef930db5ef4b533a7904.css",
+      "bytes": 31,
+      "sha256": "ab27ed8c467722d8cd39fe804ec78c3081b6f8003d5e9cdf598127bf08f77204",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7431.ef930db5ef4b533a7904.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7435.45bbca649d592877886a.css",
+      "bytes": 4555,
+      "sha256": "471a3c546c7110cdf242cf2140a21f212c0037bb05f1998ea5f94b40a92193b4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7435.45bbca649d592877886a.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7572.eeafd67dac93bb21fca3.css",
+      "bytes": 8010,
+      "sha256": "76edccf96e7442d09ab37b206c4de1f261a6fa05e5bf7af63c6314f5b20f2fad",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7572.eeafd67dac93bb21fca3.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7762.c7ba43013335f9bc0a67.css",
+      "bytes": 2687,
+      "sha256": "7c4a619ccd31ef923dc4a41a7f1d7048bdd39d754920cc2ae29900a50e5e8087",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7762.c7ba43013335f9bc0a67.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/779.b84315f4350430cdb348.css",
+      "bytes": 340,
+      "sha256": "fe2a067cb555250781b049bc3cf260c3b7bb31d3582cf0270507004d3afd814c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/779.b84315f4350430cdb348.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7819.ec12fcdd26208efd2be5.css",
+      "bytes": 833,
+      "sha256": "fd064ae8784a83cfb39e39283678323a85194ec28881b18740ca9d58938d66d1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7819.ec12fcdd26208efd2be5.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7849.2e870d1d6307ad5e1004.css",
+      "bytes": 6043,
+      "sha256": "690a093c7991bd4785b11a0ea84727f442705efcaa03d83afb8b0525e39dde25",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7849.2e870d1d6307ad5e1004.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7854.77fde9897992fb67135b.css",
+      "bytes": 5603,
+      "sha256": "1c9c50d511d8e8c315b3cf4320a269ccf28f1726861f16360940dd7c5a36907c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7854.77fde9897992fb67135b.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7898.5f66db4e388dc6954163.js",
+      "bytes": 31925,
+      "sha256": "0e4e5fa86ee89b9a1ececbd40910d7bef69b112c7e6c4ae05be50b0a40bf1349",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7898.5f66db4e388dc6954163.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7935.5553a5da7a4e4bd90438.css",
+      "bytes": 7575,
+      "sha256": "24d8d3b2a667ec9a955d3be42940207b31877729ecab9d6e86039921811fa12f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7935.5553a5da7a4e4bd90438.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7995.a2fd6ad4fac910d0fc6a.js",
+      "bytes": 94222,
+      "sha256": "bd798a55c3f30ba64888c7a96c71cee509cea4ab7cfcc8a687be3ef64955b27b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/7995.a2fd6ad4fac910d0fc6a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8146.4982384e389f11dd6517.css",
+      "bytes": 13236,
+      "sha256": "ed02dfcd0cc1fed8d86b474872a466935d07754e5d951d6d75206afa0c006c89",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8146.4982384e389f11dd6517.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8185.3f7aa75dce6efc9bcaeb.css",
+      "bytes": 51077,
+      "sha256": "f33771545bff833e06bbbc3d4ac88c287dd391c07a29400d82a5502458790d5d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8185.3f7aa75dce6efc9bcaeb.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8222.a31543d092246fd03dd2.css",
+      "bytes": 417,
+      "sha256": "fa289f0f418e5300b54d040c178d533fe87d890ab2b424413784fb52fe1636a8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8222.a31543d092246fd03dd2.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8257.0e03bab72eb086ffb4ee.css",
+      "bytes": 8418,
+      "sha256": "37489bcf4d5b8700c3975992b760b353c9543151e24c66195f3c25ac5b39ef24",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8257.0e03bab72eb086ffb4ee.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8357.8fc764ff0ed9b29a01ab.css",
+      "bytes": 899,
+      "sha256": "2e14259fe42220bffeed0435e6ab9f17a15c51a72a6bb13fa2de9a2e2f0c1bcb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8357.8fc764ff0ed9b29a01ab.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8402.2756e58e899131679cc9.js",
+      "bytes": 15634,
+      "sha256": "32e6a828b1be1585ac70c1a7539750fb1fa0a9c2a7dffd66b14a035d4c707b15",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8402.2756e58e899131679cc9.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8473.bd22fdbcb9baef45b965.css",
+      "bytes": 852,
+      "sha256": "e638a0d79a9680de443148445bc37a1357673b06b5ec8e2757d253ff319fc2f8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8473.bd22fdbcb9baef45b965.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8511.ebf1c606bff9c570835b.js",
+      "bytes": 9985,
+      "sha256": "01cc5a502911d4f4243f0548c8e4337a0e0bfda05726de7fbe1b99172c907d38",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8511.ebf1c606bff9c570835b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8524.1f8a90c800e6e2b3b5dd.js",
+      "bytes": 48900,
+      "sha256": "284855b24315e49894fabfa3c07c2a52e3aa5a97c08264d638a93b335b437f48",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8524.1f8a90c800e6e2b3b5dd.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8544.16c0fd7539d08ad5ffd3.css",
+      "bytes": 71,
+      "sha256": "53888837c5b68453fd47dc6dea4f60c65fec5dd9e337d81908f7a5c85b4d4e0e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8544.16c0fd7539d08ad5ffd3.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8666.d1d8147337bae3fa6372.css",
+      "bytes": 3301,
+      "sha256": "be4452a71a95b9f018e3712b1f10f4c42b7e1171c0927e88bf6ac1344cf1323f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8666.d1d8147337bae3fa6372.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8687.cf83e05c069da5b8e89c.js",
+      "bytes": 32494,
+      "sha256": "cb6c189f38602611445495e0be282814c06cdeb0bbd3dda1cef5a0ab4024709e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8687.cf83e05c069da5b8e89c.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8692.1372368151d36104b74b.css",
+      "bytes": 4420,
+      "sha256": "6cd757c931b948c3e462bf45b2b799765054c75e9e2a9068175e85842de20cbf",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8692.1372368151d36104b74b.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8739.46bc02e3f69ed5c4c004.css",
+      "bytes": 5937,
+      "sha256": "99c0a68b5f7b6328a413bb2fcefa530f179276aa5899c0cdc9e6d565d5723c47",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8739.46bc02e3f69ed5c4c004.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8859.4e8179db16fddc59e8fa.css",
+      "bytes": 1838,
+      "sha256": "a443737ba16aa6b493cd8b96faf41f97eef6cf9ecea9a686b5fff08cca2552b3",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8859.4e8179db16fddc59e8fa.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8985.10034c1258391b9f008c.css",
+      "bytes": 4345,
+      "sha256": "4aa3c981d56b485ada895385777309a8d3755aaf22eb8d447ae7331466f999d7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/8985.10034c1258391b9f008c.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9063.0563208c1bb41cf158b9.css",
+      "bytes": 6597,
+      "sha256": "2002a547dfe7326f045df02178a4528024c89aad6f702c5df0f3fa45830d3275",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9063.0563208c1bb41cf158b9.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9088.e5b04ee7028204603d5e.js",
+      "bytes": 17231,
+      "sha256": "c87994adf92545f861a0557ba5587018c4c50ff5227314b77d08eb23aa425cba",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9088.e5b04ee7028204603d5e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9162.7dd9df5592fa3bfd0827.css",
+      "bytes": 55,
+      "sha256": "d7ac8b458d4b2395f26efd736003ed59e20f2e1db2cf7e90dbcff03b84e2409a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9162.7dd9df5592fa3bfd0827.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9216.dce4735e29d10fe9a604.js",
+      "bytes": 14984,
+      "sha256": "368eb9e729b8cb552a2dc8c371cb472be30e23512bb783b09af983fda3e35ae9",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9216.dce4735e29d10fe9a604.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9221.80dee957187879f81fd2.css",
+      "bytes": 6445,
+      "sha256": "3e2518f0232774c5276d5c8fae7e72d26d7beeaa50c8e510bd01e2c46a7d20af",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9221.80dee957187879f81fd2.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9255.574882a5338ad0774967.css",
+      "bytes": 8491,
+      "sha256": "34729601c1c2172c2a8a688604aab9d587e2677a54b40b9a8c938bd9bb7be426",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9255.574882a5338ad0774967.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9258.127a4c4030a8c2724b98.css",
+      "bytes": 186,
+      "sha256": "75a68ada40a0bdcba49a6447e71bdd1c447fbc35878e56d0ade19bbb031049e1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9258.127a4c4030a8c2724b98.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9296.dff3cd88e89f770d4753.css",
+      "bytes": 2072,
+      "sha256": "ab5eecdf5a9fd7ad1c658ded3d84420f9642ed01f80d707d095041399d8cd8af",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9296.dff3cd88e89f770d4753.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9325.f2e1edd6097be38e73da.css",
+      "bytes": 58,
+      "sha256": "d7cf8690f1afc26f2bce369883fc803e0344b216d2c8baf5e1c47a8f7e0463ca",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9325.f2e1edd6097be38e73da.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9362.cc83d3aee74a110c4071.css",
+      "bytes": 80327,
+      "sha256": "6145514260d59863fabe53ceb166e0600e5b81e8a11287c782c60b8ad3e0cc30",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9362.cc83d3aee74a110c4071.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9388.e55a351c0813be7d0c20.css",
+      "bytes": 2116,
+      "sha256": "aaae3e1dda2535a1288e5563c4de6a80aa9e45ba55e7d46d4744e8c59f65e8ee",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9388.e55a351c0813be7d0c20.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9393.98129bb676c42540f954.css",
+      "bytes": 6949,
+      "sha256": "4eb0c587ea2bb2af12f6b1a9bd134331ac00c16bf19121197ad342c3267199a0",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9393.98129bb676c42540f954.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9481.63a2692b383c39f8a3d1.css",
+      "bytes": 9379,
+      "sha256": "1c740471cda978da5d1f7ce52b73e83d6194beba5ae5a39a54e5a8bc4d470fba",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9481.63a2692b383c39f8a3d1.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9531.9edf4ac64b0547e8a926.css",
+      "bytes": 26745,
+      "sha256": "4adbcb9311598626fde8f8c00b7f03f82c129b8fab4e9fd99f34c2b2a54f2748",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9531.9edf4ac64b0547e8a926.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9561.892974d637b862abee04.css",
+      "bytes": 240,
+      "sha256": "4eae8e6eb9169894beaeee59c2dfe6b4148f5bb9487576b70375d15a59517d52",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9561.892974d637b862abee04.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/959.2526af36a4d043499f8f.js",
+      "bytes": 6537,
+      "sha256": "733ad4c9149ba4e3778c712995f9f0e1894d658e827ce3ee5f8cb13dc4ae6aa7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/959.2526af36a4d043499f8f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9608.d8e66f4c4d6c2e5e9e51.css",
+      "bytes": 90,
+      "sha256": "d97ca21115bb117a8b761a79d9a09496de0ba13687d37f0479ea1742b192c7c7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9608.d8e66f4c4d6c2e5e9e51.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9642.60f4b13d8eb012aa4791.css",
+      "bytes": 6566,
+      "sha256": "f44518d0fcd9feda6c250601c1e61f0ea95e7acced962b9b21934e506d34ad77",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9642.60f4b13d8eb012aa4791.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9654.e02f2476bd5db34eaf55.css",
+      "bytes": 3392,
+      "sha256": "f17a489595e147c110f8fb5a2a3935c28013af7bba2fafd754dd2ef50c27a868",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9654.e02f2476bd5db34eaf55.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9704.004638546a58c07591ff.css",
+      "bytes": 34842,
+      "sha256": "1d8b1a16c9870410fe3fb116cdbaeafcbf296176322cc0c54a3112cab9f94501",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9704.004638546a58c07591ff.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9753.b7b1c5568e3084458241.css",
+      "bytes": 4796,
+      "sha256": "edda88e7b43b3fbe21b10b8f7294b2c76247de6040af38659896b637ff7655b7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9753.b7b1c5568e3084458241.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9766.631d966499ce5a6b82a9.css",
+      "bytes": 1279,
+      "sha256": "fda269ef9169d2461f67e30deaeee7e76490cc34092675a8fddc4781d6956bcb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9766.631d966499ce5a6b82a9.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9824.b4ab54cb2a5928dcd2d8.css",
+      "bytes": 11845,
+      "sha256": "fdccf95dca61d3988af452c87f77b3e40f86907dc52e2e1c0dff3467e580dc92",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9824.b4ab54cb2a5928dcd2d8.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9937.e9709e88abb24d2bb653.js",
+      "bytes": 14508,
+      "sha256": "03fdf9cda5837d979313130da0a8b4bf2b0f83d7c8294976138fcd7c0c6d9587",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9937.e9709e88abb24d2bb653.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9967.ea707572e7ac5e0fd485.css",
+      "bytes": 764,
+      "sha256": "27fc1ab39e4f9d6cfd7eb848eb64987007011c8a8dd242b349445493ba67f74a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9967.ea707572e7ac5e0fd485.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9977.d6dee9346a53b63a68b0.css",
+      "bytes": 2939,
+      "sha256": "ef8c9193f945871082b06cca4fd2078f174249b2bbb03e305a21e57ca5d8a618",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/9977.d6dee9346a53b63a68b0.css"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/EuclidCircular.be8f862db48c2976009f.woff2",
+      "bytes": 35044,
+      "sha256": "1aee44e827f8b55b70fdd14acd7f5b95751605423701df48f4a30d50a8ddb9ef",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/EuclidCircular.be8f862db48c2976009f.woff2"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-cirillic-ext.0639e7c9c951cb7d0235.woff2",
+      "bytes": 4728,
+      "sha256": "34835e43b923a438743d9d52d14b30b0cb45050d02bf539e6659b3ace07b5f19",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-cirillic-ext.0639e7c9c951cb7d0235.woff2"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-cirillic.41e2189761adad56d375.woff2",
+      "bytes": 12224,
+      "sha256": "5a1d66f886f80a3e24fb0e6b1b4ee047ff30f6d20673247e714b86a028129e97",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-cirillic.41e2189761adad56d375.woff2"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-greek-ext.8e69b0b0802f20ac68b3.woff2",
+      "bytes": 888,
+      "sha256": "304f73430d0a251e1f63f759cf069827ac10f65206bfff4994fc03c19cfab483",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-greek-ext.8e69b0b0802f20ac68b3.woff2"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-greek.8e69b0b0802f20ac68b3.woff2",
+      "bytes": 888,
+      "sha256": "304f73430d0a251e1f63f759cf069827ac10f65206bfff4994fc03c19cfab483",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-greek.8e69b0b0802f20ac68b3.woff2"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-latin-ext.e64627b2d70bc502d2e6.woff2",
+      "bytes": 9392,
+      "sha256": "1e7a555e9d52dd1592e0fba2910259312a1cebea3dbf4fc4792d775d8bdea255",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-latin-ext.e64627b2d70bc502d2e6.woff2"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-latin.3f49f5755fb3b7008edb.woff2",
+      "bytes": 19184,
+      "sha256": "1efeb96433e8ae81fef331699fff99e11ee39812d8972c53b9cfa4b6822a08eb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-latin.3f49f5755fb3b7008edb.woff2"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-vietnamese.72695846f58d94c4caaa.woff2",
+      "bytes": 2780,
+      "sha256": "dcdeede9cb7017623f41a83a7e5f4bb94d6f26fb85e4861990c4ef3f137e3d39",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/Semibold-WebXL-vietnamese.72695846f58d94c4caaa.woff2"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/add-compare-dialog.bca1670e02a084391f6a.js",
+      "bytes": 40866,
+      "sha256": "05b12b95397775db0b63f63ac1ef308c9b5661276ab8c07658e63f93f800400e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/add-compare-dialog.bca1670e02a084391f6a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/alarm_clock.6f8cd36a9014a21689b4.mp3",
+      "bytes": 27166,
+      "sha256": "7b701eb81d73c9225dfe279a9a7679ea9cdbbe04f4927428c62aa785a3e31690",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/alarm_clock.6f8cd36a9014a21689b4.mp3"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/bottom-widgetbar.6cd99a863ac9d00955f1.js",
+      "bytes": 18048,
+      "sha256": "41e162ab590e26ffcbaf7133b62c8dd57d311038b3b9b8d28592528d8d61f3c7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/bottom-widgetbar.6cd99a863ac9d00955f1.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/change-interval-dialog.a8ba0df4c4a77167cc2a.js",
+      "bytes": 21893,
+      "sha256": "2f6479572336f8f8618029d7865f03c44762c1bf1e0ae3925763b92529c53e09",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/change-interval-dialog.a8ba0df4c4a77167cc2a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-bottom-toolbar.fd38479e975a1ac4fdd8.js",
+      "bytes": 83107,
+      "sha256": "68d078c522ca594e62b170183ab8d6d83ba326aaa207bd740ebb30c84a4a5df6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-bottom-toolbar.fd38479e975a1ac4fdd8.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-event-hint.b3213e45c9027ee69e75.js",
+      "bytes": 7668,
+      "sha256": "a3b385dc6747c14b76b22043c13423c1daf991a1275a6a84251de381b9dd1d5c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-event-hint.b3213e45c9027ee69e75.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-screenshot-hint.9f3a96d769a1e33cd974.js",
+      "bytes": 10127,
+      "sha256": "5b7f3bc2dadaeb1fb5c1074cba8ae4f667f142b76a47ce1489e7933032dcc43a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-screenshot-hint.9f3a96d769a1e33cd974.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-storage-external-adapter.be0fcd2667b4f0a36e03.js",
+      "bytes": 1523,
+      "sha256": "2e110abf313f619d6d3de516d3c020887742a31c564a445b0a52360039903ad7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-storage-external-adapter.be0fcd2667b4f0a36e03.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-storage-library-http.8480de7178466bea2b66.js",
+      "bytes": 2352,
+      "sha256": "e73affa8ca6073a4db244215aa1eacf213c16e253f818940e63b213437959816",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-storage-library-http.8480de7178466bea2b66.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-text-editor-renderer.52b6d0d014826597d257.js",
+      "bytes": 3748,
+      "sha256": "d2bfa67a2b80f688db8c8b3737aa317b6e963ef4d9a4baa640f4afb770216368",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-text-editor-renderer.52b6d0d014826597d257.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-widget-gui.aeec68ebc81cf955e615.js",
+      "bytes": 207941,
+      "sha256": "62854e5805cbc7aaf073775aa9221737797e34922de8a2699c71d0d79f912553",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/chart-widget-gui.aeec68ebc81cf955e615.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/compare-model.17fcdaff82dd9646d47f.js",
+      "bytes": 11622,
+      "sha256": "f6f5791bdfa19852a99b60a6be28b06a38e63f3223cfc12c3fec682132586e48",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/compare-model.17fcdaff82dd9646d47f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/confirm-widget.66cf3a8256ac3ddf2e71.js",
+      "bytes": 1967,
+      "sha256": "9b5b851accd82224c7b5aa246096a1d5f43ca6d5976e0c0eb3278da089ce9300",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/confirm-widget.66cf3a8256ac3ddf2e71.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/context-menu-renderer.a115d5ac19a33e492b8f.js",
+      "bytes": 5243,
+      "sha256": "2d84c8ace2a094251f7826189a822acb7ba7144e2f3f46e8d26dbc3fbc1620a6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/context-menu-renderer.a115d5ac19a33e492b8f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/create-confirm-dialog.87b53e347f2649a7321e.js",
+      "bytes": 15483,
+      "sha256": "2f6189a6048e8894319900ac5dc7e7bfc81c7b5008132b1b20f84482522693ae",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/create-confirm-dialog.87b53e347f2649a7321e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/currency-label-menu-events.10ee734f18789b1b3a9f.js",
+      "bytes": 1374,
+      "sha256": "337736fa903776725fbf95837710ddaec76e6cc788026ffc82fa8f7df4ce4fc4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/currency-label-menu-events.10ee734f18789b1b3a9f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/currency-label-menu.5e4a65f682c315c97785.js",
+      "bytes": 41607,
+      "sha256": "b7d12253fb40c6075517657d54ef8ef8903fd6006d84ebca347877880d59e5cc",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/currency-label-menu.5e4a65f682c315c97785.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/custom-intervals-add-dialog.d76a6a740a6ac3246ab1.js",
+      "bytes": 60457,
+      "sha256": "bc39f222e29d02012ccdb2471bb69975a067c476172d57dc4903faec364f6126",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/custom-intervals-add-dialog.d76a6a740a6ac3246ab1.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/custom-themes-api.e50888e058a78aa2a25d.js",
+      "bytes": 160970,
+      "sha256": "024afba369a10512d8f11898acd8ffc4b214b9a35d2af806cc7a1478ad6b5e24",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/custom-themes-api.e50888e058a78aa2a25d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/data-exportdialog.8525d1f6cf241ad40fb2.js",
+      "bytes": 27482,
+      "sha256": "53ce003c42c0817da8baeb90fe2a3fd7718d09018d3dda7a9de2a9405dbd8d15",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/data-exportdialog.8525d1f6cf241ad40fb2.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/data-window-widget.d78122f5e2e1b039ebb4.js",
+      "bytes": 26417,
+      "sha256": "cf8f4d0b1229fd89f469c8a9cef13865f17c14b106b0a4a6371dcae1c7ca14cb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/data-window-widget.d78122f5e2e1b039ebb4.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/delete-locked-line-confirm-dialog-content.0ef3463857331a35a126.js",
+      "bytes": 13488,
+      "sha256": "72cb6167908d56ce32b4b3401b2507b388887889dabe932ade1fb37500f10f22",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/delete-locked-line-confirm-dialog-content.0ef3463857331a35a126.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/delisted-mobile.4d26a2d7c431dffe94ed.svg",
+      "bytes": 171,
+      "sha256": "995dbb5ff8953e7e248b5984923f02a3c590a0ced494b18e6cb71e18ef9b6c33",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/delisted-mobile.4d26a2d7c431dffe94ed.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/demonstration-highlighter.0f62595712186cfed817.js",
+      "bytes": 13224,
+      "sha256": "c3d13e45445f12778daf064f1f9e0307e820015707d4f86fdf870b3942c803b6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/demonstration-highlighter.0f62595712186cfed817.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/dom-panel.81d8dd298ff835119bb5.js",
+      "bytes": 104752,
+      "sha256": "0477a61769d4ccf5d591eeaa5cc07eb6d92ef8f6d95de0112b4dbe3f3387cb5c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/dom-panel.81d8dd298ff835119bb5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/dot.3d617b6b01edba83a7f4.cur",
+      "bytes": 4286,
+      "sha256": "9376251232b344ce75c7ee0014091d8cf60213eb4c3d9bd324dd66f7a33112d1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/dot.3d617b6b01edba83a7f4.cur"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/drawing-toolbar.78664919600fb2511721.js",
+      "bytes": 70020,
+      "sha256": "1ed636f15a7b5dbd07562983ec32b2be1d25502746d1b0a31721b610889b9459",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/drawing-toolbar.78664919600fb2511721.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/empty-coin-dark.d6d07bff92d7e4dff5ad.svg",
+      "bytes": 373,
+      "sha256": "80afb4b5c136ae4650ed60c5a0c44d60f8f10b0fdcc2fd74e759da18bddb3d92",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/empty-coin-dark.d6d07bff92d7e4dff5ad.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/empty-coin-light.6d0b731ac6f489f06e65.svg",
+      "bytes": 370,
+      "sha256": "bb13cf02d74d06f158f262e4b949ac9ad2722780feaf4410a1cc29c071900611",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/empty-coin-light.6d0b731ac6f489f06e65.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1025.96f5d0769a3499cd18c3.js",
+      "bytes": 612,
+      "sha256": "8454f3276ceb9bf21c2eb4a2f8b9d6127e960c3f5bce3193764c518a9a0bf625",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1025.96f5d0769a3499cd18c3.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1067.39a6f6638bd5cbc0e3a9.js",
+      "bytes": 1109,
+      "sha256": "6c96b9e21859d1b9ca2c895fd4f0e7f59c29dd789434e5b8b7c42f802793cbf0",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1067.39a6f6638bd5cbc0e3a9.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1086.3d9c7d1f9cb08cdca9e5.js",
+      "bytes": 217,
+      "sha256": "eb9c85927a163163f9ef3e48b59156879afd49dd8b1d5641ca4424c5d8f5950a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1086.3d9c7d1f9cb08cdca9e5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1303.85ed512a480b68e0e954.js",
+      "bytes": 866,
+      "sha256": "b80e014925a220f2b0ec9ea923b874dce3f2710b4fba0af234afca205e80f9e4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1303.85ed512a480b68e0e954.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1308.893693c9557da5c4f480.js",
+      "bytes": 4637,
+      "sha256": "8c9bbcaae7fb77ec190aeb0b4c2476b98620c6238d01daae48cc092b20d335e2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1308.893693c9557da5c4f480.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1419.91fe5198ce64bef2e9ff.js",
+      "bytes": 324,
+      "sha256": "7cdb7ecb323a7eadde6a20be71e3933646723892fcad9f95b253ede0c8afdf20",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1419.91fe5198ce64bef2e9ff.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1427.8fb2101cf2ba270b3f73.js",
+      "bytes": 4770,
+      "sha256": "84d958af9d370387f420190c0b1b3858353cbcda56983cd8d84df3d8579e1cb7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1427.8fb2101cf2ba270b3f73.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1430.023429d60459435abc6d.js",
+      "bytes": 62554,
+      "sha256": "1599887aebe827758211361c3606aea892d505acf5896edf1570838b37a6e4da",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1430.023429d60459435abc6d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1432.6b95710723f48373866c.js",
+      "bytes": 3954,
+      "sha256": "ac7f35625fd051fc4dc44190c2198f8bd470e1569a3084e8ae15e215e6e17b84",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1432.6b95710723f48373866c.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1445.f90a91ddb479cd36c697.js",
+      "bytes": 4046,
+      "sha256": "d3c8772b2c64c2dea61c560f9f411e89c4ddba8a027bc1329cea7b6aae777c8b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1445.f90a91ddb479cd36c697.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1629.0d588f55a69735ed0951.js",
+      "bytes": 264,
+      "sha256": "c0ea7f232113648a8ec475c2fba8e7085c45230dc195672d63542db8216c0760",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1629.0d588f55a69735ed0951.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1714.520a025e6dc4021cee47.js",
+      "bytes": 10249,
+      "sha256": "0605d5f6301f306a4516c9923e858c7aa471558c938bdb96d23fab69d5652335",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1714.520a025e6dc4021cee47.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1715.894f5ee9f65ad7b86c27.js",
+      "bytes": 277,
+      "sha256": "68775c4f791a0e456c8fc33e8da7d15e5325aa49338bccce082d301090766d2f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1715.894f5ee9f65ad7b86c27.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1748.5deaeeeb1d49322b6eb6.js",
+      "bytes": 10311,
+      "sha256": "6ca80269d7e3599baedb3a9c5ca50694476b2d4c72b8dfe96e3539afeb0fe048",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1748.5deaeeeb1d49322b6eb6.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1904.b23c76f1dd4da22ffcf5.js",
+      "bytes": 5429,
+      "sha256": "454e64b429e54cc14c8edfcd50026ea8947a6e774a51873fba21f59a00782309",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.1904.b23c76f1dd4da22ffcf5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2199.5dbcea5dfbfa18bc6170.js",
+      "bytes": 11811,
+      "sha256": "8352286ebeee8a39289bb852710b5962899801b1e4259935941d8686842932b3",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2199.5dbcea5dfbfa18bc6170.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2303.16f389155cefdb0999bd.js",
+      "bytes": 4390,
+      "sha256": "f4e97556efc4fede05beb7b73dc80d5e7e6be92b9b9039b108070b5c5e397853",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2303.16f389155cefdb0999bd.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2342.600743c9212728ae9f49.js",
+      "bytes": 166,
+      "sha256": "da8264d4c7719e403960bb98263e8df4397e52e00e4faa5eab2dca9364962032",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2342.600743c9212728ae9f49.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2486.219e89abf5c3b9fee3bf.js",
+      "bytes": 5780,
+      "sha256": "d2bf58f0f4075b1d3a6f2ace0161799ea9437764aa8297fdd034f344dcd6fe96",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2486.219e89abf5c3b9fee3bf.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2530.69b98008475b554dc8d1.js",
+      "bytes": 622,
+      "sha256": "9d297188a71d68c0e1872f4f32b09fde344d103c8de33d01ffd32fa80e953704",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2530.69b98008475b554dc8d1.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2603.f9d2a02c886ec7640135.js",
+      "bytes": 3542,
+      "sha256": "850b943e0faafc9e9d99069d53470e29bdf29210b70b5623fc3777e24f73fdce",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2603.f9d2a02c886ec7640135.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2787.63f25d012ea723b25a13.js",
+      "bytes": 3776,
+      "sha256": "e61b0b0eba9460c760931580d7a4a55294fc17b8a74377f90ef269a5e0e75384",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2787.63f25d012ea723b25a13.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2970.192d64e32a7edae012d7.js",
+      "bytes": 808,
+      "sha256": "10e621ff3be9e2c82b5a2d4768a95cac341f11dee25d7e51ab2aff0aa3479447",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.2970.192d64e32a7edae012d7.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3181.bfad1bfa49a63ea9b078.js",
+      "bytes": 3450,
+      "sha256": "ec1f1b9485fc1f8353c42b894e37f87055fd45947e7904d49b24ac725abccd31",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3181.bfad1bfa49a63ea9b078.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.323.92f432a7ab66f51447cc.js",
+      "bytes": 866,
+      "sha256": "873cae4f1cf600345ca2de01cba816c9ba0ad0085f7eba67b8870c5924009407",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.323.92f432a7ab66f51447cc.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3334.ddbe38e387f787af8520.js",
+      "bytes": 118,
+      "sha256": "b8975f5d986cbb16416e40f0e18ea02b034a9dd37a3f13a63b62d7f488af883a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3334.ddbe38e387f787af8520.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3341.d671fc0f04f819dc7ad2.js",
+      "bytes": 7641,
+      "sha256": "f9a142a2d7249e9ce031318400ee4c24362ef7b627e86873c787d5edf55d29dd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3341.d671fc0f04f819dc7ad2.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3355.facc72a29bf285f691b8.js",
+      "bytes": 4495,
+      "sha256": "9b910d2bd924e1bd1dfb336f2de97302835952e2a0d17d6f95ef7ec6bf228d46",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3355.facc72a29bf285f691b8.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3357.bbbbecde6b116988df8a.js",
+      "bytes": 1610,
+      "sha256": "8964b490a0cb97702788f44f950175755ff78bd69a18acf36250f1b5cfa246d1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3357.bbbbecde6b116988df8a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3367.674b971147ade9d32d55.js",
+      "bytes": 4345,
+      "sha256": "1fb3b3b5d39fb6de680e5116534ed8b6dd7acbccb9a465893b491e4cb633a1fa",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3367.674b971147ade9d32d55.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.344.a68ced17b6fd3d795f00.js",
+      "bytes": 124570,
+      "sha256": "94adae58d7198c182521dfbc0144110a24564c25589911a91faec68ed080d894",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.344.a68ced17b6fd3d795f00.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3597.e523d19bd75d77e51448.js",
+      "bytes": 1371,
+      "sha256": "5d216636ee010b63ceb5bcfe1f03f060ecac1c0bd5247588886ba2ff2c46280f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.3597.e523d19bd75d77e51448.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4040.12183e243d8f517a3ae3.js",
+      "bytes": 124,
+      "sha256": "215e2611546fc2e8d453cf7a224beb0b0d4c00ab8e7b16f452137d7c71dc7920",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4040.12183e243d8f517a3ae3.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4109.d3f265b75b625841c189.js",
+      "bytes": 182,
+      "sha256": "1c3168080b856b225930db3e5a8fb3b4faff2485d37dce8ca3753bee537f1149",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4109.d3f265b75b625841c189.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4166.0cd6694df5821f20d252.js",
+      "bytes": 484,
+      "sha256": "194dd7b9f3e35f075ba431b7d55ac3ad659b22038b730b2cd803ef718b7f44cd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4166.0cd6694df5821f20d252.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4543.aba71075f3aa3b09c89e.js",
+      "bytes": 260,
+      "sha256": "35d7a45c887e8aaa381e6e61cf0006d74438cf8948c830cf4706958019b2e91b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4543.aba71075f3aa3b09c89e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4662.4bb596a7e9afdc8b047c.js",
+      "bytes": 24756,
+      "sha256": "ecfe2faab33675c2e79be432b089f3d4764f690efddb70cc9e700ff3d56047d8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4662.4bb596a7e9afdc8b047c.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4821.a10db9c3614cc8c6daa2.js",
+      "bytes": 118,
+      "sha256": "4106b06fe613d529cde0f62f9ad5a0d5da63cd92d1458a0c175f1ac73214245e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4821.a10db9c3614cc8c6daa2.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4829.73fb317fcfa2da965c86.js",
+      "bytes": 949,
+      "sha256": "a685fe6dd450a7f3370c9b1bf1e5f933aa6a110c6181d86847432550ff9f119f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4829.73fb317fcfa2da965c86.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4962.a3f22bee213fb4ec46dd.js",
+      "bytes": 2716,
+      "sha256": "50ff543087e7e0823a7965156b9bbdbedb954a3bd807915a17d4108d795fdd02",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.4962.a3f22bee213fb4ec46dd.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5111.0e84f778015dc1f067f1.js",
+      "bytes": 128,
+      "sha256": "841e32e57212800710457ddd35242c20d324b3bd3cdc9979bc9241fc26bbce86",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5111.0e84f778015dc1f067f1.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5127.00183b016a522bc4e6d6.js",
+      "bytes": 3744,
+      "sha256": "0f2edfa75c6763f4e06de3344a98b73fd87739212993528ad92ae7ac3b4cb998",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5127.00183b016a522bc4e6d6.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5402.8ae961dd947b51d68d03.js",
+      "bytes": 161,
+      "sha256": "540990a0dc01871ae9aaddc59e307af18d4563f49604f8dc4d7c662de44e019b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5402.8ae961dd947b51d68d03.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5683.2479c3853762abb2e273.js",
+      "bytes": 2121,
+      "sha256": "ba01c749c350430314164e35ec8388a2c4f4c4bf9992ebcb7c1ee158936415ae",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5683.2479c3853762abb2e273.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5862.f16dc2a97817a6f80f10.js",
+      "bytes": 730,
+      "sha256": "3a988ae3e5db90e20292eca42167f43177cf73f191993e16ef633be8840eb3bd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.5862.f16dc2a97817a6f80f10.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6155.902e4cad125dcf6cd148.js",
+      "bytes": 3163,
+      "sha256": "bfa3d9893adaaf9fd82c05ac56ba5faacce5cf701e60ae496d9ab117b53beec8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6155.902e4cad125dcf6cd148.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6173.98c05959b9e5f8d38113.js",
+      "bytes": 259,
+      "sha256": "9abe111d04e053aae13c1ae6a9934601eb384744da90452b48e045d203e86044",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6173.98c05959b9e5f8d38113.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6196.72431ed9a14689ee90f8.js",
+      "bytes": 4771,
+      "sha256": "098f7249eabc18e73d2d0de6600759e89d232e4f4b1561385848d5774d402979",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6196.72431ed9a14689ee90f8.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6290.8c8962074815f27fe82c.js",
+      "bytes": 1143,
+      "sha256": "59c469e029b9bd30709a2fd027d9d77d669f6fcb14847466171ea3575e451167",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6290.8c8962074815f27fe82c.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6342.96ca6cec41634eba0dcf.js",
+      "bytes": 643,
+      "sha256": "233466c5163e8a6e48564fcd9d9e694fda513cd30adb123e2e3b2e8f376429ce",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6342.96ca6cec41634eba0dcf.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6406.366787d455b91eb80f27.js",
+      "bytes": 18038,
+      "sha256": "cc92317bb93bf12a8212e0f22883c4809200c981bbe758b9505817378503145a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6406.366787d455b91eb80f27.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6645.7b806e40e2fb49a44342.js",
+      "bytes": 4839,
+      "sha256": "207faef56c58fa83130ff6ce146a54d0dddfb6547f08a4663f0a8a3918407edf",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6645.7b806e40e2fb49a44342.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6703.0d40cfa5035033bf7dc5.js",
+      "bytes": 1629,
+      "sha256": "725aa287b9392c7d13d63bc0584ae3ca8bf53e14aef48844610119be798c385a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6703.0d40cfa5035033bf7dc5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6760.860d9c4b8c4354852c78.js",
+      "bytes": 4651,
+      "sha256": "2b73c48d5b73b9db18cd6796f49b1f31656ce00954490858ec75cd12053d697e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6760.860d9c4b8c4354852c78.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6778.227232a064c35e39434c.js",
+      "bytes": 131,
+      "sha256": "ffa08ee8e1f7d98193a65711435b0fef2636f5b3285bfd816866e359b02618ee",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6778.227232a064c35e39434c.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.680.004b61cbed26bd77c2f5.js",
+      "bytes": 3918,
+      "sha256": "3260d15e2cbf5ceeb3c4e72d9d677d559670688a18d93730587d770ff1a9dd9d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.680.004b61cbed26bd77c2f5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6822.ee9307d05514c90ba8af.js",
+      "bytes": 2357,
+      "sha256": "fd6359b97bd2494e1591b235d811487aba9da606cc0f043150f166ef0be044e5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6822.ee9307d05514c90ba8af.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6838.43cf9361811d753c5fb9.js",
+      "bytes": 128,
+      "sha256": "42e2cf0f91f47fccfd99cafa009ee28216d6e76a2bbfe2c81480e8683a82ff91",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.6838.43cf9361811d753c5fb9.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7122.1ed01f53abba8ce41796.js",
+      "bytes": 132,
+      "sha256": "ef491328480c1967676be5713136b5b2ece0e876eaad739018a874bd20843b09",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7122.1ed01f53abba8ce41796.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7172.b33b2cca5d9415fefde5.js",
+      "bytes": 773,
+      "sha256": "6677215294d86591313e0aac7a6008281d181a5008d185de7fa6cb45c4502cd8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7172.b33b2cca5d9415fefde5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7226.d75fdbcca0c2b8998e4d.js",
+      "bytes": 1004,
+      "sha256": "2fd2cb0ee05901c723426b8b8c450bfc000f068e51a6b2740c746b9b2b687e06",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7226.d75fdbcca0c2b8998e4d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7328.36c4de383398c00d3ce7.js",
+      "bytes": 129,
+      "sha256": "db547898c313a6c9de67767378bd5e17a6f6d735c15d82c8b5ec1cb8b0b908e7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7328.36c4de383398c00d3ce7.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7616.bd1eaa9d9ef7a6a5923a.js",
+      "bytes": 15116,
+      "sha256": "58737dc0d707f8878f38c9914c5bc424274dcada2ec960279ac3fb6915670c71",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7616.bd1eaa9d9ef7a6a5923a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7690.6d79ca989ab1377db6ba.js",
+      "bytes": 4250,
+      "sha256": "3b3ca5835b4f8c562ea18c4fc5002f4c3c129f90d1443b00ec30b5996a390ed3",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7690.6d79ca989ab1377db6ba.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7714.1a8283b330cb49205281.js",
+      "bytes": 1462,
+      "sha256": "606d1a0677df0770a8d5ef909745a653e7482f1ea5c3594c4edab08fd799276b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7714.1a8283b330cb49205281.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7850.3aa6145854192b1a33fb.js",
+      "bytes": 189,
+      "sha256": "e3443c70af0691ad6a7089415bf8ed18a106ed4386e435b516b0f67c82b162d5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7850.3aa6145854192b1a33fb.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7952.7657c47534779a121a11.js",
+      "bytes": 4619,
+      "sha256": "d778f44e4fe99b466c28fac42a6b4dafec52edb82e279c0897623b6b14c60f53",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.7952.7657c47534779a121a11.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8189.619732a30f4aaf1ca1a4.js",
+      "bytes": 1408,
+      "sha256": "5ee165f32697618f75807f789db5895a357c3a14cda51d9517e4d3c4b417f962",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8189.619732a30f4aaf1ca1a4.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8245.ac34788df822d93e0814.js",
+      "bytes": 207,
+      "sha256": "6cc125d6f8fbb0a279e7bfa9600dfd613cd1363db9f32f5b1f5630555c74042e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8245.ac34788df822d93e0814.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8255.91b3072e0d5c6e4e6cff.js",
+      "bytes": 1760,
+      "sha256": "d0b9377a3cf2dd82dafacec7aa8a9e5718d37e1b7490a774b88be1043f100be8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8255.91b3072e0d5c6e4e6cff.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8370.8f53ecb203cb7ef46f74.js",
+      "bytes": 314,
+      "sha256": "95aa4f5576f01b41869ebd66336ea9eb923d2ab5992c14faf98963ffcfeb030c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8370.8f53ecb203cb7ef46f74.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8541.792ac32e47fb46a0b2de.js",
+      "bytes": 375,
+      "sha256": "18fcf1272d4770e84a5248b42b392c7f9970cb1314c82b41b5b13dcd685bd695",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8541.792ac32e47fb46a0b2de.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8622.9181e2b364297c860b4f.js",
+      "bytes": 3070,
+      "sha256": "15d868702037194987e210ef73cde9798013e0902bcc55d1e3dea6629a8c38f4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8622.9181e2b364297c860b4f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8703.759ac7d8524a85b761b5.js",
+      "bytes": 1028,
+      "sha256": "c3550659c4bdcde44ad2d19bc3d6334d0635bc87f45acac61ff6a8ce6f461d8e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8703.759ac7d8524a85b761b5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8763.7dd95105967da9e3fa87.js",
+      "bytes": 348,
+      "sha256": "c8749d7df68849ed6e0559c3d6262458fe05b9c632359aa881c572411dd7e9bd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8763.7dd95105967da9e3fa87.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8936.517cb11cd80606a1e559.js",
+      "bytes": 6251,
+      "sha256": "85c194f6ffb1b596cd38ac4ccf49140d7184cbc35bd7e8db89ff3bfbfe0f11ee",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8936.517cb11cd80606a1e559.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8940.cfff4a15faffdc7ab31d.js",
+      "bytes": 4521,
+      "sha256": "97ea7ba94de89360bd950c5b6fefb45020ce1f1b0f862b2e3fb13a951e2264e1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8940.cfff4a15faffdc7ab31d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8975.1103e4b8aa7c7a60ddc4.js",
+      "bytes": 244,
+      "sha256": "5dc18f33d6b87fea3d4f6d91d6606451a3054989880ae533a62236d107c1507e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.8975.1103e4b8aa7c7a60ddc4.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9003.00b84b215d3e32b59129.js",
+      "bytes": 4963,
+      "sha256": "e421baf060e46471e802bb3d577cfac4c88d616fa5eca5154e883190e354e793",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9003.00b84b215d3e32b59129.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9093.f8cd5dd5ccc0e0bd7bde.js",
+      "bytes": 304,
+      "sha256": "72b019de3b2e4aa3572d985dc519499343c96df5051ea26111b2e7c42f9582d0",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9093.f8cd5dd5ccc0e0bd7bde.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9179.1bb17110d4007c8fb7ef.js",
+      "bytes": 1298,
+      "sha256": "99a1b9570c8e0fd216f5cf48f197c60f63fcfef32886aa0b4c2c70bf9a8a8b6f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9179.1bb17110d4007c8fb7ef.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9494.8b4e20a348e167d9a183.js",
+      "bytes": 5646,
+      "sha256": "fdb7843999fbae28b02370a9d29a4ac6439b197c9778e81311d950f850ececa0",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9494.8b4e20a348e167d9a183.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9722.7947af770da881c26ffd.js",
+      "bytes": 456,
+      "sha256": "d2119cc164be67620f70e69d4cf3e13489d6806ad4e79c6f663dfd6db1ca9646",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/en.9722.7947af770da881c26ffd.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/eraser.c80610a04a92d2465b03.cur",
+      "bytes": 4286,
+      "sha256": "c272c594ecce924206db7acdd2ac90f28865eea7b2633d3fe2ea137ab95d2099",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/eraser.c80610a04a92d2465b03.cur"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/export-data.698f677e7782bc20b211.js",
+      "bytes": 7447,
+      "sha256": "e9684ac5be71e9efc3bd82228753b11449d102d6d38e97a0b51f63c0e938ff0c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/export-data.698f677e7782bc20b211.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/external-link.0c3ba03264187baa54fb.svg",
+      "bytes": 537,
+      "sha256": "d776b4341d16954931a23b06a64e8f2f374807d67844f470b8aee2a36f3f6d97",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/external-link.0c3ba03264187baa54fb.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/favorite-drawings-api.ba616fcfb21d72d7c603.js",
+      "bytes": 1111,
+      "sha256": "a398bce7ffb763ad42c5c65d0933655f4cc86a55779b18e6a3ff6f6b3971720c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/favorite-drawings-api.ba616fcfb21d72d7c603.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/favorite-indicators.3d92a991466d2490ac31.js",
+      "bytes": 994,
+      "sha256": "b7c9c27ed7ce84a5d9058b25ecd4abcf7b5788057a7dd48ce0c5ba190fc0b277",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/favorite-indicators.3d92a991466d2490ac31.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/floating-toolbars.435f06c307950384d090.js",
+      "bytes": 118644,
+      "sha256": "193e3f5488bc0b99cfc97f33e21b3ff792887c59ec583eafecfeb08af9c3616e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/floating-toolbars.435f06c307950384d090.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/footer-widget.08780bf0181c58031ae2.js",
+      "bytes": 42003,
+      "sha256": "c20ea28e21e7ce4c41ea3b3a81cf63365e8b64929a36270a6efed08f6e97b796",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/footer-widget.08780bf0181c58031ae2.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/full-tooltips-popup.b1c2f176631e52d31404.js",
+      "bytes": 17041,
+      "sha256": "4ab9b472b732172688b0cd366557226b59eff5441b2caf5329b65f9c4209667f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/full-tooltips-popup.b1c2f176631e52d31404.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/general-chart-properties-dialog.f1e0baa3f7c3ba8b7a81.js",
+      "bytes": 19784,
+      "sha256": "0fe495cb1749838861c8fa9c1b7ba1166d814b54d4b1e8b17887394d332ef86a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/general-chart-properties-dialog.f1e0baa3f7c3ba8b7a81.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/general-property-page.b2b045afa1ff86d18bcd.js",
+      "bytes": 51024,
+      "sha256": "a6cb6e16551d3af50b3035b3a4e7bcaa19ce30a82da29494061e6ad435f0f187",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/general-property-page.b2b045afa1ff86d18bcd.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/get-error-card.a031f39f01dfc4896f5c.js",
+      "bytes": 15928,
+      "sha256": "d832045a3ededbf769a847ecbef6c20cd1d9c15ee4f1a85365de7ef7c945e0fe",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/get-error-card.a031f39f01dfc4896f5c.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/global-search-dialog.86143b476157ff38f0f3.js",
+      "bytes": 112137,
+      "sha256": "7f1262d290e14b1f20202ae1e1fc4c4c75a60d14f79bb621b8eeb6839f89e2a5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/global-search-dialog.86143b476157ff38f0f3.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/go-to-date-dialog-impl.c90797e0c6ad86ea2772.js",
+      "bytes": 64355,
+      "sha256": "c0579d37f07ac9b3019bfc9a619907a44fa20acec6fdb3d362aee33f9e7904fb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/go-to-date-dialog-impl.c90797e0c6ad86ea2772.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/hammerjs.4e17378884ca530926b7.js",
+      "bytes": 170,
+      "sha256": "04034cf6586872d3bee54a45be770309d89e06cc09e4cc12e0473638ba9079da",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/hammerjs.4e17378884ca530926b7.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/header-toolbar.63979e6f88aa59e9933d.js",
+      "bytes": 35766,
+      "sha256": "ea4558a32662dc8103595f2a32ef561bbc76c025986615d8dcbf77797da77a97",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/header-toolbar.63979e6f88aa59e9933d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/ichart-storage.7610363593b90aad5c6b.js",
+      "bytes": 365,
+      "sha256": "05f29fbe4bb3e72a1ac1e8beec9774ba5f928be077fad170033d822e9e7c802c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/ichart-storage.7610363593b90aad5c6b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/insert-image-dialog.7e2f48e68e7184d0d3dd.js",
+      "bytes": 38885,
+      "sha256": "a010c263b364139318de16977aa12ee667545e2969d914a5d888bb64806d125c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/insert-image-dialog.7e2f48e68e7184d0d3dd.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/leverage-dialog.c11b2c654c9f8c692a4f.js",
+      "bytes": 6578,
+      "sha256": "08550e1b10d5a25e3e19216c6fecf036c257e0490d516462f6ed6c6770e6395b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/leverage-dialog.c11b2c654c9f8c692a4f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/library-studies.fca0ee09201de497a9cb.js",
+      "bytes": 6127,
+      "sha256": "03b6f24ee1398c67979153188764139a0475f5dca6cbb2daaea63105445971b8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/library-studies.fca0ee09201de497a9cb.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/library.47eb07e437b7b06c889a.js",
+      "bytes": 2762873,
+      "sha256": "415824e3d9dd4117bafa13ae4aae8fb166e9a1ac47c2f03635fef1e8c9338756",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/library.47eb07e437b7b06c889a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-5points-pattern.a670a6a2b633e6d886b9.js",
+      "bytes": 1179,
+      "sha256": "1eabd6283b02704045cc1322706b5e85eb61660d0f88e184637ec743f133cc92",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-5points-pattern.a670a6a2b633e6d886b9.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-abcd.d01d71c718f2a009181c.js",
+      "bytes": 1112,
+      "sha256": "7cf8974c73722966ad18e3769637c28bf24d2e487be82d29a5743945814d4199",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-abcd.d01d71c718f2a009181c.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-anchored-vwap.feb636b22ba9682d91ee.js",
+      "bytes": 8515,
+      "sha256": "96cce547d10ad2fba8a0ba61b524ffb44ff0df2e8c073e11a751042c233ca8e6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-anchored-vwap.feb636b22ba9682d91ee.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-arc.c3e0937be7591b93a5f3.js",
+      "bytes": 4293,
+      "sha256": "30ad0238804faf10d31dac8211a532c7185d2fe2a94f2030f43d1b7e6bcab1ca",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-arc.c3e0937be7591b93a5f3.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-arrow-mark.cdabaea3ceba1986ad59.js",
+      "bytes": 3033,
+      "sha256": "9dd5551b9c9d8ebcdd0e5bd81fed449b017ebbbe4e8f5813edbe8cd384303695",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-arrow-mark.cdabaea3ceba1986ad59.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-arrow-marker.f140aff21efe59ce3ae6.js",
+      "bytes": 1047,
+      "sha256": "9e18776fa6f40d7c14025ed86c2bf0f69dcf095ebc71d1810eea509567e8ea39",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-arrow-marker.f140aff21efe59ce3ae6.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-arrow.80cf5888061a6d661308.js",
+      "bytes": 9153,
+      "sha256": "bcd19eec9992d27338b4585b6a59e68c20d70b5554abd86638562edac2424412",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-arrow.80cf5888061a6d661308.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-balloon.cc9528cf22d5214a596d.js",
+      "bytes": 13923,
+      "sha256": "1a0bbaf7ed898d49f9a7c54767cd47a97b8980641758f2cadb075af3cbdecce5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-balloon.cc9528cf22d5214a596d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-bars-pattern.b606b15fb3f27a7139ea.js",
+      "bytes": 7751,
+      "sha256": "1b2fa15216a111666410fa94cead55cbfd737e236bb14f0d7dc6ff6a9623f453",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-bars-pattern.b606b15fb3f27a7139ea.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-bezier-cubic.645dcda81a279752cafe.js",
+      "bytes": 26544,
+      "sha256": "9e1f9ffa4ffed5ef376bd56c26b57d15c9eabf9b1a09d4021ec18ab450446491",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-bezier-cubic.645dcda81a279752cafe.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-bezier-quadro.e4b6c72098bc06127927.js",
+      "bytes": 1773,
+      "sha256": "916f70bb69b50e66d3d8448dcfa20fabde65420924d4cdf67205167138682082",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-bezier-quadro.e4b6c72098bc06127927.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-brush.d570e2ffd586b10fc876.js",
+      "bytes": 1190,
+      "sha256": "a91bd52e91fcf38a588a23ef3922a31358bafdd3f7cde9332c98517ba0ed10e1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-brush.d570e2ffd586b10fc876.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-callout.d553f33d9229ad487151.js",
+      "bytes": 11224,
+      "sha256": "a4d404486eba3872e14a7238d950ce546b8040bcba999e6255ca37656ba1627d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-callout.d553f33d9229ad487151.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-circle.7a6f270ac35ee849b519.js",
+      "bytes": 8563,
+      "sha256": "4b3d9864ea39c49b1bdaddd3505e488ffc9e08ad8bd10d73a0215eacf353a57f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-circle.7a6f270ac35ee849b519.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-comment.29f25249f31b85635bd5.js",
+      "bytes": 4478,
+      "sha256": "7c1e1ae21d541510c25688ec22a8537b8af48d5ad38f14bbeab4766bea95309b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-comment.29f25249f31b85635bd5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-cross-line.114f2d41da4e2ca7f677.js",
+      "bytes": 2681,
+      "sha256": "2fa378635f29c0272ed3e0b101cdb1f4bdbdc9692d3f9d7f543fb48b7b8a9ca6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-cross-line.114f2d41da4e2ca7f677.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-cyclic-lines.48c6042e7ef1e6803c72.js",
+      "bytes": 18745,
+      "sha256": "2ac6fbc7bb64af6e07f75ead9b230864dc594163da8013e8f8edd10b197611ad",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-cyclic-lines.48c6042e7ef1e6803c72.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-cypher-pattern.1d195fc4890a7f9e4e2b.js",
+      "bytes": 1753,
+      "sha256": "4d8cae45948e33bf1854ed528333a2b49505532848ad9d37747b066a51efde28",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-cypher-pattern.1d195fc4890a7f9e4e2b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-date-and-price-range.051d4023295865c19ed3.js",
+      "bytes": 5863,
+      "sha256": "27bed55d4bb62a345c2ea1c832ed995df9ae7c612f68f397303e5ae40c64c7e5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-date-and-price-range.051d4023295865c19ed3.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-date-range.63003d5e71e1c5954569.js",
+      "bytes": 5614,
+      "sha256": "71e38917da8eecfaefeb4820166f3fd756a0743af23be3f7026c4725c462d60f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-date-range.63003d5e71e1c5954569.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-disjoint-channel.a07796f98000e84c9927.js",
+      "bytes": 3107,
+      "sha256": "c6ea166d4f3a037cf5c7968357e986ef7e3a4c44f447d3be483d6fef72c7ba92",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-disjoint-channel.a07796f98000e84c9927.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-ellipse.7e6149b354dbcaa295a0.js",
+      "bytes": 11708,
+      "sha256": "05123ddd7f60640a8ee9cb23ef8f1bb750d7f9a18e9db60828a5b16f4a6b3e13",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-ellipse.7e6149b354dbcaa295a0.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-emoji.0242475ba0a76b7939f4.js",
+      "bytes": 14158,
+      "sha256": "60fb3e58ac2d014163ceb0510f8047021ec6f20c64463a7fe097a66ea314cb96",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-emoji.0242475ba0a76b7939f4.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-extended.58a08e6fb6ca9a43b55a.js",
+      "bytes": 9166,
+      "sha256": "ca22ae3d1e00f413bbef0385b39d4e47d324a5bb50245daad6957a64c0554138",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-extended.58a08e6fb6ca9a43b55a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-channel.a49034229e5a9d673dc9.js",
+      "bytes": 9799,
+      "sha256": "111951473d1ea01c0e450ac196d17c18bf160da032ae2948f8222b50f69473c5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-channel.a49034229e5a9d673dc9.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-circles.d4b5a73c33b4667f445d.js",
+      "bytes": 9694,
+      "sha256": "938a719024ee60a6fb5f703f5f9e24622eb6574004f2cc99f5509b6d4801ef33",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-circles.d4b5a73c33b4667f445d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-retracement.9d8cecaf6759e8bea9a9.js",
+      "bytes": 12245,
+      "sha256": "17cbcf70e2b6c1ff21971b0203693efbb598343b06b024bca5efd4ed93d7202f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-retracement.9d8cecaf6759e8bea9a9.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-speed-resistance-arcs.f199b848f18447881ed8.js",
+      "bytes": 18778,
+      "sha256": "deba446a4896f54b485c4248b6bf5b10af22e5c8b30dc6c8cf93d2b932398e0a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-speed-resistance-arcs.f199b848f18447881ed8.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-speed-resistance-fan.e7ff1b13ad1ed9feb702.js",
+      "bytes": 26829,
+      "sha256": "f6c4e3953e325cfc5f98cd8aacf244284206629f72765bf659b8dc5801f172d0",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-speed-resistance-fan.e7ff1b13ad1ed9feb702.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-spiral.aa7d11906c58b59b98c5.js",
+      "bytes": 18242,
+      "sha256": "a32d87e6de0b799d6c48a2033541d4ae6a3580b280b48a630bdcf846d2b9b86a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-spiral.aa7d11906c58b59b98c5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-timezone.e26f7c7af46bc0477cd1.js",
+      "bytes": 4116,
+      "sha256": "f5386e4b866651f8e37226d045a13eb7e78429a6bef837575554de97cd87455f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-timezone.e26f7c7af46bc0477cd1.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-wedge.f69d1cfc1b31057f9e47.js",
+      "bytes": 22175,
+      "sha256": "2a1b17acfbf5dd59f0cd8425bc7121e6a003d8ea51d337d7391999aab5233f82",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-fib-wedge.f69d1cfc1b31057f9e47.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-flag-mark.bf9d612db929e52430bd.js",
+      "bytes": 1243,
+      "sha256": "91ecb2965a10c87143e2ce827a54317babf801e1be24ab771dad1d4f85e86bd0",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-flag-mark.bf9d612db929e52430bd.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-flat-bottom.fbe73477437c21959759.js",
+      "bytes": 2880,
+      "sha256": "4f95b36e87314c511f8a80000c7a5eb80fdd324db81cd6974a6bcce61e089afd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-flat-bottom.fbe73477437c21959759.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-gann-complex.82ff4389abc01f316340.js",
+      "bytes": 9243,
+      "sha256": "8f6bfca3fd449963a4085933196449709812a85572b979809132481676250dbc",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-gann-complex.82ff4389abc01f316340.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-gann-fan.50223e2599e30aea9969.js",
+      "bytes": 3212,
+      "sha256": "ee514ee8fab93a1ce3c670f876c2eb4609d1f4d885eb9ddda2c2cba2c148ad6b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-gann-fan.50223e2599e30aea9969.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-gann-fixed.45540c12529aac3103a1.js",
+      "bytes": 5786,
+      "sha256": "5f59d06c7788a0b16da1556bfd7ac8179e5d1a01050d87f5acecb17cc2ea7753",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-gann-fixed.45540c12529aac3103a1.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-gann-square.e226bd81b316c3c0432f.js",
+      "bytes": 4600,
+      "sha256": "7617886da32b84b11dda77e7dfd20c12a92a1cd1ac2254903b13a179a62369cc",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-gann-square.e226bd81b316c3c0432f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-ghost-feed.c3c0348ac2b7c986be31.js",
+      "bytes": 6340,
+      "sha256": "df99652098d7fb342b523aea3dd900907cbea3cd490d8eba43c2d7f1a688cf31",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-ghost-feed.c3c0348ac2b7c986be31.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-head-and-shoulders.7d97fe23d4f1bbb107e2.js",
+      "bytes": 1104,
+      "sha256": "2708d292eb8bfd1d1ca8af78ca0f1215b8cc00728d3df4519cd4fe385ba03577",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-head-and-shoulders.7d97fe23d4f1bbb107e2.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-highlighter.9d67f91df2e9e003a983.js",
+      "bytes": 1089,
+      "sha256": "86e15a2dea255b42a8975e9266f13a35b3ed27e6116e971ff0419b7e1b31697e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-highlighter.9d67f91df2e9e003a983.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-horizontal-line.d29f9b9a62e5e2f50508.js",
+      "bytes": 9264,
+      "sha256": "6d5aaf313a4d5e73bcedbde35e3fd180bcee84593b572518e339ad4d132e95f2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-horizontal-line.d29f9b9a62e5e2f50508.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-horizontal-ray.6b1efa2c567e2d2e94a1.js",
+      "bytes": 2389,
+      "sha256": "fbd5d16cc11d60c446157537bf4cab66ac795158326941582f1cbe6fee73b8e7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-horizontal-ray.6b1efa2c567e2d2e94a1.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-icon.3cce74adf9ace2d0a51b.js",
+      "bytes": 5857,
+      "sha256": "aa22e50ced4b7d2a8cb0faa8df651af4f1c12d13e0d18d1a3bfa7105e618bba1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-icon.3cce74adf9ace2d0a51b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-image.4d04f2b79bf1118ef7a9.js",
+      "bytes": 6961,
+      "sha256": "9785e0fe2ca89b70983f2c0f8aca031a08e8530da8c093e73db3df3f81abd8b2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-image.4d04f2b79bf1118ef7a9.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-info-line.a838af7057819733d514.js",
+      "bytes": 9299,
+      "sha256": "1ced36754ff4421b054c14008edde41a163a89d40de40f50d7f0a23f0096f52b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-info-line.a838af7057819733d514.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-inside-pitchfork.58f89f2158d436238406.js",
+      "bytes": 5253,
+      "sha256": "078ba66a7e93098b6d4fc627c515ba725cab9be802ded17d51c899c28a549f4f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-inside-pitchfork.58f89f2158d436238406.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-note.643c572b18f008e5c4c5.js",
+      "bytes": 22246,
+      "sha256": "23dad28ff26a21ad60809b777480d4822f990f14f58c054ff83bdf31011fd56a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-note.643c572b18f008e5c4c5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-parallel-channel.e2e289455ec8e4f97d55.js",
+      "bytes": 13646,
+      "sha256": "2394177649d58d96b7e41b8be0eab3951d6e763b20e7e2544ad555464048accc",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-parallel-channel.e2e289455ec8e4f97d55.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-path.39b0569dcf42c20f177b.js",
+      "bytes": 1906,
+      "sha256": "ffd30855b3f7f074dde724d06c8270a92ea7bd53e151810a3fd744904a174ca8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-path.39b0569dcf42c20f177b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-pitch-fan.390f14217b9f85109946.js",
+      "bytes": 13166,
+      "sha256": "78eb4a47ca1bff677565cf23278fe44c602a6b4704f2afe25e4dacd6a042220b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-pitch-fan.390f14217b9f85109946.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-pitchfork.ecf74ac3bdf7e8c01a6e.js",
+      "bytes": 4821,
+      "sha256": "9355b71b45c3fee53dac7b17e8463d4ae23f1d0f09ed8b575857b25d0b046284",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-pitchfork.ecf74ac3bdf7e8c01a6e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-poly-line.20a65de4446962385acd.js",
+      "bytes": 2716,
+      "sha256": "79c2125ac445200e4d414312c9f6f7539046eb561879e2b76086818ddfe40530",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-poly-line.20a65de4446962385acd.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-prediction.9e38a052b51bea1ec07f.js",
+      "bytes": 3396,
+      "sha256": "788d4720fe117d59a20db39585220c821d4b59ffd295538de566105ac418d3bb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-prediction.9e38a052b51bea1ec07f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-price-label.3345899386830cd21aa9.js",
+      "bytes": 1167,
+      "sha256": "4f8a16e2f42bc116fc75b0196adcc32e67a25c1903b0178953c28ee47f4f6e5f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-price-label.3345899386830cd21aa9.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-price-note.e7fc870ef1557fb0fe52.js",
+      "bytes": 25853,
+      "sha256": "076ba290e14a64d99e291af56b7a5dd3f59e12aebcb0bc25b8d14f7cb6a81ac5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-price-note.e7fc870ef1557fb0fe52.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-price-range.57fc6d730c3936a6eccc.js",
+      "bytes": 5148,
+      "sha256": "3b1b428facedea1c33f5fcefc9017badcb3d700be1525deacfb1329162cb49f5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-price-range.57fc6d730c3936a6eccc.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-projection.6cd354eb28e1d3fbba43.js",
+      "bytes": 11025,
+      "sha256": "ad88ce362d204e52548e8db2c56eeadf2fb3ffb90fd445440a880bbaf4fa328f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-projection.6cd354eb28e1d3fbba43.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-ray.7fb3001e0646c790670a.js",
+      "bytes": 9149,
+      "sha256": "a9875ec69509fda0db29e06648c8778a67a5fbb12e88af8a1a40d89e86981cc9",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-ray.7fb3001e0646c790670a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-rectangle.78b4c59c150774e8347d.js",
+      "bytes": 16492,
+      "sha256": "b745fcf676e01ba6b4f621b057ed7974b31e7146dd6a7977c9f01e8ca0e57962",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-rectangle.78b4c59c150774e8347d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-regression-trend.24e346d52a48609c957c.js",
+      "bytes": 4559,
+      "sha256": "32020f892c610c9df8adc5d8f1f3a70dbbb6c70a6c1f20386a7aa72d979ae5cc",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-regression-trend.24e346d52a48609c957c.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-risk-reward-long.bb9d22eb3ee52471cf76.js",
+      "bytes": 1559,
+      "sha256": "9d3d80ba6e76a667bd865193c18c54befc6c6fbccdd0a62cb306b0c91813f601",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-risk-reward-long.bb9d22eb3ee52471cf76.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-risk-reward-short.4d6333ef644e3196831f.js",
+      "bytes": 1562,
+      "sha256": "f3de425deedabb992bd59be40a85a0d8a5ae5463d2a28528a558c4bbd185d664",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-risk-reward-short.4d6333ef644e3196831f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-rotated-rectangle.fa7177ca6371f9ebf508.js",
+      "bytes": 1956,
+      "sha256": "f6247afcb6f6a55d008fc5779b4ac54fa3504c8f84575d01f977f434cea50189",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-rotated-rectangle.fa7177ca6371f9ebf508.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-schiff-pitchfork.2f2ee803b13a7f826747.js",
+      "bytes": 5262,
+      "sha256": "bda8c575081eb5a6e432a8b6410aef45fa38706ef2b10c1c803cc75938b7b11a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-schiff-pitchfork.2f2ee803b13a7f826747.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-schiff-pitchfork2.e1ee5cc06d4b96c112cf.js",
+      "bytes": 5254,
+      "sha256": "971f2cb533407fdc0e1c1421b5ffe7b18c0ff78279ece6ffbe11e64c020f1ee4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-schiff-pitchfork2.e1ee5cc06d4b96c112cf.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-signpost.ddc6038eb53f8a37a8cb.js",
+      "bytes": 15229,
+      "sha256": "0bd22762ed0d29c6d2b3e9ee03834a671c736c623eaa33999a12394597d24f57",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-signpost.ddc6038eb53f8a37a8cb.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-sine-line.318633c2943533aaeb73.js",
+      "bytes": 851,
+      "sha256": "ff661b22f640a03e0a20d228aae4cf84c474bbe4954217137e3984033f7367c6",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-sine-line.318633c2943533aaeb73.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-sticker.15ac522d373de72bc5bf.js",
+      "bytes": 5681,
+      "sha256": "fbf877ff8650468b914385ea52713e548ce44dbfc63f3c7e6bdf06b914e0d861",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-sticker.15ac522d373de72bc5bf.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-table.fa8073658bb0379600d2.js",
+      "bytes": 43135,
+      "sha256": "bb9075844526991059f94f27a380c44af4b84b0a0747a51c78d3016cf60c39b4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-table.fa8073658bb0379600d2.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-templates-list.21e19d1b710af56bb4a7.js",
+      "bytes": 5217,
+      "sha256": "a504f3dcb4ac51e91e9b729c2291d8a91a44c1d63448960bc141cfb4b6d94543",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-templates-list.21e19d1b710af56bb4a7.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-text-note.343ef931a7b4346f3ebe.js",
+      "bytes": 21862,
+      "sha256": "ba43483c0d925f67d0a2da7062a67f53e272e1b94c5fa97de09002d015e61549",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-text-note.343ef931a7b4346f3ebe.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-text.77222134b4d049ece60b.js",
+      "bytes": 10377,
+      "sha256": "caf61a8e4056e87d7ca5aed8136708e91fa21bf26df40509a6ed7b03aa73ea7b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-text.77222134b4d049ece60b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-three-drivers.b38cf49208597c28709f.js",
+      "bytes": 1244,
+      "sha256": "e0fa31de658628eb0dc379a62d7a4d6cc53c3690afaff46110a8a51e4fdfd8f4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-three-drivers.b38cf49208597c28709f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-time-cycles.fd3155eb606914b2cc52.js",
+      "bytes": 1232,
+      "sha256": "d2e7273f640e3f1748b7a1ab511b3563c394447b40801057265fdc4af3e045e1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-time-cycles.fd3155eb606914b2cc52.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-trend-angle.a93a24a6e757461c95d2.js",
+      "bytes": 9903,
+      "sha256": "665bcb1f054de7db7a69c77f38cfa4a03d1242d65f0ba1b0fefcc1e0a80c3174",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-trend-angle.a93a24a6e757461c95d2.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-trend-based-fib-extension.a24b3b8991d77d81cb83.js",
+      "bytes": 12202,
+      "sha256": "b8ab04617bfd39b222dd1729f5dfedd83af0f1f465a87f4d3126eaca168b2446",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-trend-based-fib-extension.a24b3b8991d77d81cb83.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-trend-based-fib-time.3f335968fad8f29dfbc7.js",
+      "bytes": 3494,
+      "sha256": "2073163aae1c8579e35b79885d10b9cab78887074f1a39e780f1939c7c3c9f40",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-trend-based-fib-time.3f335968fad8f29dfbc7.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-trend-line.6bb4cc8964d120634934.js",
+      "bytes": 8790,
+      "sha256": "a71d33d75916d7892e7d334ed8d047ad4d7efa3a5e01940c0c72e0170b30af73",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-trend-line.6bb4cc8964d120634934.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-triangle-pattern.15b9de096fb124b528c0.js",
+      "bytes": 1190,
+      "sha256": "b1c9554058c787efcd7ff7863c4a530d8e64a5b1cfd54a80b0c74dbb7d77f703",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-triangle-pattern.15b9de096fb124b528c0.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-triangle.8e20271f2de181c14482.js",
+      "bytes": 994,
+      "sha256": "d497a709a0599bf7b0261d2a977b2aa885d65e5c94fee75c1b381042143de963",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-triangle.8e20271f2de181c14482.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-vertical-line.4b4510520c938f1d1daa.js",
+      "bytes": 10065,
+      "sha256": "4f48465df81b8546dcb0710bc5fdf1a0f230efa1e48e62f6d4344d45d4944084",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-vertical-line.4b4510520c938f1d1daa.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-volume-profile.038fa939c28dfddaebd6.js",
+      "bytes": 7477,
+      "sha256": "92e55ad11614d5519a4ec40e2aa6a50dec31b7ce7df191cfbd03ea01dbd69899",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tool-volume-profile.038fa939c28dfddaebd6.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tools-icons.b492c92d44816b2cfc80.js",
+      "bytes": 75225,
+      "sha256": "7e286ced5533dfe9d854236414af687c5bdb00accf2973a7bd4254c91db38b2e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tools-icons.b492c92d44816b2cfc80.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tools-synchronizer.667b607302351f23fe7b.js",
+      "bytes": 25155,
+      "sha256": "163bd9f7fedc247242aee01b3d665292c46a6263766c435f33f37e01cdbfebde",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/line-tools-synchronizer.667b607302351f23fe7b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/load-chart-dialog.baf3981812a2cb6bda5d.js",
+      "bytes": 58947,
+      "sha256": "60ccae4f077dfea30fbbe218bdec41b7c28fb01f45fdd0ed168d9b60d53cf300",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/load-chart-dialog.baf3981812a2cb6bda5d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lollipop-tooltip-renderer.f3c2dd7476dfeb41ded5.js",
+      "bytes": 23717,
+      "sha256": "a8ca9e99e6711ad6d1d24141b07286033d907974c8849df0da2798e9e1d8f55c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lollipop-tooltip-renderer.f3c2dd7476dfeb41ded5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lt-icons-atlas.9be7ec5119b485e074ed.js",
+      "bytes": 206938,
+      "sha256": "3c1e0632220ddbda993c21604fcf321dfaa88ab7ae73e78c2540d2f180abbd22",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lt-icons-atlas.9be7ec5119b485e074ed.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lt-pane-views.0e3618964c1d64330263.js",
+      "bytes": 291379,
+      "sha256": "a544938f9fa266e7a6a5a41762b93ead2b7917e97bce86ba43eef53af178480f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lt-pane-views.0e3618964c1d64330263.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lt-property-pages-with-definitions.f4646c40b1d992a958d0.js",
+      "bytes": 122180,
+      "sha256": "56b6797fcf789c4a974a6fc2b3be23276d5b4c5b26402f110f516a6a0996d45f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lt-property-pages-with-definitions.f4646c40b1d992a958d0.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lt-stickers-atlas.3723bd39677b1dcaf1c2.js",
+      "bytes": 494594,
+      "sha256": "f5f22e6f3c286f1493bd02ba9596fd399f3d562f8d408b6b556a99e1e77e5be2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/lt-stickers-atlas.3723bd39677b1dcaf1c2.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/manage-drawings-dialog.5acacbee8873756d69cf.js",
+      "bytes": 8734,
+      "sha256": "86a30e506cf88e62cc9837b9d087a4c0629a4d91e75b05571187877b412345f3",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/manage-drawings-dialog.5acacbee8873756d69cf.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/market-close.d025e87100199c1bc7af.svg",
+      "bytes": 157,
+      "sha256": "cfaf9de2e3289a75aa844aac5a1eb1f9c0b207523c590bb4766a810546701abd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/market-close.d025e87100199c1bc7af.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/market-holiday.43ca33d690939b939786.svg",
+      "bytes": 470,
+      "sha256": "15574876421aca49de91267f22d5bdcc25318f40129b6597ce379964676e6e76",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/market-holiday.43ca33d690939b939786.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/market-post.9f2c5bfda9405a291f90.svg",
+      "bytes": 196,
+      "sha256": "33211ecfb8f61a71dde86d6bb6b932733dca242af7ffda6124db931c87efb0d7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/market-post.9f2c5bfda9405a291f90.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/market-pre.7d37dcca234833d12c43.svg",
+      "bytes": 385,
+      "sha256": "6f0c60ac3aa632441a34d7a7d041a0c446331a48b4d9c63a39ff6f9eb1ec03d4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/market-pre.7d37dcca234833d12c43.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/mock-dark.16b5f3a431f502b03ae3.svg",
+      "bytes": 141,
+      "sha256": "25945a010d4f3fef717df4cb2b35b83a77c72c313f22ee723a3eeb2bee6bd8e7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/mock-dark.16b5f3a431f502b03ae3.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/mock-light.d201313017eb2c1b989f.svg",
+      "bytes": 141,
+      "sha256": "d453146abcf742d77aa698cba0e9a878cc2983674481797fe6a1b504f7161314",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/mock-light.d201313017eb2c1b989f.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/new-confirm-inputs-dialog.1ad7716cf548a0a317ad.js",
+      "bytes": 11143,
+      "sha256": "a644f9ac07a1e47c5279c3a1f4d8f5ae5ac85f033558065e1f430b78201f2f00",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/new-confirm-inputs-dialog.1ad7716cf548a0a317ad.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/new-edit-object-dialog.4d64cf5237fd0734deb8.js",
+      "bytes": 68029,
+      "sha256": "767afeb0998330cb476a76114558e53fd15139fa007514c03d7f2e36d5f43f8f",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/new-edit-object-dialog.4d64cf5237fd0734deb8.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/news-description-dialog.a52c8cefcc4170215723.js",
+      "bytes": 16037,
+      "sha256": "fb0e411e00440b294090e4bf54b0145626ebe3be12ab7dfc499089bbedff1855",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/news-description-dialog.a52c8cefcc4170215723.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/object-tree-dialog.4a11d9f8c1610348f9d1.js",
+      "bytes": 45515,
+      "sha256": "72e395931d38e9f0086a1ff3641a7c7b5d46827c4aafca7a04f81dd148125338",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/object-tree-dialog.4a11d9f8c1610348f9d1.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/object-tree-panel.09f8e9c19caa65eeba5b.js",
+      "bytes": 10958,
+      "sha256": "b1a70f1a3c2ef0400499607278d8a7ad727d817a11163f3e1757835df46ff5c7",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/object-tree-panel.09f8e9c19caa65eeba5b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/opacity-pattern.4d8fbb552dde3db26f4a.svg",
+      "bytes": 147,
+      "sha256": "6ae762927aba7ef77e5b07026b949d63b0c8e2be878c8333ddab30fbd75ab321",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/opacity-pattern.4d8fbb552dde3db26f4a.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/order-widget.1d82e2e1e9cb3f946588.js",
+      "bytes": 107607,
+      "sha256": "157c2309def453b4fdb8bc46a1b7ae5bc79d524c8095c84957aa466caef44370",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/order-widget.1d82e2e1e9cb3f946588.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/partially-closing-dialog-renderer.079aa6634c9c5d93379f.js",
+      "bytes": 1283,
+      "sha256": "889b433152a88d2f8615aac17f25d9b8463e07ec070ac249b5a32835b342ce54",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/partially-closing-dialog-renderer.079aa6634c9c5d93379f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/partially-closing-dialog.edec6fb5a2d26dfac97e.js",
+      "bytes": 4295,
+      "sha256": "6cd70485c65e3ec138c9d832186d98181babd0422a090dcc576e46ed8d28f57d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/partially-closing-dialog.edec6fb5a2d26dfac97e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/performance.769cf9dda2ede7d12b74.svg",
+      "bytes": 1119,
+      "sha256": "e5b2668aabd769031d93bc00eeabe095f1c4344a104487a9e832a45fa66cc272",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/performance.769cf9dda2ede7d12b74.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/position-widget.b36b02fe1cc4cfc34e5a.js",
+      "bytes": 6071,
+      "sha256": "42668555aee297a7ef46c0c92f2281f134f35c9c638e6f59560ab09f7aa508f1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/position-widget.b36b02fe1cc4cfc34e5a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/prediction-clock-white.c4675d37769f1df4c9ec.png",
+      "bytes": 160,
+      "sha256": "894eeb249791afadd87aca27ec4adab2c1779258efc852c765e8933d48c71e96",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/prediction-clock-white.c4675d37769f1df4c9ec.png"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/prediction-failure-white.a838a6689f951970e715.png",
+      "bytes": 125,
+      "sha256": "58f71a0a03d7417843f7a5a1b095253d10f507becc2ed90a56821d05173123f5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/prediction-failure-white.a838a6689f951970e715.png"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/prediction-success-white.2fb9966b4c0f3529a2ea.png",
+      "bytes": 168,
+      "sha256": "6a31043e48daea83ddc8ddcb6b3400e98e112cb3feefa0c6d64b2a936d232dc4",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/prediction-success-white.2fb9966b4c0f3529a2ea.png"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/price-scale-mode-buttons-renderer.f005deb14baec3edb33f.js",
+      "bytes": 4130,
+      "sha256": "f68bfc1549bf997d3a9d4b3cdb2af0e3a1e4d0f5a44778a4a27f94be8e1ab008",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/price-scale-mode-buttons-renderer.f005deb14baec3edb33f.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/restricted-toolset.2c230f2eec3191d28f7b.js",
+      "bytes": 157291,
+      "sha256": "c0bb89c7eaaafd4a00d0429da6815aa16b4dbf463735a74a802215caded2aa6c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/restricted-toolset.2c230f2eec3191d28f7b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/runtime.e7b22a9e847c6e4bedc1.js",
+      "bytes": 32912,
+      "sha256": "bba43f8b0652202f13e6a1a6867fc079c4bd1c7c6faaf9b625ba3430cdc5dd18",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/runtime.e7b22a9e847c6e4bedc1.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/sad-screen-black.b56100c456e5742dd159.svg",
+      "bytes": 1062,
+      "sha256": "8319508a1098422e8de104b9e525d690483952ed89e5b793409f19135f2d0794",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/sad-screen-black.b56100c456e5742dd159.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/sad-screen.d0d4634ec8d26161f6e1.svg",
+      "bytes": 1047,
+      "sha256": "93a784c52406fa453a2ba67cb9dbacbc02573310d7122f603df3f4c2a77dab0e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/sad-screen.d0d4634ec8d26161f6e1.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/screen-with-keyhole-black.2ffef22800ca978e85c1.svg",
+      "bytes": 2088,
+      "sha256": "0a8a7b3ea81f5661ef0d8f1d800b9adf1a29aba2da8a230e9187320e74add94d",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/screen-with-keyhole-black.2ffef22800ca978e85c1.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/screen-with-keyhole.52b325ed5c554cde36eb.svg",
+      "bytes": 2079,
+      "sha256": "1bd2768c720aca8727f472ebe787e897a145dd574ef33b6ab2b2006a0db268c5",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/screen-with-keyhole.52b325ed5c554cde36eb.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/series-icons-map.ea8b58590dc174d036c6.js",
+      "bytes": 8415,
+      "sha256": "cf1a65086c5f9cabf27087f472df118822cc9ba095c96c831966ee3cd08cc686",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/series-icons-map.ea8b58590dc174d036c6.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/series-pane-views.3e9df0950a7091909d2b.js",
+      "bytes": 3539,
+      "sha256": "c7fc63e9328a745c380e6d236602449c23566b627651777caa02d41f2375cab8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/series-pane-views.3e9df0950a7091909d2b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/share-chart-to-social-utils.62684128a22a69dd5f27.js",
+      "bytes": 1021,
+      "sha256": "8436fe279f46de895559f5cd7709f116f295423f9becc10f1e32793c0fd0342e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/share-chart-to-social-utils.62684128a22a69dd5f27.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/show-theme-save-dialog.08f7e98705f191217dd8.js",
+      "bytes": 952,
+      "sha256": "a9ab2f3747dd012f7bda5684777e225a498c84324b547d35dfede11930670730",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/show-theme-save-dialog.08f7e98705f191217dd8.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/simple-dialog.53830f75346c6ed8c553.js",
+      "bytes": 32766,
+      "sha256": "a726fb4cb70effe5d425476c31dc6cb9d2735de23fa3e8691ea8c3bbc27af5a1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/simple-dialog.53830f75346c6ed8c553.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/source-properties-editor.900e24a9cf927086b5b6.js",
+      "bytes": 11960,
+      "sha256": "23e6c56958de2db2e1b4d17aea3ddc985d77722892a1bb12493aab6d0e1bed20",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/source-properties-editor.900e24a9cf927086b5b6.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/sparkle.52cc9730ec8e15c42aa9.svg",
+      "bytes": 851,
+      "sha256": "63b3c4f252c57a599f5a65197a4ee361c8fffa39e3b17d844892257ce91e547b",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/sparkle.52cc9730ec8e15c42aa9.svg"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/spinner-renderer.20676b1f5bb8e3a5388e.js",
+      "bytes": 920,
+      "sha256": "1393d230c7325b444f89b4854721a03e6b39abd0c14849a3e5a5109f46484078",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/spinner-renderer.20676b1f5bb8e3a5388e.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/studies.2127c9bd4ed3cba196fc.js",
+      "bytes": 53666,
+      "sha256": "755b29da45cfa1a4834b3635e4a44c197ebd1446158e0db1e1e388ebc789fac8",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/studies.2127c9bd4ed3cba196fc.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-inputs-pane-views.73d08de4bceec5b1970d.js",
+      "bytes": 9089,
+      "sha256": "485fa14d338ce87c6bcfc19423b4ddca1957f693f629b3cfe55d7e05ce703d3e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-inputs-pane-views.73d08de4bceec5b1970d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-market.958531c4a183b19a7315.js",
+      "bytes": 30985,
+      "sha256": "1dfe09406daa7054eb09087cea73e63455cec7959f19548e8a04e1d4bd35c23e",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-market.958531c4a183b19a7315.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-pane-views.c62fc52b9a2dc4005c4b.js",
+      "bytes": 17869,
+      "sha256": "7b24220a11f76bce85a56a49885df396899035f24ba7fa383ad6e460145b52c1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-pane-views.c62fc52b9a2dc4005c4b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-property-pages-with-definitions.0a4131bf8eff84dc5e36.js",
+      "bytes": 18524,
+      "sha256": "6a3a3830d430aa71e59a792a71d599865483461e9811d8a59dbb182a051aea67",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-property-pages-with-definitions.0a4131bf8eff84dc5e36.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-template-dialog.52ea63ee394eb915a4f4.js",
+      "bytes": 57325,
+      "sha256": "91074009b24dfe02169d08c1a296f0f298e46ae45ec4de933f36f2a45584850c",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/study-template-dialog.52ea63ee394eb915a4f4.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/symbol-details.b77e4d320c1dbbfb0ea5.js",
+      "bytes": 125334,
+      "sha256": "b8d3c3f1dd275ff47948bc18e96352a354f540863275f41d0f182d698fc2dadd",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/symbol-details.b77e4d320c1dbbfb0ea5.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/symbol-info-dialog-impl.23e8feddd0326a1feabb.js",
+      "bytes": 43937,
+      "sha256": "90bf2870cf501472f004e236a02cb95e8d63521a651c535f7ed5ec27ed4d1a37",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/symbol-info-dialog-impl.23e8feddd0326a1feabb.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/symbol-list-service.9d41707b512fa2f94dc3.js",
+      "bytes": 4013,
+      "sha256": "f6ebd0738f58579311c9eb6664d6377ae9ce63a269276d692417ff10dbf03498",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/symbol-list-service.9d41707b512fa2f94dc3.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/symbol-search-dialog.e4d328c68d9d959e382a.js",
+      "bytes": 9578,
+      "sha256": "352f6516c872c870d668c88d0dd9c8f5b8389f133d7c810fb073e21c487ceb32",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/symbol-search-dialog.e4d328c68d9d959e382a.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/tablecontext-menu.e4793114015e643731ce.js",
+      "bytes": 2107,
+      "sha256": "0f60ffbc6bf3abee90e86976bccb5ba06d2e530bb1612a0f8345be8bb786e348",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/tablecontext-menu.e4793114015e643731ce.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/take-chart-image-impl.42287d91c9035ba0c0d7.js",
+      "bytes": 2742,
+      "sha256": "69ce1c47db8093a21a25bee0b7556e1054e054df6f95fb2c57f033784efaebde",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/take-chart-image-impl.42287d91c9035ba0c0d7.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/terminal-configset.abbe3b2ddf1adcad2530.js",
+      "bytes": 9653,
+      "sha256": "dcbb0c5246f90835269ebab6d8f971a6507fddd53649b38842c7cda66073a7fb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/terminal-configset.abbe3b2ddf1adcad2530.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/toasts-groupable-layer-chart.a858a2d486d8da454954.js",
+      "bytes": 39085,
+      "sha256": "f171ea32be5a61d8cdf3e06936834d1c0d2aa979f5b7fd40cf7ebaaf18b451cb",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/toasts-groupable-layer-chart.a858a2d486d8da454954.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-account-manager.1b2c5c3fc6d9600dc0fb.js",
+      "bytes": 172668,
+      "sha256": "83168ecfb1b7886c23cfaa81ddd4929e06f02f7ead26484d0454a290555de3c1",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-account-manager.1b2c5c3fc6d9600dc0fb.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-custom-sources.8d00ec8d822b402ca34b.js",
+      "bytes": 20891,
+      "sha256": "d6cf4d7ea2f05db021f9cf0b248ce24b630a4db30fe36783c4fc37181e8378ed",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-custom-sources.8d00ec8d822b402ca34b.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-custom-widgets.fce5afddf1d90d616bc0.js",
+      "bytes": 8266,
+      "sha256": "20aa11e9ab1ed3a1b9e86809fde1fcb61b2952857b425705d58cdfc2927ac0ad",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-custom-widgets.fce5afddf1d90d616bc0.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-groups.63ec6e7590de94fa6881.js",
+      "bytes": 46808,
+      "sha256": "88533e07ab095d993421ec45ec520b8f994161d2540a7770ed9dce17ce9a6843",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-groups.63ec6e7590de94fa6881.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-informer.1a37f780bbfd1085e9c6.js",
+      "bytes": 4743,
+      "sha256": "d777e80d267428c9d651d2db89b5e608a8d8af298bf0b88e0ca3514219a8d044",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading-informer.1a37f780bbfd1085e9c6.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading.27e4252becaf1b4be641.js",
+      "bytes": 510769,
+      "sha256": "f175a39d8ab01121a15ec54c7c14f970aa0c36fbe58db89f077afe4e19cb35be",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/trading.27e4252becaf1b4be641.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/user-defined-bars-marks-tooltip.5ed365d69bbe08c5ca0d.js",
+      "bytes": 4417,
+      "sha256": "08baddf19b41ed156ca677481fe28635153ee32871493730d02cd268a1af8203",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/user-defined-bars-marks-tooltip.5ed365d69bbe08c5ca0d.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/watchlist-widget.2c01f1bffc89dc71f082.js",
+      "bytes": 184421,
+      "sha256": "13176cccbf47370a352a1e13642be82b224cea1af1bb871a0f414888e950bcaa",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/watchlist-widget.2c01f1bffc89dc71f082.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/widgetbar.de3db7ec90766ee0a678.js",
+      "bytes": 104816,
+      "sha256": "fe043d40122ad14f1e37fd854d17aff06f773269659e4479f2cb9b494502da04",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/widgetbar.de3db7ec90766ee0a678.js"
+    },
+    {
+      "path": "v1/Libraries/Paid_libraries/TT_v29_1_0/charting_library.standalone.js",
+      "bytes": 54666,
+      "sha256": "749f8d03488db698e8d1bc4152867e035e27edfde64f42997aaaf31efafb0e70",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/charting_library.standalone.js"
+    },
+    {
+      "path": "Icons/Dark/HardRefresh.png",
+      "bytes": 338,
+      "sha256": "2295d792bda739b08f8754594a51b2d830ced9c60717924fc30aae79d77db884",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/Icons/Dark/HardRefresh.png"
+    },
+    {
+      "path": "Icons/Dark/Rotate.png",
+      "bytes": 357,
+      "sha256": "b6917da4771afc7ac519fa598f01603c68309d4a8e6a5fff9f51a4bccefb6a81",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/Icons/Dark/Rotate.png"
+    },
+    {
+      "path": "Icons/Light/HardRefresh.png",
+      "bytes": 441,
+      "sha256": "156f109554dfa8ff9face6baa3e4795cb5c3cc654d5c75b2e21f629bf966df94",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/Icons/Light/HardRefresh.png"
+    },
+    {
+      "path": "Icons/Light/Rotate.png",
+      "bytes": 546,
+      "sha256": "c4120a1d89c109b6dc32815cf788e811cfbb0a9e307efcb0a7f968831eaf3d69",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/Icons/Light/Rotate.png"
+    },
+    {
+      "path": "v4/RiseApp_Mobile.html",
+      "bytes": 1607,
+      "sha256": "a0a1f9b55f87c2aea9cfb47cc8796e42603895b67e62ad13244cffdd75616226",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v4/RiseApp_Mobile.html",
+      "owned": true,
+      "upstreamSha256": "0f5272d80d0999f704fb93689e481a1c107cbfa3ab3aa377818aaff6c9c47439"
+    },
+    {
+      "path": "v4/js/core/static_config.js",
+      "bytes": 60064,
+      "sha256": "f42376cd09ce80af36ba8389fdd3ac5b84f5283b20bce2d011eb0942a582abf2",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/core/static_config.js?v=5",
+      "owned": true,
+      "upstreamSha256": "f42376cd09ce80af36ba8389fdd3ac5b84f5283b20bce2d011eb0942a582abf2"
+    },
+    {
+      "path": "v4/js/core/stream.js",
+      "bytes": 11011,
+      "sha256": "093147d3b1553b18cedfa09cc8fcaf45ae3b8c6000caac03ccc8ae9e5863504a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/core/stream.js?v=6",
+      "owned": true,
+      "upstreamSha256": "093147d3b1553b18cedfa09cc8fcaf45ae3b8c6000caac03ccc8ae9e5863504a"
+    },
+    {
+      "path": "v4/js/datafeeds/datafeed.js",
+      "bytes": 11753,
+      "sha256": "b521e05eaa3fecfcf7ddd892b3bf0c38893374ff47e896f1cc4e07de425d9618",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/datafeeds/datafeed.js?v=6",
+      "owned": true,
+      "upstreamSha256": "b521e05eaa3fecfcf7ddd892b3bf0c38893374ff47e896f1cc4e07de425d9618"
+    },
+    {
+      "path": "v4/js/libs/loglevel-plugin-prefix.min.js",
+      "bytes": 1764,
+      "sha256": "928cdafe590ab12fd56cde056c22821f41500eb93a7d5df790e4168edf76bb59",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/libs/loglevel-plugin-prefix.min.js",
+      "owned": true,
+      "upstreamSha256": "928cdafe590ab12fd56cde056c22821f41500eb93a7d5df790e4168edf76bb59"
+    },
+    {
+      "path": "v4/js/libs/loglevel.min.js",
+      "bytes": 3171,
+      "sha256": "86fa1b78c2c97a22980ea69a1af7e2e74b1cdc30b0d3ab5bcd1e598890925e44",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/libs/loglevel.min.js",
+      "owned": true,
+      "upstreamSha256": "86fa1b78c2c97a22980ea69a1af7e2e74b1cdc30b0d3ab5bcd1e598890925e44"
+    },
+    {
+      "path": "v4/js/main.js",
+      "bytes": 67240,
+      "sha256": "fc642b754b954cf8aa6fa6ae057a1de72656a419db934e9b62a49cef9ffe059a",
+      "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/main.js?v=6",
+      "owned": true,
+      "upstreamSha256": "fc642b754b954cf8aa6fa6ae057a1de72656a419db934e9b62a49cef9ffe059a"
+    }
+  ]
+}
