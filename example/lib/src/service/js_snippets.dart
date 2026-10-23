@@ -196,6 +196,105 @@ String buildLibUrlsJs(String runId) {
       '})();';
 }
 
+/// Reports the chart data-API requests (`/chart/api/...`) the page has made since the previous
+/// report, query strings included.
+///
+/// [_hbLibFnJs] deliberately skips fetch/XHR; this is its counterpart for the data calls. It
+/// answers what the page source cannot: how many `HistoryV3` calls a first open really makes and
+/// with which `countBack`/`from`/`to`, how large the bodies are, and how many `SaveChartData`
+/// POSTs a pan produces. Resource Timing does not record the HTTP method, so POSTs are told apart
+/// by path.
+///
+/// Entries are de-duplicated by `startTime|name` rather than by list position: the timeline is
+/// ordered by start time but an entry only appears once its response completes, so a slow request
+/// that started before the previous report would be skipped by an index cursor.
+///
+/// Sizes are readable only while the page and the API share an origin (true for the remote page;
+/// a locally served page needs `Timing-Allow-Origin` on the API or they read 0).
+String buildApiTraceJs(String runId, String label) {
+  final String r = jsonEncode(runId);
+  final String l = jsonEncode(label);
+  return '(function(){'
+      'try{'
+      'try{performance.setResourceTimingBufferSize(2000);}catch(x){}'
+      'var seen=window.__hbTraceSeen||(window.__hbTraceSeen={});'
+      'var rs=performance.getEntriesByType("resource")||[];'
+      'var out=[];'
+      'for(var i=0;i<rs.length;i++){'
+      'var e=rs[i];'
+      'if(e.initiatorType!=="fetch"&&e.initiatorType!=="xmlhttprequest")continue;'
+      'var k=Math.round(e.startTime)+"|"+e.name;'
+      'if(seen[k])continue;'
+      'var u;try{u=new URL(e.name);}catch(x){continue;}'
+      'var at=u.pathname.toLowerCase().indexOf("/chart/api/");'
+      'if(at<0)continue;'
+      'seen[k]=1;'
+      'out.push({p:u.pathname.slice(at+11),q:u.search.slice(1),'
+      'st:Math.round(e.startTime),end:Math.round(e.responseEnd),'
+      'transfer:e.transferSize||0,decoded:e.decodedBodySize||0,'
+      'status:(typeof e.responseStatus==="number"?e.responseStatus:null)});'
+      '}'
+      'out.sort(function(a,b){return a.st-b.st;});'
+      '__hb($r,"apiTrace",{label:$l,entries:out,total:rs.length,capped:rs.length>=250});'
+      '}catch(e){__hb($r,"apiTrace",{label:$l,entries:[],error:String(e)});}'
+      '})();';
+}
+
+/// Changes the full chart's resolution through the widget, resolving when its data has loaded.
+///
+/// `v1.setTimeFrame` cannot be used: it is wired to the *compact* chart only, so on a full chart
+/// it would silently do nothing.
+String buildSetResolutionJs(String runId, String resolution) => buildOpJs(
+      runId: runId,
+      op: 'setResolution',
+      resolver: '(function(res){'
+          'var w=window.ChartApp&&window.ChartApp.tvWidget;'
+          'if(!w)throw new Error("no tvWidget");'
+          'return new Promise(function(ok){w.activeChart().setResolution(res,ok);});'
+          '})',
+      jsCall: 'fn(${jsonEncode(resolution)})',
+    );
+
+/// Moves the visible window three spans into the past, which forces the library to ask the
+/// datafeed for older bars (`getBars` with `firstDataRequest=false`).
+String buildScrollBackJs(String runId) => buildOpJs(
+      runId: runId,
+      op: 'scrollBack',
+      resolver: '(function(){'
+          'var w=window.ChartApp&&window.ChartApp.tvWidget;'
+          'if(!w)throw new Error("no tvWidget");'
+          'var c=w.activeChart();var r=c.getVisibleRange();var s=r.to-r.from;'
+          'return c.setVisibleRange({from:r.from-3*s,to:r.to-3*s});'
+          '})',
+      jsCall: 'fn()',
+    );
+
+/// Pans the visible window back and forth for ten seconds at ~4 Hz, to count the save traffic a
+/// pan generates.
+///
+/// The window only ever moves toward the (empty) future, so it never asks for history and the
+/// request count isolates saves. It returns at once and the timer runs on; the scenario waits out
+/// the ten seconds itself, because an acknowledgement would have to outlast the ack timeout.
+///
+/// A finger drag fires range changes far faster than 4 Hz, so the count this yields is a lower
+/// bound for real use.
+String buildPanZoomJs(String runId) => buildOpJs(
+      runId: runId,
+      op: 'panZoom',
+      resolver: '(function(){'
+          'var w=window.ChartApp&&window.ChartApp.tvWidget;'
+          'if(!w)throw new Error("no tvWidget");'
+          'var c=w.activeChart();var r=c.getVisibleRange();var step=(r.to-r.from)/50;'
+          'var n=0,k=0,dir=1;'
+          'var t=setInterval(function(){'
+          'n++;if(n>40){clearInterval(t);return;}'
+          'k+=dir;if(k>=10||k<=0)dir=-dir;'
+          'c.setVisibleRange({from:r.from+k*step,to:r.to+k*step});'
+          '},250);'
+          '})',
+      jsCall: 'fn()',
+    );
+
 /// Harvests navigation and resource timings from inside the page.
 ///
 /// This is what settles the caching question per asset rather than by inference:

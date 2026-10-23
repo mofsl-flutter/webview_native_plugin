@@ -454,6 +454,33 @@ class ScenarioRunner extends ChangeNotifier {
         }
         flush();
 
+      case TraceApi(:final String label):
+        final String runId = _runId();
+        await IosWebViewPlugin.runJavaScript(hbBootstrapJs);
+        await IosWebViewPlugin.runJavaScript(buildApiTraceJs(runId, label));
+        final HarnessMessage? m = await _ack.waitForAny(
+          runId,
+          <String>{'apiTrace'},
+          timeout: const Duration(seconds: 8),
+        );
+        final Object? d = m?.detail;
+        final List<Object?> entries =
+            d is Map && d['entries'] is List ? d['entries'] as List<Object?> : const <Object?>[];
+        obs.probes['trace.$label'] = <String, Object?>{
+          'count': entries.length,
+          'error': d is Map ? d['error'] : 'no reply',
+          'capped': d is Map ? d['capped'] : null,
+        };
+        obs.summaries['trace.$label.count'] = '${entries.length}';
+        // One short evidence line per request: a long platform log line is split or dropped.
+        for (int i = 0; i < entries.length; i++) {
+          final Object? e = entries[i];
+          if (e is! Map) continue;
+          obs.summaries['trace.$label.${i.toString().padLeft(3, '0')}'] =
+              '+${e['st']}ms ${e['end'] == null ? '' : '${(e['end'] as num) - (e['st'] as num)}ms '}'
+              'xfer=${e['transfer']} dec=${e['decoded']} st=${e['status']} ${e['p']}?${e['q']}';
+        }
+
       case WaitForLibQuiet(:final Duration quiet, :final Duration max, :final Duration poll):
         final Stopwatch sw = Stopwatch()..start();
         int? last;
@@ -526,6 +553,9 @@ class ScenarioRunner extends ChangeNotifier {
         ),
       'updateAskAndBid' => buildAskBidJs(runId, arg?.toString() ?? '0:22', 101.0, 100.0),
       'drain401' => buildDrain401Js(runId),
+      'setResolution' => buildSetResolutionJs(runId, arg?.toString() ?? '5'),
+      'scrollBack' => buildScrollBackJs(runId),
+      'panZoom' => buildPanZoomJs(runId),
       _ => null,
     };
 

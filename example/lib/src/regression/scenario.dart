@@ -366,6 +366,22 @@ final class CaptureLibUrls extends ScenarioStep {
   String get describe => 'capture library urls';
 }
 
+/// Records the chart data-API requests (`/chart/api/...`) made since the previous [TraceApi],
+/// under [label], as evidence lines.
+///
+/// Measurement only: it asserts nothing. It exists to ground the data-flow notes in what the page
+/// really requests (call counts, `countBack`/`from`/`to`, body sizes, save traffic).
+final class TraceApi extends ScenarioStep {
+  /// Creates the step.
+  const TraceApi(this.label);
+
+  /// Name of the phase being traced; becomes the evidence key prefix.
+  final String label;
+
+  @override
+  String get describe => 'trace api "$label"';
+}
+
 /// Waits until the set of library files the page has loaded stops growing.
 ///
 /// A fixed wait cannot be right across network speeds: the library loads some chunks lazily after
