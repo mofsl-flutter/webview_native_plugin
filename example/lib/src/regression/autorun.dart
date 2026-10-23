@@ -12,7 +12,7 @@ const MethodChannel _launchChannel = MethodChannel('regression_harness/launch');
 /// Arguments passed in the launch intent.
 class LaunchArgs {
   /// Creates a set of launch arguments.
-  const LaunchArgs({this.scenarioId, this.dimension, this.autorun = false});
+  const LaunchArgs({this.scenarioId, this.dimension, this.recovery, this.autorun = false});
 
   /// A single case id to run, e.g. `B2`.
   final String? scenarioId;
@@ -20,11 +20,17 @@ class LaunchArgs {
   /// A dimension code to run, e.g. `C`.
   final String? dimension;
 
+  /// Recovery-suite case ids to run, comma separated, or `all`. Needs no token.
+  final String? recovery;
+
   /// Whether to start running without waiting for a tap.
   final bool autorun;
 
-  /// Whether anything was requested.
+  /// Whether anything was requested of the chart regression suite.
   bool get hasWork => autorun && (scenarioId != null || dimension != null);
+
+  /// Whether the recovery suite was requested.
+  bool get hasRecoveryWork => autorun && recovery != null && recovery!.isNotEmpty;
 
   /// Reads the launch intent.
   ///
@@ -34,12 +40,22 @@ class LaunchArgs {
     try {
       final Map<Object?, Object?>? raw =
           await _launchChannel.invokeMethod<Map<Object?, Object?>>('getLaunchArgs');
-      return _parseArgs(raw);
+      final LaunchArgs fromIntent = _parseArgs(raw);
+      return fromIntent.hasRecoveryWork || fromIntent.hasWork ? fromIntent : _fromBuild();
     } on PlatformException {
-      return const LaunchArgs();
+      return _fromBuild();
     } on MissingPluginException {
-      return const LaunchArgs();
+      return _fromBuild();
     }
+  }
+
+  /// A request baked into the build with `--dart-define=RECOVERY=all` (or a comma-separated list of
+  /// case ids). The launch intent is Android-only, so this is how an iOS run, or any run without
+  /// `adb`, asks for the recovery suite to start by itself.
+  static LaunchArgs _fromBuild() {
+    const String recovery = String.fromEnvironment('RECOVERY');
+    if (recovery.isEmpty) return const LaunchArgs();
+    return const LaunchArgs(recovery: recovery, autorun: true);
   }
 }
 
@@ -68,6 +84,7 @@ LaunchArgs _parseArgs(Map<Object?, Object?>? raw) {
   return LaunchArgs(
     scenarioId: m['scenario']?.toString(),
     dimension: m['dimension']?.toString(),
+    recovery: m['recovery']?.toString(),
     autorun: m['autorun']?.toString().toLowerCase() == 'true',
   );
 }

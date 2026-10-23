@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../service/token_api.dart';
 import 'config_screen.dart';
+import 'recovery_screen.dart';
 import 'session.dart';
 
 /// Generates an access token from a client code.
@@ -178,6 +179,14 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ],
           const SizedBox(height: 20),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.healing, size: 18),
+            label: const Text('Recovery suite (no token needed)'),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const RecoveryScreen()),
+            ),
+          ),
+          const SizedBox(height: 8),
           FilledButton(
             onPressed: s.hasToken
                 ? () => Navigator.of(context).push(

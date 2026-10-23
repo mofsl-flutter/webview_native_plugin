@@ -29,10 +29,19 @@ class WebViewMoFlutter: NSObject, FlutterPlatformView {
     private var delegate: WebViewControllerDelegate?
     private var isChart: Bool = true
 
+    private let viewId: Int64
+
     init(frame: CGRect, viewIdentifier: Int64, args: Any?, messenger: FlutterBinaryMessenger, delegate: WebViewControllerDelegate?) {
         self.webView = WebViewManager.shared.getWebView(frame: frame)
         self.delegate = delegate
+        self.viewId = viewIdentifier
         super.init()
+        // Flutter creates the incoming platform view before releasing the outgoing one, so the
+        // WebView may still sit in the old container here; UIKit reparents it when this view is
+        // added. Recorded so the host can tell "page alive" from "page alive and on screen".
+        let wasReparented = webView.superview != nil
+        WebViewManager.shared.attachedViewId = viewIdentifier
+        delegate?.onNativeEvent(["event": "viewAttached", "viewId": viewIdentifier, "wasReparented": wasReparented])
 
          // Initialize isChart from args
         if let argsDict = args as? [String: Any], let isChart = argsDict["isChart"] as? Bool {
@@ -63,7 +72,15 @@ class WebViewMoFlutter: NSObject, FlutterPlatformView {
         return webView
     }
 
-   
+    deinit {
+        // Only the newest host may clear the record: a newer view is created before this one is
+        // released, and its id must survive.
+        let owned = WebViewManager.shared.attachedViewId == viewId
+        if owned {
+            WebViewManager.shared.attachedViewId = -1
+        }
+        delegate?.onNativeEvent(["event": "viewDetached", "viewId": viewId, "owned": owned])
+    }
 }
 
 extension WebViewMoFlutter: WKNavigationDelegate {
@@ -85,5 +102,14 @@ extension WebViewMoFlutter: WKNavigationDelegate {
         // handleLoadingError()
         delegate?.onPageLoadError()
     }
-    
+
+    /// This view replaces `WebViewManager` as the navigation delegate while it is mounted, so the
+    /// termination callback has to be handled here too; `WebViewManager`'s copy only covers the
+    /// time between platform views. iOS reclaims the web content process of a backgrounded app
+    /// routinely and the WKWebView then renders blank with nothing reported, so the host kept
+    /// believing the chart was loaded. Reported under the name Android uses for the equivalent
+    /// failure so the host handles both with one path.
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        delegate?.onNativeEvent(["event": "renderProcessGone", "didCrash": false])
+    }
 }

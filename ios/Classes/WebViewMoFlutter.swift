@@ -30,7 +30,11 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
                 let backgroundColor = args["backgroundColor"] as? String ?? "#FFFFFF"
                 print("Received isChart: \(isChart)")
                 // The engine that navigates owns the events (mirrors the Android plugin).
-                WebViewManager.shared.delegate = self
+                claimDelegate(reason: "loadUrl")
+                // The host's "navigation was dispatched" acknowledgement, which arrives within
+                // milliseconds when the event path is healthy. Its absence is how the host tells
+                // a dead event path from a slow page.
+                onNativeEvent(["event": "loadRequested", "url": urlString, "channels": ["ChartAppDelegate"], "createdWebView": false, "viaPrewarm": false])
                 WebViewManager.shared.loadURL(urlString, isChart, withJavaScriptChannel: javaScriptChannelName, plugin: self, backgroundColor: backgroundColor)
                 result(nil)
             } else {
@@ -51,7 +55,42 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
             }
 
         case "reloadUrl":
+            claimDelegate(reason: "reloadUrl")
             WebViewManager.shared.webView?.reload()
+            result(nil)
+
+        case "probe":
+            guard let args = call.arguments as? [String: Any], let script = args["script"] as? String else {
+                result(FlutterError(code: "INVALID_ARGUMENT", message: "script is required", details: nil))
+                return
+            }
+            let timeoutMs = (args["timeoutMs"] as? NSNumber)?.doubleValue ?? 1_500
+            // The answer is this call's return value, not an event, so it still arrives when the
+            // event path is the thing that is broken; `ownsDelegate` reports whether it is.
+            WebViewManager.shared.probe(script: script, timeout: timeoutMs / 1000) { [weak self] facts in
+                var out = facts
+                out["ownsDelegate"] = self != nil && WebViewManager.shared.delegate === self
+                result(out)
+            }
+
+        case "claimDelegate":
+            let reason = (call.arguments as? [String: Any])?["reason"] as? String ?? "explicit"
+            let changed = claimDelegate(reason: reason)
+            result(["changed": changed, "owner": ObjectIdentifier(self).hashValue])
+
+        case "debugReleaseDelegate":
+            #if DEBUG
+            if WebViewManager.shared.delegate === self { WebViewManager.shared.delegate = nil }
+            result(nil)
+            #else
+            result(FlutterError(code: "RELEASE_BUILD", message: "debugReleaseDelegate is debug-only", details: nil))
+            #endif
+
+        case "destroyWebView":
+            // Rebuilds the WKWebView. The host must remount its platform view afterwards: the old
+            // view keeps the old (now discarded) WKWebView.
+            claimDelegate(reason: "destroyWebView")
+            WebViewManager.shared.destroyWebView()
             result(nil)
 
         case "resetCache":
@@ -133,6 +172,25 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
         eventSink?(["event": "javascriptChannelMessageReceived", "channelName": channelName, "message": message])
     }
 
+    /// Routes the manager's events to this plugin instance. Returns whether ownership moved, and
+    /// reports the move as `delegateClaimed` (to this instance, which is now the owner), matching
+    /// the Android plugin so a host reads one vocabulary on both platforms.
+    @discardableResult
+    private func claimDelegate(reason: String) -> Bool {
+        if WebViewManager.shared.delegate === self { return false }
+        WebViewManager.shared.delegate = self
+        onNativeEvent(["event": "delegateClaimed",
+                       "owner": ObjectIdentifier(self).hashValue,
+                       "reason": reason])
+        return true
+    }
+
+    func onNativeEvent(_ event: [String: Any]) {
+        var stamped = event
+        stamped["ts"] = Int64(Date().timeIntervalSince1970 * 1000)
+        eventSink?(stamped)
+    }
+
     func onNavigationRequest(url: String) {}
     func onPageFinished(url: String) {
         eventSink?(["event": "pageFinished", "url": url])
@@ -144,7 +202,7 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
 extension WebViewMoFlutterPlugin: FlutterStreamHandler {
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         self.eventSink = events
-        WebViewManager.shared.delegate = self
+        claimDelegate(reason: "listen")
         return nil
     }
 
@@ -168,8 +226,15 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     private let defaultURLString = "https://tradingview.com/"
     private var isChart = true
 
+    /// Platform view whose container currently hosts the WebView, or -1 when none does.
+    var attachedViewId: Int64 = -1
+
     override init() {
         super.init()
+        buildWebView()
+    }
+
+    private func buildWebView() {
         let configuration = WKWebViewConfiguration()
         configuration.preferences.javaScriptEnabled = true
         configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
@@ -180,10 +245,66 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         webView.scrollView.bounces = false
         addJavascriptChannel(name: "ChartAppDelegate")
     }
-    
+
+    /// Discards the WKWebView and builds a fresh one, for a host that has decided the current one
+    /// is beyond recovery. Channels are re-registered on the new instance.
+    func destroyWebView() {
+        let old = webView
+        old?.navigationDelegate = nil
+        old?.stopLoading()
+        old?.removeFromSuperview()
+        // The content controller retains its message handlers, which would keep this manager and
+        // the dead view alive.
+        for name in configuredJavaScriptChannels {
+            old?.configuration.userContentController.removeScriptMessageHandler(forName: name)
+        }
+        configuredJavaScriptChannels.removeAll()
+        attachedViewId = -1
+        buildWebView()
+    }
+
     func getWebView(frame: CGRect) -> WKWebView {
         webView.frame = frame
         return webView
+    }
+
+    /// What only the native side can say: whether a platform view is actually hosting the WebView.
+    func probeFacts() -> [String: Any] {
+        var facts: [String: Any] = [
+            "hasWebView": webView != nil,
+            "attached": webView?.superview != nil && webView?.window != nil,
+            "attachedViewId": attachedViewId,
+            "isPaused": false,
+            "ts": Int64(Date().timeIntervalSince1970 * 1000),
+        ]
+        // Explicit NSNull: an Optional inside `Any` is not reliably encodable by the platform codec.
+        if let url = webView?.url?.absoluteString {
+            facts["url"] = url
+        } else {
+            facts["url"] = NSNull()
+        }
+        return facts
+    }
+
+    /// Runs `script` and returns its value with `probeFacts`. Completes exactly once; a content
+    /// process that never answers surfaces as `timedOut` instead of leaving the caller waiting.
+    func probe(script: String, timeout: TimeInterval, completion: @escaping ([String: Any]) -> Void) {
+        var finished = false
+        let finish: ([String: Any]) -> Void = { extras in
+            if finished { return }
+            finished = true
+            completion(self.probeFacts().merging(extras) { _, new in new })
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
+            finish(["js": NSNull(), "timedOut": true])
+        }
+        webView.evaluateJavaScript(script) { response, error in
+            if let error = error {
+                finish(["js": NSNull(), "error": error.localizedDescription])
+            } else {
+                finish(["js": response ?? NSNull()])
+            }
+        }
     }
 
     func loadURL(_ urlString: String, _ isFromChart: Bool, withJavaScriptChannel javaScriptChannelName: String?, plugin: WKScriptMessageHandler, backgroundColor: String) {
@@ -258,6 +379,14 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         loadDefaultURL()
     }
 
+    /// iOS reclaims the web content process of a backgrounded app routinely. The WKWebView object
+    /// survives it but renders blank, and nothing is ever reported unless this is implemented, so
+    /// the host kept believing the chart was loaded. Reported under the same name Android uses for
+    /// the equivalent failure so the host handles both with one path.
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        delegate?.onNativeEvent(["event": "renderProcessGone", "didCrash": false])
+    }
+
     @objc public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if let messageBody = message.body as? String {
             delegate?.onJavascriptChannelMessageReceived(channelName: message.name, message: messageBody)
@@ -274,6 +403,8 @@ protocol WebViewControllerDelegate: AnyObject {
     func onPageFinished(url: String)
     func onReceivedError(message: String)
     func onJsAlert(url: String, message: String)
+    /// Emits a native event (`event` plus its fields) on the shared event channel, stamped with `ts`.
+    func onNativeEvent(_ event: [String: Any])
 }
 
 

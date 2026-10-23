@@ -99,14 +99,15 @@ class WebViewMoFlutterPlugin internal constructor(
      * driving the WebView": a Dart subscriber appearing, or a navigation/lifecycle method call.
      * A headless engine never does either, so it can never take the delegate. Idempotent.
      */
-    private fun claimDelegate(reason: String) {
-        if (webViewManager.delegate === this) return
+    private fun claimDelegate(reason: String): Boolean {
+        if (webViewManager.delegate === this) return false
         webViewManager.delegate = this
         webViewManager.emit(
             "delegateClaimed",
             "owner" to System.identityHashCode(this),
             "reason" to reason
         )
+        return true
     }
 
     override fun onWebViewEvent(event: Map<String, Any?>) {
@@ -201,6 +202,41 @@ class WebViewMoFlutterPlugin internal constructor(
                         result.success(response)
                     }
                 }
+            }
+
+            "probe" -> {
+                // Evaluates the caller's script and returns it alongside the native facts. The
+                // result travels back as this call's return value, never through the event
+                // channel, so it still works when the event path is the thing that is broken;
+                // `ownsDelegate` reports whether that is the case.
+                val script = call.argument<String>("script")
+                if (script == null) {
+                    result.error("INVALID_ARGUMENT", "script is required", null)
+                    return
+                }
+                val timeoutMs = call.argument<Number>("timeoutMs")?.toLong() ?: 1_500L
+                webViewManager.probe(script, timeoutMs) { facts ->
+                    result.success(facts + mapOf("ownsDelegate" to (webViewManager.delegate === this)))
+                }
+            }
+
+            "claimDelegate" -> {
+                // Explicit take-back for a host that has just learned its events stopped
+                // arriving. Safe to call from any foreground engine; a headless one never does.
+                val owner = System.identityHashCode(this)
+                val changed = claimDelegate(call.argument<String>("reason") ?: "explicit")
+                result.success(mapOf("changed" to changed, "owner" to owner))
+            }
+
+            "debugReleaseDelegate" -> {
+                // QA only: reproduces the field failure by dropping the delegate. Refused on a
+                // release build so it cannot be reached from a shipped app.
+                if (!webViewManager.isDebuggable()) {
+                    result.error("RELEASE_BUILD", "debugReleaseDelegate is debug-only", null)
+                    return
+                }
+                if (webViewManager.delegate === this) webViewManager.delegate = null
+                result.success(null)
             }
 
             "reloadUrl" -> {

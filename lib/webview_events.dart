@@ -175,6 +175,7 @@ sealed class WebViewEvent {
         return WebViewDetachedEvent(
           raw: raw,
           viewId: _asInt(map["viewId"]) ?? -1,
+          owned: map["owned"] as bool? ?? true,
           ts: ts,
           tsMono: tsMono,
           loadId: loadId,
@@ -431,6 +432,7 @@ final class WebViewDetachedEvent extends WebViewEvent {
   const WebViewDetachedEvent({
     required super.raw,
     required this.viewId,
+    this.owned = true,
     super.ts,
     super.tsMono,
     super.loadId,
@@ -438,6 +440,12 @@ final class WebViewDetachedEvent extends WebViewEvent {
 
   /// Platform view that was disposed.
   final int viewId;
+
+  /// Whether the disposed view was the one hosting the WebView.
+  ///
+  /// `false` means a newer view had already taken it over, so nothing was detached. Older native
+  /// builds do not report this and read as `true`.
+  final bool owned;
 }
 
 /// A bare string payload, as iOS emits for some messages.

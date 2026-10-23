@@ -8,6 +8,7 @@ import 'src/regression/scenario_catalog.dart';
 import 'src/service/token_api.dart';
 import 'src/service/webview_bridge.dart';
 import 'src/ui/auth_screen.dart';
+import 'src/ui/recovery_screen.dart';
 import 'src/ui/regression_screen.dart';
 import 'src/ui/session.dart';
 
@@ -33,6 +34,12 @@ void main() {
   // request — e.g. the orchestration script backgrounding the app then "reopening" it — has to
   // be picked up here instead, wherever the app currently is.
   listenForNewLaunch((LaunchArgs args) {
+    if (args.hasRecoveryWork) {
+      _navigatorKey.currentState?.push(
+        MaterialPageRoute<void>(builder: (_) => RecoveryScreen(autorun: args.recovery)),
+      );
+      return;
+    }
     if (!args.hasWork) return;
     final List<Scenario> selected = selectScenarios(args, buildCatalog());
     if (selected.isEmpty) return;
@@ -134,6 +141,7 @@ class BenchmarkApp extends StatelessWidget {
             return const Scaffold(body: Center(child: CircularProgressIndicator()));
           }
           final LaunchArgs args = snap.data!;
+          if (args.hasRecoveryWork) return RecoveryScreen(autorun: args.recovery);
           if (args.hasWork) {
             final List<Scenario> selected = selectScenarios(args, buildCatalog());
             if (selected.isNotEmpty) {

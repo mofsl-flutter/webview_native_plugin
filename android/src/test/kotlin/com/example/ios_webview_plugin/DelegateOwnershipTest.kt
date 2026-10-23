@@ -10,6 +10,7 @@ import io.flutter.plugin.platform.PlatformViewRegistry
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.inOrder
+import org.mockito.Mockito.RETURNS_DEFAULTS
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import kotlin.test.Test
@@ -26,9 +27,29 @@ import kotlin.test.assertTrue
  */
 class DelegateOwnershipTest {
 
-    /** Stands in for the singleton: a real `delegate` slot, every other call a no-op. */
-    private val manager: WebViewManager = mock(WebViewManager::class.java)
+    /**
+     * Stands in for the singleton: a real `delegate` slot, every other call a no-op, except
+     * `probe`, which completes immediately with a fixed script result like a healthy page would.
+     */
+    private val manager: WebViewManager = mock(WebViewManager::class.java) { call ->
+        if (call.method.name == "probe") {
+            @Suppress("UNCHECKED_CAST")
+            (call.arguments[2] as (Map<String, Any?>) -> Unit)(mapOf("js" to "\"ok\"", "attached" to true))
+            null
+        } else {
+            RETURNS_DEFAULTS.answer(call)
+        }
+    }
     private var held: WebViewControllerDelegate? = null
+
+    /** Keeps what a method call answered with. */
+    private class CapturingResult : MethodChannel.Result {
+        var value: Any? = null
+        var errorCode: String? = null
+        override fun success(result: Any?) { value = result }
+        override fun error(code: String, message: String?, details: Any?) { errorCode = code }
+        override fun notImplemented() {}
+    }
 
     private class RecordingSink : EventChannel.EventSink {
         val events = mutableListOf<Any?>()
@@ -122,5 +143,66 @@ class DelegateOwnershipTest {
         val headless = newPlugin()
         headless.onAttachedToEngine(binding())
         assertTrue(held == null, "attach must not claim; only listen/loadUrl/prewarm do")
+    }
+
+    @Test
+    fun `claimDelegate takes the delegate back and reports whether it moved`() {
+        val main = newPlugin()
+        val other = newPlugin()
+        main.onAttachedToEngine(binding())
+        other.onAttachedToEngine(binding())
+        main.onListen(null, RecordingSink())
+        other.onMethodCall(MethodCall("prewarm", emptyMap<String, Any?>()), NoopResult())
+        assertSame(other, held)
+
+        val first = CapturingResult()
+        main.onMethodCall(MethodCall("claimDelegate", mapOf("reason" to "test")), first)
+        val second = CapturingResult()
+        main.onMethodCall(MethodCall("claimDelegate", emptyMap<String, Any?>()), second)
+
+        assertSame(main, held)
+        assertEquals(true, (first.value as Map<*, *>)["changed"])
+        assertEquals(false, (second.value as Map<*, *>)["changed"], "already owned, nothing moved")
+    }
+
+    @Test
+    fun `probe reports whether this engine owns the delegate`() {
+        val main = newPlugin()
+        val other = newPlugin()
+        main.onAttachedToEngine(binding())
+        other.onAttachedToEngine(binding())
+        main.onListen(null, RecordingSink())
+
+        val owned = CapturingResult()
+        main.onMethodCall(MethodCall("probe", mapOf("script" to "1")), owned)
+        // The delegate moves to another engine: the page may be fine but events no longer arrive.
+        other.onMethodCall(MethodCall("prewarm", emptyMap<String, Any?>()), NoopResult())
+        val stolen = CapturingResult()
+        main.onMethodCall(MethodCall("probe", mapOf("script" to "1")), stolen)
+
+        assertEquals(true, (owned.value as Map<*, *>)["ownsDelegate"])
+        assertEquals(false, (stolen.value as Map<*, *>)["ownsDelegate"])
+        assertEquals("\"ok\"", (stolen.value as Map<*, *>)["js"], "script result still comes back")
+    }
+
+    @Test
+    fun `probe without a script is rejected`() {
+        val main = newPlugin()
+        main.onAttachedToEngine(binding())
+        val result = CapturingResult()
+        main.onMethodCall(MethodCall("probe", emptyMap<String, Any?>()), result)
+        assertEquals("INVALID_ARGUMENT", result.errorCode)
+    }
+
+    @Test
+    fun `debugReleaseDelegate is refused on a release build`() {
+        val main = newPlugin()
+        main.onAttachedToEngine(binding())
+        main.onListen(null, RecordingSink())
+        // The mocked manager reports isDebuggable() == false, like a shipped app.
+        val result = CapturingResult()
+        main.onMethodCall(MethodCall("debugReleaseDelegate", emptyMap<String, Any?>()), result)
+        assertEquals("RELEASE_BUILD", result.errorCode)
+        assertSame(main, held, "a refused call must not touch ownership")
     }
 }

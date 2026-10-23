@@ -5,6 +5,8 @@ import android.content.pm.ApplicationInfo
 import android.graphics.Color
 import android.net.http.SslError
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.os.SystemClock
 import android.util.Log
@@ -32,6 +34,7 @@ import androidx.webkit.WebViewFeature
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
+import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "WebViewMoFlutterPlugin"
 
@@ -81,6 +84,15 @@ class WebViewMoFlutter(
 
     private fun attachWebViewToContainer(fromGetView: Boolean) {
         try {
+            // Flutter calls getView() more than once, including while it tears a view down, so a
+            // re-host from there must not take the WebView from a view that is hosting it. Without
+            // this an older view, asked for its view just before it was disposed, pulled the
+            // WebView back out of the newer view's container and left that one blank. Only the
+            // constructor (fromGetView = false) is an explicit "this is the newest view" claim.
+            if (fromGetView) {
+                val host = webViewManager.attachedViewId
+                if (host != -1 && host != viewId) return
+            }
             val parent = webView.parent
             val wasReparented = parent != null && parent != container
             if (wasReparented) {
@@ -102,6 +114,8 @@ class WebViewMoFlutter(
             if (webViewManager.isWebViewPaused) {
                 webViewManager.resumeWebView()
             }
+
+            webViewManager.attachedViewId = viewId
 
             if (!fromGetView) {
                 webViewManager.emit(
@@ -126,11 +140,20 @@ class WebViewMoFlutter(
     }
 
     override fun dispose() {
+        // Flutter disposes the outgoing platform view after the incoming one has been created, so
+        // by now another view may already host the singleton WebView (a chart route replaced by
+        // another, or a kept-alive mini chart under a full chart). Detaching unconditionally took
+        // the WebView out of that newer view's container and left it blank, with the page still
+        // alive and the Dart state still `chartLoaded`.
+        val owned = webView.parent === container
         container.removeAllViews()
-        // Detach only — never pause or destroy. The singleton WebView and its loaded page
-        // survive platform-view disposal, which is what makes chart reuse possible.
-        webViewManager.detachWebView()
-        webViewManager.emit("viewDetached", "viewId" to viewId)
+        if (owned) {
+            // Detach only — never pause or destroy. The singleton WebView and its loaded page
+            // survive platform-view disposal, which is what makes chart reuse possible.
+            webViewManager.detachWebView()
+            if (webViewManager.attachedViewId == viewId) webViewManager.attachedViewId = -1
+        }
+        webViewManager.emit("viewDetached", "viewId" to viewId, "owned" to owned)
     }
 }
 
@@ -150,6 +173,11 @@ class WebViewManager private constructor(private val context: Context) {
     var isWebViewPaused: Boolean = false
         private set
 
+    /** Platform view whose container currently holds the WebView, or `-1` when none does. */
+    var attachedViewId: Int = -1
+
+    private val mainHandler: Handler by lazy { Handler(Looper.getMainLooper()) }
+
     private var isFromChart: Boolean = true
 
     /** Explicit fallback target on load error. `null` disables the fallback entirely. */
@@ -167,6 +195,9 @@ class WebViewManager private constructor(private val context: Context) {
 
     private val debuggable: Boolean =
         (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+
+    /** Whether the host app is a debuggable build. Gates QA-only entry points. */
+    fun isDebuggable(): Boolean = debuggable
 
     private fun debugLog(message: String) {
         if (debuggable) Log.d(TAG, message)
@@ -216,6 +247,52 @@ class WebViewManager private constructor(private val context: Context) {
             "ts" to System.currentTimeMillis(),
             "tsMono" to SystemClock.elapsedRealtime()
         )
+    }
+
+    /**
+     * What only the native side can say about the WebView: whether it exists and whether a platform
+     * view is actually hosting it. A page can be perfectly alive while nothing is showing it.
+     */
+    fun probeFacts(): Map<String, Any?> {
+        val view = webView
+        return mapOf(
+            "hasWebView" to (view != null),
+            "attached" to (view != null && view.parent != null && view.isAttachedToWindow),
+            "attachedViewId" to attachedViewId,
+            "isPaused" to isWebViewPaused,
+            "loadId" to loadId,
+            "url" to view?.url,
+            "ts" to System.currentTimeMillis(),
+            "tsMono" to SystemClock.elapsedRealtime()
+        )
+    }
+
+    /**
+     * Runs [script] in the page and hands back [probeFacts] together with what it returned.
+     *
+     * Completes exactly once. A renderer that never answers surfaces as `timedOut` rather than a
+     * caller waiting forever, which is itself the signal that the page is hung. Main thread only.
+     */
+    fun probe(script: String, timeoutMs: Long, completion: (Map<String, Any?>) -> Unit) {
+        val view = webView
+        if (view == null) {
+            completion(probeFacts() + mapOf("js" to null, "error" to "NO_WEBVIEW"))
+            return
+        }
+        val finished = AtomicBoolean(false)
+        lateinit var timeoutTask: Runnable
+        fun finish(extras: Map<String, Any?>) {
+            if (!finished.compareAndSet(false, true)) return
+            mainHandler.removeCallbacks(timeoutTask)
+            completion(probeFacts() + extras)
+        }
+        timeoutTask = Runnable { finish(mapOf("js" to null, "timedOut" to true)) }
+        mainHandler.postDelayed(timeoutTask, timeoutMs)
+        try {
+            view.evaluateJavascript(script) { raw -> finish(mapOf("js" to raw)) }
+        } catch (e: Exception) {
+            finish(mapOf("js" to null, "error" to (e.message ?: "evaluateJavascript failed")))
+        }
     }
 
     // ------------------------------------------------------------ web view
@@ -491,6 +568,7 @@ class WebViewManager private constructor(private val context: Context) {
             )
             // Returning false would kill the whole app process.
             webView = null
+            attachedViewId = -1
             configuredJavaScriptChannels.clear()
             isWebViewPaused = false
             return true
@@ -815,12 +893,16 @@ class WebViewManager private constructor(private val context: Context) {
     fun destroyWebView() {
         debugLog("destroyWebView")
         isWebViewPaused = true
+        // Detach first: Chromium logs an error, and on some versions misbehaves, when destroy()
+        // is called on a WebView that is still in a view hierarchy.
+        detachWebView()
         webView?.apply {
             onPause()
             pauseTimers()
             destroy()
         }
         webView = null
+        attachedViewId = -1
         configuredJavaScriptChannels.clear()
     }
 

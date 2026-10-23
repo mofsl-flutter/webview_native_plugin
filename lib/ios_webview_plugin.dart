@@ -130,6 +130,72 @@ class IosWebViewPlugin {
     }
   }
 
+  /// Checks that the page is alive and the native side can still reach this engine.
+  ///
+  /// Runs [script] in the page and returns what it produced together with native facts:
+  /// `hasWebView`, `attached` (a platform view is actually hosting the WebView), `attachedViewId`,
+  /// `ownsDelegate` (this engine receives the WebView's events), `isPaused`, `loadId`, `url`.
+  /// The script's own result is under `js` (a string; `null` when it did not run), and `timedOut`
+  /// is `true` when the renderer did not answer within [timeout], which means the page is hung.
+  ///
+  /// The answer is this call's return value, not an event, so it works exactly when the event
+  /// path does not. Never throws: an unavailable plugin returns `{"error": ...}`.
+  static Future<Map<String, Object?>> probe(
+    String script, {
+    Duration timeout = const Duration(milliseconds: 1500),
+  }) async {
+    try {
+      final Map<Object?, Object?>? res = await _channel
+          .invokeMethod<Map<Object?, Object?>>(
+            "probe",
+            <String, Object?>{"script": script, "timeoutMs": timeout.inMilliseconds},
+          )
+          // Native completes within [timeout]; this only bounds a platform thread that never
+          // answers at all.
+          .timeout(timeout + const Duration(seconds: 1));
+      return res == null ? <String, Object?>{"error": "NO_RESULT"} : Map<String, Object?>.from(res);
+    } on TimeoutException {
+      return <String, Object?>{"timedOut": true, "error": "PLATFORM_TIMEOUT"};
+    } on PlatformException catch (e) {
+      return <String, Object?>{"error": e.code, "message": e.message};
+    } on MissingPluginException {
+      return <String, Object?>{"error": "UNSUPPORTED"};
+    }
+  }
+
+  /// Makes this engine the one that receives the WebView's events.
+  ///
+  /// Normally ownership follows use (listening, `openWebView`, `prewarm`). Call this when events
+  /// have stopped arriving: it is idempotent and returns `{"changed": bool, "owner": int}`, where
+  /// `changed` says whether ownership actually moved.
+  static Future<Map<String, Object?>> claimDelegate({String reason = "explicit"}) async {
+    try {
+      final Map<Object?, Object?>? res = await _channel.invokeMethod<Map<Object?, Object?>>(
+        "claimDelegate",
+        <String, Object?>{"reason": reason},
+      );
+      return res == null ? <String, Object?>{} : Map<String, Object?>.from(res);
+    } on PlatformException catch (e) {
+      debugPrint("Failed to claim delegate: '${e.message}'.");
+      return <String, Object?>{};
+    } on MissingPluginException {
+      return <String, Object?>{};
+    }
+  }
+
+  /// Drops this engine's ownership of the WebView's events. **Debug builds only**; a release build
+  /// refuses. Exists so QA can reproduce the field failure where events stop arriving.
+  static Future<bool> debugReleaseDelegate() async {
+    try {
+      await _channel.invokeMethod<void>("debugReleaseDelegate");
+      return true;
+    } on PlatformException {
+      return false;
+    } on MissingPluginException {
+      return false;
+    }
+  }
+
   /// Downloads the chart's JavaScript library into the WebView's HTTP cache, so the first chart
   /// open does not pay for it.
   ///
