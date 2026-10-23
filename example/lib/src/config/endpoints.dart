@@ -1,6 +1,8 @@
 /// Endpoints and fixed inputs for the benchmark harness.
 library;
 
+import 'package:ios_webview_plugin/chart_bundle.dart';
+
 /// Access-token API base.
 const String kTokenBase =
     'https://tradingapi.motilaloswaluat.com/tradingapiV2/api/Authorize/AccessToken';
@@ -11,6 +13,41 @@ const String kChartUrl =
 
 /// Chart data API base, for reference when reading resource timings.
 const String kChartApiBase = 'https://tradingapi.motilaloswaluat.com/chart/api';
+
+/// The server's chart root: the URL `api/...` is relative to, and what a bundled page is told as
+/// `apiBase` (see `ChartBundle.localUrl`).
+const String kChartRoot = 'https://tradingapi.motilaloswaluat.com/chart/';
+
+/// Whether the harness loads the chart from the bundle inside the plugin instead of the hosted
+/// page. Off by default so existing runs stay comparable; turn on with
+/// `flutter run --dart-define=CHART_LOCAL=true`.
+const bool kChartLocal = bool.fromEnvironment('CHART_LOCAL');
+
+/// The URL the chart page is loaded from: the hosted page, or the bundled one when [kChartLocal].
+///
+/// With nothing else asked for and [kChartLocal] off this is exactly [kChartUrl], so the hosted
+/// runs keep the URLs (and so the cache keys) they always had. [theme] and [runId] (`hbRun`, the
+/// harness's cache-bust and stray-event marker) are added as query parameters in that order.
+String chartPageUrl({String? theme, String? runId}) {
+  final Map<String, String> extra = <String, String>{
+    'theme': ?theme,
+    'hbRun': ?runId,
+  };
+  if (!kChartLocal) {
+    return extra.isEmpty
+        ? kChartUrl
+        : Uri.parse(kChartUrl).replace(queryParameters: extra).toString();
+  }
+  final Uri local = ChartBundle.localUrl(apiBase: Uri.parse(kChartRoot), theme: theme);
+  return local
+      .replace(
+        queryParameters: <String, String>{
+          ...local.queryParameters,
+          'hbRun': ?runId,
+        },
+      )
+      .toString();
+}
 
 /// Default client code.
 const String kDefaultClientCode = 'T06794';

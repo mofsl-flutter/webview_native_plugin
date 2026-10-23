@@ -46,6 +46,24 @@ flutter:
       
     # -------------------
 
+  # The chart page and the TradingView library, mirrored by tool/sync_chart_bundle.dart. Flutter
+  # asset directories are not recursive, so every directory that holds a file is listed; the
+  # test in test/chart_bundle_assets_test.dart fails when one is missing.
+  assets:
+    - assets/chart/manifest.json
+    - assets/chart/Icons/Dark/
+    - assets/chart/Icons/Light/
+    - assets/chart/v1/Icons/
+    - assets/chart/v1/Icons/Dark/
+    - assets/chart/v1/Icons/Light/
+    - assets/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/
+    - assets/chart/v1/Libraries/Paid_libraries/TT_v29_1_0/bundles/
+    - assets/chart/v4/
+    - assets/chart/v4/js/
+    - assets/chart/v4/js/core/
+    - assets/chart/v4/js/datafeeds/
+    - assets/chart/v4/js/libs/
+
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

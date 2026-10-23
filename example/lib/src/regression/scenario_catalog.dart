@@ -2,6 +2,7 @@ import '../config/endpoints.dart';
 import '../model/bench_models.dart';
 import 'expectation.dart';
 import 'harness_ack.dart';
+import 'local_bundle_scenarios.dart';
 import 'scenario.dart';
 
 /// Symbols used across the catalog.
@@ -691,6 +692,50 @@ List<Scenario> buildCatalog() => <Scenario>[
         ],
       ),
 
+      // ---------------------------------------------------------------- T0
+      // Not a regression: the Phase 0 request trace for the local-bundle work. Opens the chart
+      // cold, then drives each user-visible data path in turn and records which `/chart/api/`
+      // calls each one makes (see [TraceApi]). It is measurement: it asserts only that the trace
+      // itself worked, never that the numbers are good.
+      //
+      // Order matters. Scroll-back and pan/zoom need a chart that has data, so they run on the
+      // freshly opened chart BEFORE any resolution change; an interval change whose history is
+      // slow or empty (a `204`) leaves them driving a blank chart, and their zero counts then mean
+      // nothing. A request only shows up in a trace once its response completes, so each step
+      // waits long enough for its own calls to finish (the interval change gets 35 s, because
+      // the API was seen answering in 20-30 s). The 11 s after `panZoom` lets its 40 steps,
+      // 250 ms apart, finish.
+      // Run with `--es scenario T0 --ez autorun true` on an explicitly chosen device.
+      Scenario(
+        id: 'T0',
+        title: 'Trace chart data-API traffic per user action',
+        dimension: Dimension.storage,
+        precondition: ExternalPrecondition.fullCold,
+        steps: const <ScenarioStep>[
+          OpenChart(kEquityA, budgetScale: 6),
+          Wait(Duration(seconds: 3)),
+          TraceApi('open'),
+          Operate('scrollBack'),
+          Wait(Duration(seconds: 8)),
+          TraceApi('scrollback'),
+          Operate('panZoom'),
+          Wait(Duration(seconds: 11)),
+          TraceApi('panzoom'),
+          Operate('setResolution', arg: '15'),
+          Wait(Duration(seconds: 35)),
+          TraceApi('interval'),
+          ChangeSymbol(kEquityB),
+          Wait(Duration(seconds: 20)),
+          TraceApi('switch'),
+        ],
+        expectations: const <Expectation>[
+          ExpectCustom('the open produced a data-API trace', _openTraced),
+        ],
+      ),
+
+      // Cases for the chart bundled inside the plugin (need --dart-define=CHART_LOCAL=true).
+      ...localBundleScenarios,
+
       // ---------------------------------------------------------------- G2
       Scenario(
         id: 'G2',
@@ -825,6 +870,16 @@ bool _manifestMissing(ScenarioObservations o) {
 bool _cacheStillEmpty(ScenarioObservations o) {
   final Object? bytes = o.probes['afterWarm']?['httpBytes'];
   return bytes is num && bytes < 100000;
+}
+
+/// T0: the first trace saw at least one request and reported no error.
+///
+/// Passing means the instrument worked; an empty or errored trace must fail loudly rather than
+/// leave a confident-looking report with no data in it.
+bool _openTraced(ScenarioObservations o) {
+  final Map<String, Object?>? p = o.probes['trace.open'];
+  final Object? count = p?['count'];
+  return count is num && count > 0 && p?['error'] == null;
 }
 
 bool _urlsCaptured(ScenarioObservations o) {

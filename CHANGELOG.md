@@ -1,3 +1,22 @@
+## Unreleased
+
+* The chart page and the TradingView charting library (29.1.0) now ship inside the plugin
+  (`assets/chart/`, 516 files, 11.6 MB, 3.7 MB stored in a debug APK; release size not measured)
+  and are served locally, so opening
+  the chart fetches no code from the network. Nothing changes unless the host asks for it.
+  * New `ChartBundle.localUrl(apiBase:, theme:)` returns the URL to load: Android serves it from
+    `https://appassets.androidplatform.net/chart/` (`WebViewAssetLoader`), iOS from
+    `mochart://app/chart/` (`WKURLSchemeHandler`). `apiBase` is required and is the server's chart
+    root (`https://tradingapi.motilaloswaluat.com/chart/`): the page keeps calling the real API for
+    symbols, history and saved layouts, it just no longer finds it next to itself.
+  * New `IosWebViewPlugin.chartBundleInfo()` reports whether this build carries the bundle, so a
+    host can fall back to the hosted page. It never throws.
+  * iOS: a navigation that fails on the bundled scheme no longer falls back to tradingview.com.
+  * The page and its app scripts are the plugin's own copy (`assets/chart/v4/`), refreshed with
+    `dart tool/sync_chart_bundle.dart`, which never overwrites edits made there; see the file header.
+* Example app: `--dart-define=CHART_LOCAL=true` loads the bundled chart, `--dart-define=SCENARIO=L1`
+  starts a regression case on iOS, and cases `L1`/`L2` check the bundled chart on both platforms.
+
 ## 0.0.4
 
 * New `IosWebViewPlugin.probe(script)`: runs a script in the page and returns it with native facts

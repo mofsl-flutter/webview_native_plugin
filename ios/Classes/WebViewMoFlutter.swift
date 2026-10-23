@@ -16,6 +16,12 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
 
         let factory = WebViewMoFlutterViewFactory(messenger: registrar.messenger(), delegate: instance)
         registrar.register(factory, withId: "web_view_mo_flutter")
+
+        // Where the bundled chart's files are. Kept off WebViewManager on purpose: touching its
+        // `shared` builds a WKWebView, and every engine registers plugins, including headless ones.
+        ChartBundleScheme.assetKeyLookup = { asset in
+            registrar.lookupKey(forAsset: asset, fromPackage: ChartBundleScheme.package)
+        }
     }
 
     private var eventSink: FlutterEventSink?
@@ -53,6 +59,11 @@ public class WebViewMoFlutterPlugin: NSObject, FlutterPlugin, WKScriptMessageHan
             } else {
                 result(FlutterError(code: "INVALID_ARGUMENT", message: "JavaScript code is required", details: nil))
             }
+
+        case "chartBundleInfo":
+            // Read-only: reports whether the chart bundle shipped in this build. Needs no delegate,
+            // so it does not take ownership away from the engine driving the WebView.
+            result(ChartBundleScheme.info())
 
         case "reloadUrl":
             claimDelegate(reason: "reloadUrl")
@@ -238,6 +249,9 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         let configuration = WKWebViewConfiguration()
         configuration.preferences.javaScriptEnabled = true
         configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
+        // Must be installed before the web view is created; a scheme handler cannot be added to a
+        // live configuration. Serves the bundled chart (see ChartSchemeHandler).
+        configuration.setURLSchemeHandler(ChartSchemeHandler(), forURLScheme: ChartBundleScheme.name)
 
         webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = self
@@ -358,7 +372,15 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     }
 
     private func isValidURL(_ url: URL) -> Bool {
+        // canOpenURL is false for any custom scheme that is not whitelisted in Info.plist, and the
+        // bundled chart's scheme is ours: this process serves it.
+        if ChartBundleScheme.isChartURL(url) { return true }
         return UIApplication.shared.canOpenURL(url)
+    }
+
+    /// The URL a failed navigation was for, falling back to what the view shows.
+    private func failedURL(_ error: Error) -> URL? {
+        return (error as NSError).userInfo[NSURLErrorFailingURLErrorKey] as? URL ?? webView.url
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -371,11 +393,16 @@ class WebViewManager: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         delegate?.onPageLoadError()
+        // The fallback page is for a hosted chart that could not be reached. A bundled chart has
+        // no network to fail on; showing tradingview.com in its place would hide a broken bundle
+        // behind a working-looking page, so report the error and stay put.
+        if ChartBundleScheme.isChartURL(failedURL(error)) { return }
         loadDefaultURL()
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         delegate?.onPageLoadError()
+        if ChartBundleScheme.isChartURL(failedURL(error)) { return }
         loadDefaultURL()
     }
 

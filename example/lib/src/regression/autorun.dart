@@ -52,8 +52,13 @@ class LaunchArgs {
   /// A request baked into the build with `--dart-define=RECOVERY=all` (or a comma-separated list of
   /// case ids). The launch intent is Android-only, so this is how an iOS run, or any run without
   /// `adb`, asks for the recovery suite to start by itself.
+  ///
+  /// `--dart-define=SCENARIO=L1` (or a comma-separated list) does the same for chart regression
+  /// cases, which the launch intent otherwise selects on Android.
   static LaunchArgs _fromBuild() {
     const String recovery = String.fromEnvironment('RECOVERY');
+    const String scenario = String.fromEnvironment('SCENARIO');
+    if (scenario.isNotEmpty) return const LaunchArgs(scenarioId: scenario, autorun: true);
     if (recovery.isEmpty) return const LaunchArgs();
     return const LaunchArgs(recovery: recovery, autorun: true);
   }

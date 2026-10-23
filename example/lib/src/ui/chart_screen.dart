@@ -56,7 +56,7 @@ class _ChartScreenState extends State<ChartScreen> {
       await IosWebViewPlugin.prewarm(
         javascriptChannels: <String>[kChartChannel],
         cacheMode: widget.session.template.cacheMode,
-        url: kChartUrl,
+        url: chartPageUrl(),
       );
     }
 

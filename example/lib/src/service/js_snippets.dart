@@ -183,15 +183,37 @@ String buildLibCacheJs(String runId, String label) {
 /// The query string is part of the HTTP cache key, so a warm-up has to request `main.js?v=6`, not
 /// `main.js`. This is how that list is captured from a real run, rather than guessed from the
 /// page's source: the lazy chunks only show up once the chart is actually used.
-String buildLibUrlsJs(String runId) {
+///
+/// With [includeDom] the URLs the page's own `<script src>` / `<link href>` elements name, in the
+/// page and every same-origin frame, are added. Resource Timing is the primary source, but WebKit
+/// records none for files served by a custom URL scheme (the bundled chart on iOS), so on its own
+/// it would report an empty page. The elements say where each file was requested from on every
+/// platform. Off by default: the capture script that writes the warm-up fixture wants exactly what
+/// the network timeline saw.
+String buildLibUrlsJs(String runId, {bool includeDom = false}) {
   final String r = jsonEncode(runId);
+  final String domPass = includeDom
+      ? 'var dom=0;'
+          'var walk=function(w){try{'
+          'var els=w.document.querySelectorAll("script[src],link[href]");'
+          'for(var k=0;k<els.length;k++){'
+          'var u=els[k].src||els[k].href;'
+          'if(!u||u.indexOf("/chart/")<0)continue;'
+          'if(els[k].tagName==="LINK"&&!/stylesheet/i.test(els[k].rel||""))continue;'
+          'if(!seen[u]){seen[u]=1;urls.push(u);dom++;}}'
+          'var fs=w.document.querySelectorAll("iframe");'
+          'for(var j=0;j<fs.length;j++){try{walk(fs[j].contentWindow);}catch(x){}}'
+          '}catch(x){}};'
+          'walk(window);'
+      : 'var dom=null;';
   return '(function(){'
       '$_hbLibFnJs'
       'try{var L=hbLib();'
       'var all=(L.all||[]).slice().sort(function(a,b){return a.st-b.st;});'
       'var seen={},urls=[];'
       'for(var i=0;i<all.length;i++){var h=all[i].h;if(!seen[h]){seen[h]=1;urls.push(h);}}'
-      '__hb($r,"libUrls",{urls:urls,error:L.error||null});'
+      '$domPass'
+      '__hb($r,"libUrls",{urls:urls,domOnly:dom,error:L.error||null});'
       '}catch(e){__hb($r,"libUrls",{urls:[],error:String(e)});}'
       '})();';
 }
@@ -229,7 +251,7 @@ String buildApiTraceJs(String runId, String label) {
       'var at=u.pathname.toLowerCase().indexOf("/chart/api/");'
       'if(at<0)continue;'
       'seen[k]=1;'
-      'out.push({p:u.pathname.slice(at+11),q:u.search.slice(1),'
+      'out.push({h:u.host,p:u.pathname.slice(at+11),q:u.search.slice(1),'
       'st:Math.round(e.startTime),end:Math.round(e.responseEnd),'
       'transfer:e.transferSize||0,decoded:e.decodedBodySize||0,'
       'status:(typeof e.responseStatus==="number"?e.responseStatus:null)});'

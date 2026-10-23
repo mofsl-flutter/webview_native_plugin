@@ -48,7 +48,7 @@ void main() {
   final Uri bundles = libBase.resolve("bundles/");
 
   group("manifest", () {
-    test("lists exactly the files on disk", () {
+    test("agrees with the disk on every mirrored file", () {
       final Set<String> listed = <String>{
         for (final Map<String, Object?> e in entries) e["path"]! as String,
       };
@@ -57,8 +57,14 @@ void main() {
           if (e is File)
             e.path.substring(_root.length + 1),
       }..removeWhere((String p) => p == "manifest.json" || p.startsWith("upstream/"));
-      expect(onDisk.difference(listed), isEmpty, reason: "on disk but not in the manifest");
+      // v4/ is ours: adding a file there by hand is normal and must not need a network sync, so
+      // extra files are allowed. A file the manifest lists must still exist, mirrored or owned.
       expect(listed.difference(onDisk), isEmpty, reason: "in the manifest but not on disk");
+      expect(
+        onDisk.difference(listed).where((String p) => !p.startsWith("v4/")),
+        isEmpty,
+        reason: "mirrored file on disk but not in the manifest",
+      );
     });
 
     test("every mirrored file matches its recorded size and SHA-256", () {
@@ -69,6 +75,29 @@ void main() {
         if (bytes.length != e["bytes"] || sha256Hex(bytes) != e["sha256"]) bad.add("${e["path"]}");
       }
       expect(bad, isEmpty, reason: "changed since the last sync; re-run tool/sync_chart_bundle.dart");
+    });
+  });
+
+  group("pubspec", () {
+    test("declares every directory that holds a bundled file", () {
+      // Flutter asset directories are not recursive: a file in an undeclared directory is simply
+      // absent from the built app, and nothing else would notice until the page loaded.
+      final Set<String> declared = <String>{
+        for (final RegExpMatch m in RegExp(r"^\s*-\s+(assets/chart/\S+)\s*$", multiLine: true)
+            .allMatches(File("pubspec.yaml").readAsStringSync()))
+          m.group(1)!,
+      };
+      final List<String> uncovered = <String>[
+        for (final Map<String, Object?> e in entries)
+          if (!declared.contains("assets/chart/${e["path"]}") &&
+              !declared.contains("assets/chart/${(e["path"]! as String).replaceFirst(RegExp(r"[^/]+$"), "")}"))
+            e["path"]! as String,
+      ];
+      expect(uncovered, isEmpty, reason: "add the directory to flutter.assets in pubspec.yaml");
+      final List<String> dead = declared
+          .where((String d) => !File(d).existsSync() && !Directory(d).existsSync())
+          .toList();
+      expect(dead, isEmpty, reason: "declared in pubspec.yaml but not on disk");
     });
   });
 

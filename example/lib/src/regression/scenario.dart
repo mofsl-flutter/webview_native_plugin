@@ -360,10 +360,14 @@ final class AwaitWarm extends ScenarioStep {
 /// on evidence lines so a host script can write them into `config/chart_lib_urls.dart`.
 final class CaptureLibUrls extends ScenarioStep {
   /// Creates the step.
-  const CaptureLibUrls();
+  const CaptureLibUrls({this.includeDom = false});
+
+  /// Also read the page's `<script>` / `<link>` elements, for platforms whose Resource Timing
+  /// omits files served by a custom URL scheme. See [buildLibUrlsJs].
+  final bool includeDom;
 
   @override
-  String get describe => 'capture library urls';
+  String get describe => 'capture library urls${includeDom ? ' (with DOM)' : ''}';
 }
 
 /// Records the chart data-API requests (`/chart/api/...`) made since the previous [TraceApi],

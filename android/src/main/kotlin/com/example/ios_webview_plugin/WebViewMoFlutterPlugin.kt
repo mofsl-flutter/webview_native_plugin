@@ -411,6 +411,10 @@ class WebViewMoFlutterPlugin internal constructor(
                 result.success(null)
             }
 
+            // Read-only: reports whether the chart bundle shipped in this build. Needs no
+            // delegate, so it does not take ownership away from the engine driving the WebView.
+            "chartBundleInfo" -> result.success(webViewManager.chartBundleInfo())
+
             else -> result.notImplemented()
         }
     }

@@ -4,6 +4,7 @@ import "dart:convert";
 import "package:flutter/foundation.dart";
 import "package:flutter/services.dart";
 
+import "chart_bundle.dart";
 import "src/cache_warmer_js.dart";
 import "webview_events.dart";
 
@@ -395,6 +396,25 @@ class IosWebViewPlugin {
       debugPrint("Failed to run JavaScript: '${e.message}'.");
     } on MissingPluginException catch (e) {
       debugPrint("runJavaScript not implemented: '${e.message}'.");
+    }
+  }
+
+  /// Whether this build ships the bundled chart (see [ChartBundle]), and which one.
+  ///
+  /// Read-only: it does not touch the WebView or take the event delegate. Never throws; a build
+  /// whose native side predates the bundle reports it unavailable, so the host can fall back to the
+  /// hosted page.
+  static Future<ChartBundleInfo> chartBundleInfo() async {
+    try {
+      final Map<Object?, Object?>? res =
+          await _channel.invokeMethod<Map<Object?, Object?>>("chartBundleInfo");
+      return res == null
+          ? const ChartBundleInfo.unavailable("the platform returned nothing")
+          : ChartBundleInfo.fromMap(res);
+    } on PlatformException catch (e) {
+      return ChartBundleInfo.unavailable("platform error: ${e.message}");
+    } on MissingPluginException {
+      return const ChartBundleInfo.unavailable("this platform has no chart bundle");
     }
   }
 

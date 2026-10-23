@@ -28,13 +28,16 @@ import android.webkit.WebStorage
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.webkit.WebResourceErrorCompat
+import androidx.webkit.WebViewAssetLoader
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
+import io.flutter.FlutterInjector
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 import java.util.concurrent.atomic.AtomicBoolean
+import org.json.JSONObject
 
 private const val TAG = "WebViewMoFlutterPlugin"
 
@@ -169,6 +172,58 @@ class WebViewManager private constructor(private val context: Context) {
     private val pendingJavaScriptChannels: MutableSet<String> = mutableSetOf()
 
     private val defaultURLString = "https://tradingview.com/"
+
+    /**
+     * Serves the bundled chart (`assets/chart/`) for the virtual host [ChartAssetPaths.HOST].
+     *
+     * A request for any other host is not answered here and goes to the network unchanged, which
+     * is how the page's API calls reach the real server. Built lazily because resolving a bundled
+     * asset needs the Flutter engine to be running, and nothing asks before a page loads.
+     */
+    private val chartAssets: WebViewAssetLoader by lazy {
+        WebViewAssetLoader.Builder()
+            .setDomain(ChartAssetPaths.HOST)
+            .addPathHandler(
+                ChartAssetPaths.URL_PREFIX,
+                ChartAssetPathHandler(
+                    lookupKey = {
+                        FlutterInjector.instance().flutterLoader()
+                            .getLookupKeyForAsset(it, ChartAssetPaths.PACKAGE)
+                    },
+                    openAsset = { context.assets.open(it) },
+                )
+            )
+            .build()
+    }
+
+    /**
+     * What the bundled chart is, or why it is not available.
+     *
+     * Read from the bundle's own manifest, so a build that shipped without the assets reports
+     * `available: false` and the host can fall back to the hosted page instead of loading a blank
+     * 404.
+     */
+    fun chartBundleInfo(): Map<String, Any?> {
+        return try {
+            val key = FlutterInjector.instance().flutterLoader()
+                .getLookupKeyForAsset("assets/chart/manifest.json", ChartAssetPaths.PACKAGE)
+            val manifest = JSONObject(context.assets.open(key).bufferedReader().use { it.readText() })
+            mapOf(
+                "available" to true,
+                "baseUrl" to ChartAssetPaths.BASE_URL,
+                "library" to manifest.optString("library"),
+                "pageVersion" to manifest.optString("pageVersion"),
+                "language" to manifest.optString("language"),
+                "fileCount" to manifest.optInt("fileCount"),
+            )
+        } catch (e: Exception) {
+            mapOf(
+                "available" to false,
+                "baseUrl" to ChartAssetPaths.BASE_URL,
+                "reason" to (e.message ?: e.javaClass.simpleName),
+            )
+        }
+    }
 
     var isWebViewPaused: Boolean = false
         private set
@@ -472,6 +527,15 @@ class WebViewManager private constructor(private val context: Context) {
             super.onPageFinished(view, url)
             debugLog("Page finished loading: $url")
             emit("pageFinished", "url" to (url ?: ""))
+        }
+
+        override fun shouldInterceptRequest(
+            view: WebView,
+            request: WebResourceRequest
+        ): WebResourceResponse? {
+            // Only the chart's own virtual host is answered here; `null` leaves every other
+            // request, including the page's API calls, to the network.
+            return chartAssets.shouldInterceptRequest(request.url)
         }
 
         override fun shouldOverrideUrlLoading(

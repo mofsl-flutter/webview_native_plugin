@@ -1433,8 +1433,18 @@
             return new Promise(async (resolve, reject) => {
                 // Adjust the URL to go up one directory from v3
                 const adjustedUrl = url.startsWith('api/') ? `../${url}` : url;
-                
-                let response = await fetch(adjustedUrl, options);
+
+                // adjustedUrl stays the relative form: it is what the host is told on a 401 and
+                // what the retry queue stores. Only the request itself goes to the real server
+                // when the page is served from the app (see core/api_base.js).
+                let target;
+                try {
+                    target = chartApp.apiBase.resolve(adjustedUrl);
+                } catch (err) {
+                    reject(err);
+                    return;
+                }
+                let response = await fetch(target, options);
                 if (response.status !== 401) {
                     resolve(response);
                     return;

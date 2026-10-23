@@ -235,7 +235,7 @@ class ScenarioRunner extends ChangeNotifier {
       case PreWarm(:final bool loadUrl):
         await IosWebViewPlugin.prewarm(
           javascriptChannels: <String>[kChartChannel, kChartSessionAckChannel],
-          url: loadUrl ? kChartUrl : null,
+          url: loadUrl ? chartPageUrl() : null,
         );
         obs.notes.add('pre-warmed${loadUrl ? ' with load' : ''}');
 
@@ -341,6 +341,11 @@ class ScenarioRunner extends ChangeNotifier {
           ..._sessionFields(),
           ...?p,
         };
+        // The few fields that say whether the chart drew anything, so a failed "has candles"
+        // expectation can be read from the log without re-running under a debugger.
+        final Map<String, Object?> seen = obs.probes[label]!;
+        obs.summaries['probe.$label'] = 'symbol=${seen['symbol']} resolution=${seen['resolution']} '
+            'bars=${seen['bars']} widgetReady=${seen['widgetReady']} hasToken=${seen['hasToken']}';
 
       case RecreateHost(:final String label):
         final Map<String, Object?> observed = await host.recreateChartScreen();
@@ -419,10 +424,10 @@ class ScenarioRunner extends ChangeNotifier {
       case AwaitWarm(:final String label):
         await _pendingWarms.remove(label);
 
-      case CaptureLibUrls():
+      case CaptureLibUrls(:final bool includeDom):
         final String runId = _runId();
         await IosWebViewPlugin.runJavaScript(hbBootstrapJs);
-        await IosWebViewPlugin.runJavaScript(buildLibUrlsJs(runId));
+        await IosWebViewPlugin.runJavaScript(buildLibUrlsJs(runId, includeDom: includeDom));
         final HarnessMessage? m = await _ack.waitForAny(
           runId,
           <String>{'libUrls'},
@@ -435,7 +440,10 @@ class ScenarioRunner extends ChangeNotifier {
         obs.probes['libUrls'] = <String, Object?>{
           'count': urls.length,
           'error': d is Map ? d['error'] : 'no reply',
+          // Which origin each static file came from: the proof a bundled page fetched no code.
+          'hosts': _hostCounts(urls.map((String u) => Uri.parse(u).host)),
         };
+        obs.summaries['urls.hosts'] = _hostCounts(urls.map((String u) => Uri.parse(u).host)).toString();
         obs.summaries['urls.count'] = '${urls.length}';
         // A long log line is split by the platform, so the list goes out in short numbered lines.
         int chunk = 0;
@@ -470,6 +478,10 @@ class ScenarioRunner extends ChangeNotifier {
           'count': entries.length,
           'error': d is Map ? d['error'] : 'no reply',
           'capped': d is Map ? d['capped'] : null,
+          // Which origin each API call went to: a bundled page must reach the real server.
+          'hosts': _hostCounts(
+            entries.whereType<Map<Object?, Object?>>().map((Map<Object?, Object?> e) => '${e['h']}'),
+          ),
         };
         obs.summaries['trace.$label.count'] = '${entries.length}';
         // One short evidence line per request: a long platform log line is split or dropped.
@@ -478,7 +490,7 @@ class ScenarioRunner extends ChangeNotifier {
           if (e is! Map) continue;
           obs.summaries['trace.$label.${i.toString().padLeft(3, '0')}'] =
               '+${e['st']}ms ${e['end'] == null ? '' : '${(e['end'] as num) - (e['st'] as num)}ms '}'
-              'xfer=${e['transfer']} dec=${e['decoded']} st=${e['status']} ${e['p']}?${e['q']}';
+              'xfer=${e['transfer']} dec=${e['decoded']} st=${e['status']} ${e['h']} ${e['p']}?${e['q']}';
         }
 
       case WaitForLibQuiet(:final Duration quiet, :final Duration max, :final Duration poll):
@@ -587,4 +599,13 @@ class ScenarioRunner extends ChangeNotifier {
     WebViewBridge.instance.clearLog();
     super.dispose();
   }
+}
+
+/// How many of [hosts] each distinct host accounts for.
+Map<String, int> _hostCounts(Iterable<String> hosts) {
+  final Map<String, int> out = <String, int>{};
+  for (final String h in hosts) {
+    out[h] = (out[h] ?? 0) + 1;
+  }
+  return out;
 }

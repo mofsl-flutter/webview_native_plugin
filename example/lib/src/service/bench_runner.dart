@@ -220,9 +220,7 @@ class BenchRunner extends ChangeNotifier {
   }
 
   String _buildUrl(String runId, RunConfig config) {
-    final StringBuffer url = StringBuffer(kChartUrl)..write('?theme=dark');
-    if (config.cacheBustUrl) url.write('&hbRun=$runId');
-    return url.toString();
+    return chartPageUrl(theme: 'dark', runId: config.cacheBustUrl ? runId : null);
   }
 
   void _resetRunState(RunConfig config) {
