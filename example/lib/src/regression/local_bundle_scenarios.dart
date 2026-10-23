@@ -57,7 +57,105 @@ final List<Scenario> localBundleScenarios = <Scenario>[
       const ExpectCustom('the chart holds candles', _hasCandles),
     ],
   ),
+  saveTrafficScenario,
+  legendPollScenario,
 ];
+
+/// Not a pass/fail case: it records how much the page saves while it is panned, so a change to the
+/// page's save logic can be compared before and after on the same movement.
+final Scenario saveTrafficScenario = Scenario(
+  id: 'S1',
+  title: 'Bundled chart: save traffic while panning',
+  dimension: Dimension.storage,
+  precondition: ExternalPrecondition.fullCold,
+  hypothesis: 'The page saves the whole chart to the server on every visible-range change, and '
+      'its panes_order_changed handler subscribes to range changes again each time it runs, so a '
+      'second pan after adding an indicator should save more than the first for the same movement.',
+  steps: const <ScenarioStep>[
+    OpenChart(kEquityB, budgetScale: 6),
+    // Wait out the API's ~10 s so there is data to pan over, then drop the load-time requests.
+    Wait(Duration(seconds: 22)),
+    TraceApi('load'),
+    // What the chart carries on open. Indicators this case adds are saved to the server's copy of
+    // the layout, so leftovers from an earlier run show up here.
+    Probe('start'),
+    // 40 range changes over 10 s; saves go out 1 s after a change and the POST takes ~0.2 s.
+    Operate('panZoom'),
+    Wait(Duration(seconds: 14)),
+    TraceApi('pan1'),
+    Probe('pan1'),
+    // An indicator in its own pane re-runs the page's panes_order_changed handler.
+    Operate('addStudy', arg: 'Relative Strength Index'),
+    Wait(Duration(seconds: 6)),
+    TraceApi('study'),
+    Operate('panZoom'),
+    Wait(Duration(seconds: 14)),
+    TraceApi('pan2'),
+    Probe('pan2'),
+    // A second indicator re-runs the handler again. If each run adds another subscription, this
+    // pan saves about twice as often as the last for the same movement.
+    Operate('addStudy', arg: 'MACD'),
+    Wait(Duration(seconds: 6)),
+    TraceApi('study2'),
+    Operate('panZoom'),
+    Wait(Duration(seconds: 14)),
+    TraceApi('pan3'),
+    Operate('saveCost'),
+    Probe('pan3'),
+    // Leave the shared test client's layout as it was found: take out what this case added, every
+    // copy (earlier runs left some), and give the page's debounced save time to go out.
+    Operate('removeStudies', arg: 'Relative Strength Index,MACD'),
+    Wait(Duration(seconds: 6)),
+    Probe('end'),
+  ],
+  expectations: <Expectation>[
+    const ExpectCustom('the harness was started with CHART_LOCAL=true', _localModeOn),
+    // Measurement only: assert the instrument saw the chart and counted range events.
+    const ExpectCustom('the chart had data to pan over', _hasPanData),
+  ],
+);
+
+/// Not a pass/fail case: how many times the page's legend poll runs per interval and per symbol
+/// change on a bundled chart, so the cost of the poll is a number rather than an impression.
+final Scenario legendPollScenario = Scenario(
+  id: 'S2',
+  title: 'Bundled chart: legend poll calls',
+  dimension: Dimension.storage,
+  precondition: ExternalPrecondition.fullCold,
+  hypothesis: 'RemoveLegendHiddenClasses re-polls every 500 ms (up to 10 times) after each interval '
+      'and symbol change. Counting its calls says whether that is a cost worth removing.',
+  steps: const <ScenarioStep>[
+    OpenChart(kEquityB, budgetScale: 6),
+    Wait(Duration(seconds: 22)),
+    Operate('countLegendPolls'),
+    Operate('setResolution', arg: '5'),
+    Wait(Duration(seconds: 16)),
+    Probe('afterInterval'),
+    ChangeSymbol(kEquityA),
+    Wait(Duration(seconds: 16)),
+    Probe('afterSymbol'),
+    // Put the shared test client's saved interval back to 1.
+    Operate('setResolution', arg: '1'),
+    Wait(Duration(seconds: 3)),
+    Probe('afterRestore'),
+  ],
+  expectations: <Expectation>[
+    const ExpectCustom('the harness was started with CHART_LOCAL=true', _localModeOn),
+    const ExpectCustom('the poll was observed', _legendObserved),
+  ],
+);
+
+bool _legendObserved(ScenarioObservations o) {
+  final Object? n = o.probes['afterRestore']?['legendPolls'];
+  return n is num;
+}
+
+bool _hasPanData(ScenarioObservations o) {
+  final Map<String, Object?>? p = o.probes['pan1'];
+  final Object? bars = p?['bars'];
+  final Object? events = p?['rangeEvents'];
+  return bars is num && bars > 0 && events is num && events > 0;
+}
 
 bool _hasCandles(ScenarioObservations o) {
   final Map<String, Object?>? p = o.probes['candles'];

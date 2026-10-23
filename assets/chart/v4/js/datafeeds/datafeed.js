@@ -111,8 +111,13 @@
             httpAdapter.getData(ticker, resolution, periodParams.from, periodParams.to, periodParams.countBack, periodParams.firstDataRequest)
                 .then(bars => {
                     if (periodParams.firstDataRequest && bars.length > 0) {
-                        const last2Raw = bars.slice(-2).map(b => ({...b, timeISO: new Date(b.time).toISOString()}));
-                        console.log(`[getBars] last 2 raw API bars for ${ticker}_${resolution}:`, last2Raw);
+                        // Debug level only: building these objects on every first request is wasted
+                        // work otherwise, and console.log crosses the native console bridge when
+                        // console forwarding is on.
+                        if (logger.getLevel() <= log.levels.DEBUG) {
+                            logger.debug(`[getBars] last 2 raw API bars for ${ticker}_${resolution}:`,
+                                bars.slice(-2).map(b => ({...b, timeISO: new Date(b.time).toISOString()})));
+                        }
                         let lastBar = bars[bars.length - 1];
                         if (bars.length > 1) {
                             const prevBar = bars[bars.length - 2];
@@ -141,7 +146,7 @@
                                     : prevBar;
                             }
                         }
-                        console.log(`Last bar set for ${ticker}_${resolution}: barTime: ${lastBar.time}, close: ${lastBar.close}`);
+                        logger.debug(`Last bar set for ${ticker}_${resolution}: barTime: ${lastBar.time}, close: ${lastBar.close}`);
                         // Keep the array we hand to the chart in sync with the (possibly snapped)
                         // lastBar — otherwise the chart library caches the raw, unsnapped time as
                         // its "current" bar while the stream computes live updates off the

@@ -781,12 +781,31 @@
                 })
                 //#endregion onchartready event
 
-                function saveChartData(){
-                    setTimeout(()=>tvWidget.save((chartObject) => {
+                // At most one save is ever waiting: range changes and auto-save requests both land
+                // here and are merged (see core/save_scheduler.js). The 1 s delay is the one every
+                // save always had; the 5 s cap stops a pan that never pauses from saving nothing.
+                // Before this, every range change made its own full-chart POST: 40 saves for a
+                // 10 s pan, 80 after a second indicator was added.
+                const saveScheduler = chartApp.saveScheduler.create({
+                    delayMs: 1000,
+                    maxWaitMs: 5000,
+                    run: () => tvWidget.save((chartObject) => {
                         const symbol = tvWidget.activeChart().symbol();
                         const mainSeriesData = chartObject.charts[0]?.panes[0]?.rightAxisesState[0];
                         httpAdapter.SaveChartData(chartObject, symbol,mainSeriesData);
-                    }),1000)
+                    }),
+                    onError: (err) => log.warn('saving chart data failed', err),
+                });
+                function saveChartData(){
+                    saveScheduler.request();
+                }
+
+                // One function, so it can be unsubscribed before it is subscribed again.
+                function onVisibleRangeChanged(){
+                    logger.debug('Chart range changed, saving chart data');
+                    if(!isSymbolChanged){
+                        saveChartData()
+                    }
                 }
                 function SubscribeToEvents(){
 
@@ -840,12 +859,11 @@
                         for (let i = 0; i < chartCount; i++) {
                             try {
                                 let chart = chartApp.tvWidget.chart(i);
-                                chart.onVisibleRangeChanged().subscribe(null, () => {
-                                    logger.debug('Chart range changed, saving chart data');
-                                    if(!isSymbolChanged){
-                                        saveChartData()
-                                    }
-                                });
+                                // This handler runs on every pane change. A bare subscribe would
+                                // stack one more listener each time, multiplying the saves made
+                                // for each range change; unsubscribing first keeps it at one.
+                                chart.onVisibleRangeChanged().unsubscribe(null, onVisibleRangeChanged);
+                                chart.onVisibleRangeChanged().subscribe(null, onVisibleRangeChanged);
                             } catch (err) {
                                 log.warn(`Error getting symbol for chart ${i}:`, err);
                             }

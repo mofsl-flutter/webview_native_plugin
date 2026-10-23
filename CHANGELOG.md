@@ -14,8 +14,19 @@
   * iOS: a navigation that fails on the bundled scheme no longer falls back to tradingview.com.
   * The page and its app scripts are the plugin's own copy (`assets/chart/v4/`), refreshed with
     `dart tool/sync_chart_bundle.dart`, which never overwrites edits made there; see the file header.
+* The bundled page (`assets/chart/v4/`, the plugin's own copy; `tool/chart_page_changes.md` lists
+  every difference from the hosted page) fixes what measurement showed to be wrong:
+  * Saving: the page POSTed the whole chart on every visible-range change, and stacked another range
+    listener each time panes changed. The same 10 s pan now saves 2 times where it saved 40 (one
+    indicator added) or 80 (two). A save is taken 1 s after the last change and at most 5 s after the
+    first one waiting; a save pending when the app is killed mid-pan is lost (up to 5 s of changes,
+    before 1 s).
+  * Live ticks are matched to their symbol exactly. A tick for `NSE:ACC` used to also move
+    `NSE:ACCELYA`, because the lookup compared key prefixes.
+  * The raw bar arrays `getBars` wrote to `console.log` on every first request are debug-level.
 * Example app: `--dart-define=CHART_LOCAL=true` loads the bundled chart, `--dart-define=SCENARIO=L1`
-  starts a regression case on iOS, and cases `L1`/`L2` check the bundled chart on both platforms.
+  starts a regression case on iOS, cases `L1`/`L2` check the bundled chart on both platforms, and `S1`/`S2`
+  record save traffic and legend-poll cost.
 
 ## 0.0.4
 

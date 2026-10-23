@@ -345,7 +345,8 @@ class ScenarioRunner extends ChangeNotifier {
         // expectation can be read from the log without re-running under a debugger.
         final Map<String, Object?> seen = obs.probes[label]!;
         obs.summaries['probe.$label'] = 'symbol=${seen['symbol']} resolution=${seen['resolution']} '
-            'bars=${seen['bars']} widgetReady=${seen['widgetReady']} hasToken=${seen['hasToken']}';
+            'bars=${seen['bars']} widgetReady=${seen['widgetReady']} hasToken=${seen['hasToken']} '
+            'rangeEvents=${seen['rangeEvents']} saveCost=${seen['saveCost']} legendPolls=${seen['legendPolls']} legendMs=${seen['legendMs']} studies=${seen['studies']}';
 
       case RecreateHost(:final String label):
         final Map<String, Object?> observed = await host.recreateChartScreen();
@@ -484,6 +485,13 @@ class ScenarioRunner extends ChangeNotifier {
           ),
         };
         obs.summaries['trace.$label.count'] = '${entries.length}';
+        // Requests per endpoint, so "how many saves did that make" reads off one line.
+        final Map<String, int> perPath = _hostCounts(
+          entries.whereType<Map<Object?, Object?>>().map(
+                (Map<Object?, Object?> e) => '${e['p']}'.split('?').first,
+              ),
+        );
+        obs.summaries['trace.$label.paths'] = perPath.toString();
         // One short evidence line per request: a long platform log line is split or dropped.
         for (int i = 0; i < entries.length; i++) {
           final Object? e = entries[i];
@@ -568,6 +576,10 @@ class ScenarioRunner extends ChangeNotifier {
       'setResolution' => buildSetResolutionJs(runId, arg?.toString() ?? '5'),
       'scrollBack' => buildScrollBackJs(runId),
       'panZoom' => buildPanZoomJs(runId),
+      'saveCost' => buildSaveCostJs(runId),
+      'removeStudies' => buildRemoveStudiesJs(runId, arg?.toString() ?? ''),
+      'countLegendPolls' => buildLegendCounterJs(runId),
+      'addStudy' => buildAddStudyJs(runId, arg?.toString() ?? 'Relative Strength Index'),
       _ => null,
     };
 
@@ -584,7 +596,10 @@ class ScenarioRunner extends ChangeNotifier {
       obs.notes.add('injection gated for "$op" at state ${_gate.state.name}');
       return;
     }
-    obs.acks.add(await _ack.awaitOp(runId, op));
+    final AckResult ack = await _ack.awaitOp(runId, op);
+    obs.acks.add(ack);
+    // The status in the log, so "the op did nothing" is not mistaken for "the page did nothing".
+    obs.summaries['op.$op'] = '${ack.status.name}${ack.detail == null ? '' : ' ${ack.detail}'}';
   }
 
   int _seq = 0;

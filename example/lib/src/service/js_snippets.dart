@@ -277,6 +277,75 @@ String buildSetResolutionJs(String runId, String resolution) => buildOpJs(
       jsCall: 'fn(${jsonEncode(resolution)})',
     );
 
+/// Measures what one `tvWidget.save()` costs: wall time to serialise the chart and the size of the
+/// JSON the page then POSTs. Stashed on `window.__hbSaveCost` and read back by [buildProbeJs],
+/// because an op's promise resolves with no value to report.
+String buildSaveCostJs(String runId) => buildOpJs(
+      runId: runId,
+      op: 'saveCost',
+      resolver: '(function(){'
+          'var w=window.ChartApp&&window.ChartApp.tvWidget;'
+          'if(!w)throw new Error("no tvWidget");'
+          'return new Promise(function(ok){'
+          'var t=performance.now();'
+          'w.save(function(o){'
+          'var s=JSON.stringify(o);'
+          'window.__hbSaveCost={ms:Math.round((performance.now()-t)*10)/10,bytes:s.length};'
+          'ok();});'
+          '});'
+          '})',
+      jsCall: 'fn()',
+    );
+
+/// Counts calls to the page's `RemoveLegendHiddenClasses` (its legend un-hiding poll) from now on,
+/// in `window.__hbLegend`, by wrapping it. Wrapping, not replacing: the real work still runs.
+String buildLegendCounterJs(String runId) => buildOpJs(
+      runId: runId,
+      op: 'countLegendPolls',
+      resolver: '(function(){'
+          'var h=window.ChartApp&&window.ChartApp.adapter&&window.ChartApp.adapter.chartHttp;'
+          'if(!h||typeof h.RemoveLegendHiddenClasses!=="function")throw new Error("no poll");'
+          'if(!h.__hbWrapped){'
+          'var orig=h.RemoveLegendHiddenClasses;window.__hbLegend=0;window.__hbLegendMs=0;'
+          'h.RemoveLegendHiddenClasses=function(){window.__hbLegend++;var t=performance.now();'
+          'try{return orig.apply(this,arguments);}finally{window.__hbLegendMs+=performance.now()-t;}};'
+          'h.__hbWrapped=true;}'
+          '})',
+      jsCall: 'fn()',
+    );
+
+/// Removes the indicators named in [names] (comma separated) from the active chart, every copy.
+///
+/// The page saves the chart layout to the server whenever it changes, so an indicator a test adds
+/// is still there on the next open unless it is removed. Named, never "all": the Volume pane is the
+/// chart's own and must stay.
+String buildRemoveStudiesJs(String runId, String names) => buildOpJs(
+      runId: runId,
+      op: 'removeStudies',
+      resolver: '(function(csv){'
+          'var w=window.ChartApp&&window.ChartApp.tvWidget;'
+          'if(!w)throw new Error("no tvWidget");'
+          'var c=w.activeChart();var names=csv.split(",");'
+          'var all=c.getAllStudies().filter(function(s){return names.indexOf(s.name)>=0;});'
+          'all.forEach(function(s){c.removeEntity(s.id);});'
+          'return Promise.resolve(all.length);'
+          '})',
+      jsCall: 'fn(${jsonEncode(names)})',
+    );
+
+/// Adds an indicator by name. Most indicators (RSI, MACD) get a pane of their own, which makes the
+/// page re-run its `panes_order_changed` handler.
+String buildAddStudyJs(String runId, String name) => buildOpJs(
+      runId: runId,
+      op: 'addStudy',
+      resolver: '(function(name){'
+          'var w=window.ChartApp&&window.ChartApp.tvWidget;'
+          'if(!w)throw new Error("no tvWidget");'
+          'return w.activeChart().createStudy(name,false,false);'
+          '})',
+      jsCall: 'fn(${jsonEncode(name)})',
+    );
+
 /// Moves the visible window three spans into the past, which forces the library to ask the
 /// datafeed for older bars (`getBars` with `firstDataRequest=false`).
 String buildScrollBackJs(String runId) => buildOpJs(
@@ -307,6 +376,10 @@ String buildPanZoomJs(String runId) => buildOpJs(
           'var w=window.ChartApp&&window.ChartApp.tvWidget;'
           'if(!w)throw new Error("no tvWidget");'
           'var c=w.activeChart();var r=c.getVisibleRange();var step=(r.to-r.from)/50;'
+          // Count the chart's own range events, so a trace of SaveChartData POSTs can be set against
+          // what triggered them. One counter listener, added once.
+          'if(!window.__hbRangeSub){window.__hbRange=0;window.__hbRangeSub=true;'
+          'c.onVisibleRangeChanged().subscribe(null,function(){window.__hbRange++;});}'
           'var n=0,k=0,dir=1;'
           'var t=setInterval(function(){'
           'n++;if(n>40){clearInterval(t);return;}'
@@ -409,6 +482,8 @@ String buildProbeJs(String runId, String label) {
       '}catch(e){out.chartErr=String(e&&e.message||e);}'
       '}'
       'try{out.charts=(w&&w.chartsCount)?w.chartsCount():null;}catch(e){}'
+      'out.rangeEvents=window.__hbRange||0;out.saveCost=window.__hbSaveCost||null;out.legendPolls=window.__hbLegend||0;out.legendMs=Math.round((window.__hbLegendMs||0)*10)/10;'
+      'try{out.studies=w&&w._ready?w.activeChart().getAllStudies().map(function(s){return s.name;}):null;}catch(e){out.studies=null;}'
       // Ground truth for whether a tick can possibly render. Without these, a dead tick
       // stream is invisible: the page drops ticks silently when the symbol is not in the
       // map or no seed bar was ever cached.

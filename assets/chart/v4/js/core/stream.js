@@ -4,6 +4,9 @@
     const _lastBarCache = new Map();
     //Map of ticker_resolution and its subscriptionItem
     const _subscriptions = new Map();
+    //Map of ticker and the subscriptionItems for it, one per resolution. Lookup by key prefix would
+    //also match a different ticker that merely starts with this one (NSE:ACC and NSE:ACCELYA).
+    const _byTicker = new Map();
 
     const stream = {
         data: {
@@ -28,11 +31,18 @@
             const lastDailyBar = _lastBarCache.get(key);
             subscriptionItem = {
                 guid,
+                ticker,
                 resolution,
                 lastDailyBar,
                 handlers: [handler],
             };
             _subscriptions.set(key, subscriptionItem);
+            let forTicker = _byTicker.get(ticker);
+            if (!forTicker) {
+                forTicker = new Set();
+                _byTicker.set(ticker, forTicker);
+            }
+            forTicker.add(subscriptionItem);
             logger.debug("Subscription Map :", _subscriptions.keys());
         },
         unsubscribe: function (guid) {
@@ -48,6 +58,11 @@
                     if (subscriptionItem.handlers.length === 0) {
                         // unsubscribe from the channel, if it was the last handler
                         _subscriptions.delete(key);
+                        const forTicker = _byTicker.get(subscriptionItem.ticker);
+                        if (forTicker) {
+                            forTicker.delete(subscriptionItem);
+                            if (forTicker.size === 0) _byTicker.delete(subscriptionItem.ticker);
+                        }
                         break;
                     }
                 }
@@ -57,10 +72,10 @@
         get: function (ticker, resolution) {
             return _subscriptions.get(`${ticker}_${resolution}`);
         },
+        // Every subscription for exactly this ticker, whatever its resolution.
         getV2:function (ticker){
-            return Array.from(_subscriptions.entries())
-                .filter(([key, _]) => key.startsWith(ticker))
-                .map(([_, value]) => value);
+            const forTicker = _byTicker.get(ticker);
+            return forTicker ? Array.from(forTicker) : [];
         },
         getQuote:function (ticker,resolution){
             const key = `${ticker}_${resolution}`;

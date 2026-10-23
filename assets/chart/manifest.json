@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-23T19:17:19.170913Z",
+  "generatedAt": "2026-10-23T19:48:22.216096Z",
   "host": "https://tradingapi.motilaloswaluat.com",
   "page": "/chart/v4/RiseApp_Mobile.html",
   "library": "TT_v29_1_0",
@@ -16,7 +16,7 @@
     "chunk 3 (3.6cf8fdd19c9e5055cd36.js) is in the runtime table but is not on the server, and no library script requests it; skipped"
   ],
   "external": [],
-  "fileCount": 516,
+  "fileCount": 517,
   "files": [
     {
       "path": "v1/Icons/Dark/ExitFullScreen.png",
@@ -3068,16 +3068,24 @@
     },
     {
       "path": "v4/RiseApp_Mobile.html",
-      "bytes": 1684,
-      "sha256": "58c6640a2811b301baafb570c38203a6b43b285574c7912c3fd8b85dc433ef7e",
+      "bytes": 1766,
+      "sha256": "3da811132fd40131f83f7dcbb3fdc75496cc9f32d3d97707fc9e773dcb3d6845",
       "source": "https://tradingapi.motilaloswaluat.com/chart/v4/RiseApp_Mobile.html",
       "owned": true,
-      "upstreamSha256": "7b326bff6d3a8d58ef5afc419ba2b5118ea4f007f3434643cdc5f1b8a4568596"
+      "upstreamSha256": "a5551a6dfddfd9f54fc32d6d58bdaeb8cbeaadf21371c8be9058c7a303f4f788"
     },
     {
       "path": "v4/js/core/api_base.js",
       "bytes": 3528,
       "sha256": "54b955b1bbda85b831acdf6477d6b8aaddbbfb1ae4e5108aca463f58c4f5ae0a",
+      "source": null,
+      "owned": true,
+      "localOnly": true
+    },
+    {
+      "path": "v4/js/core/save_scheduler.js",
+      "bytes": 3050,
+      "sha256": "d6437b1d4986076cc03a0049e9a59a8871dbece7d5a06e6ae17f16aabb61b496",
       "source": null,
       "owned": true,
       "localOnly": true
@@ -3092,16 +3100,16 @@
     },
     {
       "path": "v4/js/core/stream.js",
-      "bytes": 11011,
-      "sha256": "093147d3b1553b18cedfa09cc8fcaf45ae3b8c6000caac03ccc8ae9e5863504a",
+      "bytes": 11848,
+      "sha256": "741bed127282c4cd642a75d57489ae7caafab519c5b9c549f473da51ee186872",
       "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/core/stream.js?v=6",
       "owned": true,
       "upstreamSha256": "093147d3b1553b18cedfa09cc8fcaf45ae3b8c6000caac03ccc8ae9e5863504a"
     },
     {
       "path": "v4/js/datafeeds/datafeed.js",
-      "bytes": 11753,
-      "sha256": "b521e05eaa3fecfcf7ddd892b3bf0c38893374ff47e896f1cc4e07de425d9618",
+      "bytes": 12092,
+      "sha256": "a79ce3815200f7edc4b88de700e1b3ff73f1e7000b19238e47e2074bb1b4175d",
       "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/datafeeds/datafeed.js?v=6",
       "owned": true,
       "upstreamSha256": "b521e05eaa3fecfcf7ddd892b3bf0c38893374ff47e896f1cc4e07de425d9618"
@@ -3124,8 +3132,8 @@
     },
     {
       "path": "v4/js/main.js",
-      "bytes": 67240,
-      "sha256": "fc642b754b954cf8aa6fa6ae057a1de72656a419db934e9b62a49cef9ffe059a",
+      "bytes": 68469,
+      "sha256": "cd8d95d95aba30d3721a68698661e7432e4af764381f152eb9c05ebcdb1b6202",
       "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/main.js?v=6",
       "owned": true,
       "upstreamSha256": "fc642b754b954cf8aa6fa6ae057a1de72656a419db934e9b62a49cef9ffe059a"
