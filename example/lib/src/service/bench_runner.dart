@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:ios_webview_plugin/chart_prefetch.dart';
 import 'package:ios_webview_plugin/chart_session.dart';
 import 'package:ios_webview_plugin/ios_webview_plugin.dart';
 import 'package:ios_webview_plugin/webview_events.dart';
@@ -29,6 +30,12 @@ class BenchRunner extends ChangeNotifier {
   final List<RunRecord> _records = <RunRecord>[];
   final Map<String, int> _marks = <String, int>{};
   final String _sessionId = DateTime.now().millisecondsSinceEpoch.toString();
+
+  ChartPrefetch? _prefetch;
+
+  /// What happened to each prefetched request in the last run that used one (`ok <ms> <bytes>`, or
+  /// why it was not delivered). Empty when the run did not prefetch.
+  Map<String, String> get prefetchOutcomes => _prefetch?.outcomes ?? const <String, String>{};
 
   Stopwatch? _clock;
   Timer? _phaseTimer;
@@ -181,6 +188,15 @@ class BenchRunner extends ChangeNotifier {
       kGlobalRunCap * config.budgetScale,
       () => _finish(TerminalOutcome.timeout),
     );
+
+    // Started before navigation, so the requests overlap with the page loading. Nothing waits on it
+    // here: whatever has arrived is handed to the page once it is up, and the page asks for the rest.
+    _prefetch?.cancel();
+    _prefetch = null;
+    if (config.prefetch && !config.changeSymbolOnWarmPage) {
+      _prefetch = ChartPrefetch(apiBase: Uri.parse(kChartRoot), token: token)..start(config.symbol);
+      _mark('prefetchStarted');
+    }
 
     if (config.changeSymbolOnWarmPage && _pageAlive) {
       // No navigation: reuse the live page and only switch symbol. This is the arm that
@@ -471,6 +487,14 @@ class BenchRunner extends ChangeNotifier {
     await IosWebViewPlugin.runJavaScript(buildEnvJs(runId));
     if (_activeRunId != runId) return;
 
+    // Before authorise and loadChart: the page asks for its data the moment it is told to load.
+    final ChartPrefetch? prefetch = _prefetch;
+    if (prefetch != null) {
+      await prefetch.handoff(IosWebViewPlugin.runJavaScript);
+      _mark('prefetchHandedOff');
+      if (_activeRunId != runId) return;
+    }
+
     final RunConfig config = _activeConfig!;
     if (config.neverAuthorize) {
       // Withhold the token entirely: the page parks its unauthorised request and never settles
@@ -528,6 +552,7 @@ class BenchRunner extends ChangeNotifier {
 
   @override
   void dispose() {
+    _prefetch?.cancel();
     _phaseTimer?.cancel();
     _capTimer?.cancel();
     WebViewBridge.instance.removeSink(_onEvent);

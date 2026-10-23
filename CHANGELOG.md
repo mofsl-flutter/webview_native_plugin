@@ -28,6 +28,18 @@
   same bundle can call production: `https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/`.
   Both environments define the same 34 endpoints and the TradingView library is the same build;
   their app scripts differ (UAT is ahead). `tool/chart_page_changes.md` has the comparison.
+* New `ChartPrefetch` (`package:ios_webview_plugin/chart_prefetch.dart`) fetches a chart's opening
+  data (symbol, saved layout, config and the first candles) from Dart while the page loads, and
+  `handoff`s it to the bundled page, which takes it instead of requesting it. It is read-only (`GET`s),
+  uses the host's own token, and is a shortcut only: anything missing, late, stale, or not covering
+  what the chart asks for is requested by the page as before. The page asks for the symbol, layout and
+  config no longer (measured on UAT: 4 requests, then 1) and the chart ends up with the same candles.
+  History is used only if it has already arrived, because UAT can return a wrong window for a wide
+  range and waiting for it made the open slower. Production's response is accepted by the page's
+  checks; the page itself has not been run against production, so its end-to-end gain there is an
+  estimate (see `tool/chart_page_changes.md`).
+* The bundled page now rejects when a request fails outright (offline, DNS, TLS) instead of never
+  settling, so the chart reports no data and the host gets the symbol error rather than silence.
 * Example app: `--dart-define=CHART_API_ROOT=<root>` and `--dart-define=CHART_TOKEN=<token>` point the
   bundled page at another environment's API. `--dart-define=CHART_LOCAL=true` loads the bundled chart, `--dart-define=SCENARIO=L1`
   starts a regression case on iOS, cases `L1`/`L2` check the bundled chart on both platforms, and `S1`/`S2`

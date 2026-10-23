@@ -109,6 +109,7 @@ class RunConfig {
     this.hybridComposition = false,
     this.chartMode = 'FullChart',
     this.budgetScale = 1.0,
+    this.prefetch = false,
   });
 
   /// Symbol to load.
@@ -163,6 +164,12 @@ class RunConfig {
   /// a timeout with a half-filled cache. Left at 1 for everything that is not deliberately run on
   /// a slow network. It stretches how long a run may take; it does not change what is measured.
   final double budgetScale;
+
+  /// Fetch the chart's opening data (symbol, layout, config, first candles) from Dart while the page
+  /// loads and hand it to the page, instead of leaving the page to request it after it has loaded.
+  /// Only meaningful for a bundled page, which carries the store that receives it
+  /// (`--dart-define=CHART_LOCAL=true`); a hosted page ignores the hand-off.
+  final bool prefetch;
 
   /// Short identifier for grouping results by arm.
   String get armKey => 'pw=${preWarm ? 1 : 0},cm=$cacheMode,'

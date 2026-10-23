@@ -47,8 +47,8 @@ changes that user's saved layout. Use a dedicated test client.
 ## `RiseApp_Mobile.html`
 
 - The Akamai mPulse (boomerang) analytics snippet is removed. It phones home on every open.
-- Two scripts are added before `static_config.js`: `js/core/api_base.js` and
-  `js/core/save_scheduler.js`.
+- Three scripts are added before `static_config.js`: `js/core/api_base.js`,
+  `js/core/save_scheduler.js` and `js/core/preload.js`.
 
 ## `js/core/api_base.js` (new file)
 
@@ -60,6 +60,47 @@ Tests: `api_base.test.mjs`.
 
 `fetchWith401Retry` resolves the URL through `ChartApp.apiBase` before `fetch`. The relative form
 (`../api/...`) is still what the host is told on a 401 and what the retry queue stores.
+
+`fetchWith401Retry` now rejects when `fetch` itself fails (offline, DNS, TLS, blocked). It used to
+`await fetch` inside an `async` promise executor, so the throw escaped the executor, nothing settled
+the promise, and every caller waited forever; the chart spun with nothing to tell the host. Now the
+caller's own `.catch` runs (`getBars` reports no data, `LoadChart` falls through to the symbol
+error). Measured with case `N1`: the adapter went from `hung` to `rejected: Failed to fetch`.
+
+The four adapter calls that open a chart (`config`, `symbolInfo`, `GetChartSavedInfo`, `getData`)
+first ask `ChartApp.preload` for a response the host already fetched; see the next section.
+
+## `js/core/preload.js` (new file)
+
+Opening a chart is a chain: Symbols, then GetChartSavedInfo, then (once the widget exists) Config and
+the first HistoryV3. The page cannot start any of it before it has loaded, but the host can
+(`ChartPrefetch` in the plugin). The host hands the raw response bodies to this store and the
+adapter takes them instead of calling the network, parsing them with the same code as before.
+
+Rules, each pinned by `preload.test.mjs`:
+
+- Entries are single-use, taken by the first reader whether or not it was usable.
+- Symbols, the layout and Config are waited for while in flight (bounded). They are exact-key
+  lookups, so a response that arrives is always usable and waiting is never worse than asking.
+- **History is never waited for.** Whether it is usable depends on what the server sent: UAT's
+  `HistoryV3` returns an older window for a wide range (observed: bars from 13-19 Oct for a request
+  ending 24 Oct), which the guards correctly refuse. Waiting for it and then refusing it doubled the
+  chart's open time on UAT (11.8 s to 20.8 s) before this rule. Now it is used only if it has
+  already arrived, and the page asks itself otherwise.
+- History is served only for the first request, from a fresh prefetch (at most 15 s old, and no
+  more than the bar length), that reaches back past the library's `from`, whose `to` trails the
+  library's by no more than that, and whose slice to `[from, to]` still holds at least `countBack`
+  bars. The server returns exactly the bars inside `[from, to]` (no padding to `countBack`, no
+  trimming; checked on both environments), so such a slice is the answer it would have given.
+- Every other doubt returns "not here" and the page makes the request.
+
+Measured (`P1`, UAT, same chart opened without and with the prefetch): the page made 4 requests
+itself, then 1 (history only); end to end 11.9 / 11.3 / 11.6 s, then 10.6 / 11.0 / 10.7 s on an
+Android emulator, 12.1 s then 10.7 s on the iOS simulator. UAT's slow history dominates both. On
+production the history prefetch is accepted: replaying a production capture through this store
+served 367 bars. The page itself was not run against production (it writes), so production's
+end-to-end gain is an estimate from request times (about 0.4 s for symbol, layout and config plus
+about 0.25 s for history, partly overlapped with page start-up), not a measurement.
 
 ## `js/core/save_scheduler.js` (new file) and `js/main.js`
 
@@ -99,7 +140,3 @@ The two `console.log` calls in `getBars` (raw bar arrays, on every first history
   (about 0.1 ms each), so it is not a cost worth the risk of replacing it with a CSS override.
 - `getQuote` reads the library's private `bars()._items`. It is O(1), so not slow, but it is a
   private API that a library upgrade can break. Not changed.
-- `fetchWith401Retry` never settles if `fetch` itself rejects (a network failure): the promise
-  executor is `async`, so the throw is unhandled and nothing rejects. The chart then waits forever
-  instead of reporting no data. Not changed; it is the web team's behaviour and a fix changes what
-  callers see.

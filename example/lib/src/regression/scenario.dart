@@ -106,10 +106,14 @@ final class OpenChart extends ScenarioStep {
     this.neverAuthorize = false,
     this.chartMode = 'FullChart',
     this.budgetScale = 1.0,
+    this.prefetch = false,
   });
 
   /// Symbol to load.
   final String symbol;
+
+  /// Fetch the opening data from Dart while the page loads. See [RunConfig.prefetch].
+  final bool prefetch;
 
   /// Stretches the run's phase budgets and cap, for deliberately slow networks. See
   /// [RunConfig.budgetScale].
@@ -128,6 +132,7 @@ final class OpenChart extends ScenarioStep {
   String get describe => 'open $symbol'
       '${neverAuthorize ? ' (no authorize)' : (authorizeFirst ? '' : ' (inverted order)')}'
       '${chartMode == 'FullChart' ? '' : ' mode=$chartMode'}'
+      '${prefetch ? ' with prefetch' : ''}'
       '${budgetScale == 1.0 ? '' : ' budget x$budgetScale'}';
 }
 
@@ -412,6 +417,33 @@ final class WaitForLibQuiet extends ScenarioStep {
 
   @override
   String get describe => 'wait until library files stop arriving (${quiet.inSeconds}s quiet)';
+}
+
+/// Waits until the chart holds candles, and records how long that took (after the step began).
+///
+/// "Chart ready" is not "candles on screen": the library reports ready before its data arrives. This
+/// polls the page's own state until the series has bars, so a change that moves when candles appear
+/// can be measured, not assumed. Records nothing about a pass: if the chart never gets bars within
+/// [timeout] it says so and the case's expectations decide.
+final class WaitForBars extends ScenarioStep {
+  /// Creates the step.
+  const WaitForBars(
+    this.label, {
+    this.timeout = const Duration(seconds: 45),
+    this.poll = const Duration(milliseconds: 250),
+  });
+
+  /// Names the probe and the evidence line.
+  final String label;
+
+  /// Longest the step will wait.
+  final Duration timeout;
+
+  /// Interval between looks at the page.
+  final Duration poll;
+
+  @override
+  String get describe => 'wait for candles "$label"';
 }
 
 /// Waits a fixed period, for settling or deliberate races.

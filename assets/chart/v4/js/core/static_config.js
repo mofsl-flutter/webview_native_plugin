@@ -483,7 +483,7 @@
         this.config = async function () {
             try {
                 const configPage = chartApp.config.page === "RiseApp_Mobile.html" ? "RiseApp_Mobile_V4.html" : chartApp.config.page;
-                let response = await fetchWith401Retry(`api/Chart/Config?page=${configPage}`, {
+                let response = (await preloaded('config', configPage, 60000)) || await fetchWith401Retry(`api/Chart/Config?page=${configPage}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${localStore.accessToken()}`
@@ -518,7 +518,7 @@
             if (symbolInfo) {
                 return symbolInfo;
             }
-            let response = await fetchWith401Retry(`api/Chart/Symbols?symbol=${encodeURIComponent(symbol)}`, {
+            let response = (await preloaded('symbols', symbol, 60000)) || await fetchWith401Retry(`api/Chart/Symbols?symbol=${encodeURIComponent(symbol)}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStore.accessToken()}`
@@ -546,7 +546,7 @@
             const query = Object.keys(urlParameters)
                 .map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
                 .join('&');
-            let response = await fetchWith401Retry(`api/Chart/HistoryV3?${query}`, {
+            let response = (await preloadedHistory({ticker, resolution, from, to, countBack, firstDataRequest})) || await fetchWith401Retry(`api/Chart/HistoryV3?${query}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStore.accessToken()}`
@@ -893,7 +893,7 @@
         this.GetChartSavedInfo = async function (symbol) {
             try {
                 log.debug(`GetChartSavedInfo api called, symbol: ${symbol}`)
-                let response = await fetchWith401Retry('api/chart/GetChartSavedInfo?symbol=' + symbol +'&page=' + ChartApp.config.page, {
+                let response = (await preloaded('savedInfo', symbol + '|' + ChartApp.config.page, 30000)) || await fetchWith401Retry('api/chart/GetChartSavedInfo?symbol=' + symbol +'&page=' + ChartApp.config.page, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${localStore.accessToken()}`
@@ -1429,6 +1429,15 @@
         };
         let pending401Requests = [];
 
+       // A response the host fetched before the page asked (core/preload.js), or undefined, in which
+       // case the caller makes the request itself. Never rejects.
+       function preloaded(kind, key, maxAgeMs) {
+            return chartApp.preload ? chartApp.preload.take(kind, key, {maxAgeMs: maxAgeMs}) : Promise.resolve(undefined);
+       }
+       function preloadedHistory(request) {
+            return chartApp.preload ? chartApp.preload.takeHistory(request) : Promise.resolve(undefined);
+       }
+
        function fetchWith401Retry(url, options = {}) {
             return new Promise(async (resolve, reject) => {
                 // Adjust the URL to go up one directory from v3
@@ -1444,7 +1453,16 @@
                     reject(err);
                     return;
                 }
-                let response = await fetch(target, options);
+                let response;
+                try {
+                    response = await fetch(target, options);
+                } catch (err) {
+                    // The request itself failed (offline, DNS, TLS, blocked). Without this the throw
+                    // escapes the async executor, nothing settles the promise, and every caller
+                    // waits forever instead of reaching its own .catch.
+                    reject(err);
+                    return;
+                }
                 if (response.status !== 401) {
                     resolve(response);
                     return;

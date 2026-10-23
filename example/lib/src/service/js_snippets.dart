@@ -333,6 +333,31 @@ String buildRemoveStudiesJs(String runId, String names) => buildOpJs(
       jsCall: 'fn(${jsonEncode(names)})',
     );
 
+/// Makes the page's network calls fail, asks its adapter for a symbol, and records what the adapter
+/// did within three seconds: `rejected: <message>`, `resolved`, or `hung`.
+///
+/// A promise that never settles is how a failed request used to leave the chart spinning forever;
+/// one that rejects lets the chart report "no data". Stored on `window.__hbNet` for [buildProbeJs],
+/// since an op's promise resolves with no value. `fetch` is put back afterwards.
+String buildNetworkFailureJs(String runId) => buildOpJs(
+      runId: runId,
+      op: 'networkFailure',
+      resolver: '(function(){'
+          'var a=window.ChartApp&&window.ChartApp.adapter&&window.ChartApp.adapter.chartHttp;'
+          'if(!a)throw new Error("no adapter");'
+          'var orig=window.fetch;'
+          'window.fetch=function(){return Promise.reject(new TypeError("Failed to fetch"));};'
+          'return new Promise(function(ok){'
+          'var settled=false;'
+          'var finish=function(v){if(settled)return;settled=true;window.__hbNet=v;window.fetch=orig;ok();};'
+          'setTimeout(function(){finish("hung");},3000);'
+          'a.symbolInfo("0:NETFAIL").then(function(){finish("resolved");},'
+          'function(e){finish("rejected: "+((e&&e.message)||e));});'
+          '});'
+          '})',
+      jsCall: 'fn()',
+    );
+
 /// Adds an indicator by name. Most indicators (RSI, MACD) get a pane of their own, which makes the
 /// page re-run its `panes_order_changed` handler.
 String buildAddStudyJs(String runId, String name) => buildOpJs(
@@ -482,7 +507,8 @@ String buildProbeJs(String runId, String label) {
       '}catch(e){out.chartErr=String(e&&e.message||e);}'
       '}'
       'try{out.charts=(w&&w.chartsCount)?w.chartsCount():null;}catch(e){}'
-      'out.rangeEvents=window.__hbRange||0;out.saveCost=window.__hbSaveCost||null;out.legendPolls=window.__hbLegend||0;out.legendMs=Math.round((window.__hbLegendMs||0)*10)/10;'
+      'try{var pl=window.ChartApp&&window.ChartApp.preload;out.preload=pl&&pl.stats?pl.stats():null;}catch(e){out.preload=null;}'
+      'out.rangeEvents=window.__hbRange||0;out.net=window.__hbNet||null;out.saveCost=window.__hbSaveCost||null;out.legendPolls=window.__hbLegend||0;out.legendMs=Math.round((window.__hbLegendMs||0)*10)/10;'
       'try{out.studies=w&&w._ready?w.activeChart().getAllStudies().map(function(s){return s.name;}):null;}catch(e){out.studies=null;}'
       // Ground truth for whether a tick can possibly render. Without these, a dead tick
       // stream is invisible: the page drops ticks silently when the symbol is not in the

@@ -60,6 +60,8 @@ final List<Scenario> localBundleScenarios = <Scenario>[
   ),
   saveTrafficScenario,
   legendPollScenario,
+  prefetchScenario,
+  networkFailureScenario,
 ];
 
 /// Not a pass/fail case: it records how much the page saves while it is panned, so a change to the
@@ -150,6 +152,112 @@ final Scenario legendPollScenario = Scenario(
 bool _legendObserved(ScenarioObservations o) {
   final Object? n = o.probes['afterRestore']?['legendPolls'];
   return n is num;
+}
+
+/// What the page's adapter does when the network itself fails (offline, DNS, TLS, blocked).
+///
+/// It must reject, so the caller's own `.catch` runs and the chart can say "no data". A promise that
+/// never settles leaves the chart waiting forever with nothing to tell the host.
+final Scenario networkFailureScenario = Scenario(
+  id: 'N1',
+  title: 'Bundled chart: a network failure rejects instead of hanging',
+  dimension: Dimension.network,
+  precondition: ExternalPrecondition.fullCold,
+  hypothesis: 'fetchWith401Retry wrapped its fetch in an async promise executor, so a rejected '
+      'fetch threw inside the executor and nothing settled the promise.',
+  steps: const <ScenarioStep>[
+    OpenChart(kEquityB, budgetScale: 6),
+    Wait(Duration(seconds: 3)),
+    Operate('networkFailure'),
+    // The op is acknowledged when its promise starts; it records its verdict after up to 3 s.
+    Wait(Duration(seconds: 4)),
+    Probe('net'),
+  ],
+  expectations: <Expectation>[
+    const ExpectCustom('the harness was started with CHART_LOCAL=true', _localModeOn),
+    const ExpectCustom('the adapter rejects a failed request', _networkFailureRejects),
+  ],
+);
+
+bool _networkFailureRejects(ScenarioObservations o) {
+  final Object? net = o.probes['net']?['net'];
+  return net is String && net.startsWith('rejected');
+}
+
+/// The opening requests the page made itself, per endpoint, for a trace probe.
+int _pageCalls(ScenarioObservations o, String trace, String endpoint) {
+  final Object? paths = o.probes[trace]?['paths'];
+  if (paths is! Map) return -1;
+  final Object? n = paths[endpoint];
+  return n is num ? n.toInt() : 0;
+}
+
+/// Opens the same chart twice, once leaving the page to ask for everything itself and once with the
+/// opening data fetched from Dart while the page loads, and shows what changed.
+///
+/// What it asserts is that the prefetch is *used* and that it changes *when*, not *what*: the page
+/// asks for none of the three requests whose keys are exact, and the chart ends up with the same
+/// symbol, interval and candles. The first candles are the fourth request, which is only served when
+/// the server's answer covers the window the library asked for; UAT's often does not (it can return
+/// an older window), so that one is reported rather than required.
+final Scenario prefetchScenario = Scenario(
+  id: 'P1',
+  title: 'Bundled chart: opening data prefetched while the page loads',
+  dimension: Dimension.storage,
+  precondition: ExternalPrecondition.fullCold,
+  hypothesis: 'Symbols, the saved layout and Config cannot be asked for before the page has loaded, '
+      'but the host can ask for them in parallel with loading it. Handing them to the page should '
+      'remove those requests from the page and bring the first candles forward, without changing '
+      'what the chart shows.',
+  steps: const <ScenarioStep>[
+    // Control: the page asks for everything itself.
+    OpenChart(kEquityB, budgetScale: 6),
+    TraceApi('control'),
+    WaitForBars('control'),
+    // Prefetched: Dart fetches while the page loads and hands it over before loadChart.
+    OpenChart(kEquityB, budgetScale: 6, prefetch: true),
+    TraceApi('prefetch'),
+    WaitForBars('prefetch'),
+  ],
+  expectations: <Expectation>[
+    const ExpectCustom('the harness was started with CHART_LOCAL=true', _localModeOn),
+    const ExpectCustom('without prefetch the page asked for the symbol, layout and config itself', _controlAsks),
+    const ExpectCustom('with prefetch the page asked for none of them', _prefetchAsksNone),
+    const ExpectCustom('the page took what it was given and never gave up waiting', _pageUsedIt),
+    const ExpectCustom('both opens show the same chart', _sameChart),
+  ],
+);
+
+bool _controlAsks(ScenarioObservations o) =>
+    _pageCalls(o, 'trace.control', 'chart/symbols') >= 1 &&
+    _pageCalls(o, 'trace.control', 'chart/getchartsavedinfo') >= 1 &&
+    _pageCalls(o, 'trace.control', 'chart/config') >= 1;
+
+bool _prefetchAsksNone(ScenarioObservations o) =>
+    _pageCalls(o, 'trace.prefetch', 'chart/symbols') == 0 &&
+    _pageCalls(o, 'trace.prefetch', 'chart/getchartsavedinfo') == 0 &&
+    _pageCalls(o, 'trace.prefetch', 'chart/config') == 0;
+
+bool _pageUsedIt(ScenarioObservations o) {
+  final Object? stats = o.probes['prefetch']?['preload'];
+  if (stats is! Map) return false;
+  final Object? hits = stats['hits'];
+  final Object? timedOut = stats['timedOut'];
+  return hits is num && hits >= 3 && timedOut is num && timedOut == 0;
+}
+
+bool _sameChart(ScenarioObservations o) {
+  final Map<String, Object?>? a = o.probes['control'];
+  final Map<String, Object?>? b = o.probes['prefetch'];
+  if (a == null || b == null) return false;
+  final Object? barsA = a['bars'];
+  final Object? barsB = b['bars'];
+  return a['symbol'] == b['symbol'] &&
+      a['resolution'] == b['resolution'] &&
+      barsA is num &&
+      barsB is num &&
+      barsA > 0 &&
+      barsA == barsB;
 }
 
 bool _hasPanData(ScenarioObservations o) {

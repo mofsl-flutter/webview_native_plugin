@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-23T19:48:22.216096Z",
+  "generatedAt": "2026-10-23T20:50:47.249691Z",
   "host": "https://tradingapi.motilaloswaluat.com",
   "page": "/chart/v4/RiseApp_Mobile.html",
   "library": "TT_v29_1_0",
@@ -16,7 +16,7 @@
     "chunk 3 (3.6cf8fdd19c9e5055cd36.js) is in the runtime table but is not on the server, and no library script requests it; skipped"
   ],
   "external": [],
-  "fileCount": 517,
+  "fileCount": 518,
   "files": [
     {
       "path": "v1/Icons/Dark/ExitFullScreen.png",
@@ -3068,16 +3068,24 @@
     },
     {
       "path": "v4/RiseApp_Mobile.html",
-      "bytes": 1766,
-      "sha256": "3da811132fd40131f83f7dcbb3fdc75496cc9f32d3d97707fc9e773dcb3d6845",
+      "bytes": 1841,
+      "sha256": "b463271a94a6e3ead4f79814b8a0101e1e58f9d67bdcf1607c31be1d8c0c73e2",
       "source": "https://tradingapi.motilaloswaluat.com/chart/v4/RiseApp_Mobile.html",
       "owned": true,
-      "upstreamSha256": "a5551a6dfddfd9f54fc32d6d58bdaeb8cbeaadf21371c8be9058c7a303f4f788"
+      "upstreamSha256": "d851f8c5a7aa6a358591525e03aca09cd20d75d2c1708f8f1a778659e031b62b"
     },
     {
       "path": "v4/js/core/api_base.js",
       "bytes": 3528,
       "sha256": "54b955b1bbda85b831acdf6477d6b8aaddbbfb1ae4e5108aca463f58c4f5ae0a",
+      "source": null,
+      "owned": true,
+      "localOnly": true
+    },
+    {
+      "path": "v4/js/core/preload.js",
+      "bytes": 11055,
+      "sha256": "d6904c8568d6ca7d88e9a44aa4be69e2ceebcc0fde3db93d75704aebe58ea307",
       "source": null,
       "owned": true,
       "localOnly": true
@@ -3092,8 +3100,8 @@
     },
     {
       "path": "v4/js/core/static_config.js",
-      "bytes": 60555,
-      "sha256": "96743ae67cd321f9bdf1580f79f6e5bea626b0b3d8bfadf00cd400b45cfde31d",
+      "bytes": 61782,
+      "sha256": "b31135ccdeef9f603cfe4937cb2a27da49b58c1714dfd4217e946fd5b02b6475",
       "source": "https://tradingapi.motilaloswaluat.com/chart/v4/js/core/static_config.js?v=5",
       "owned": true,
       "upstreamSha256": "f42376cd09ce80af36ba8389fdd3ac5b84f5283b20bce2d011eb0942a582abf2"

@@ -244,7 +244,8 @@ class ScenarioRunner extends ChangeNotifier {
           :final bool authorizeFirst,
           :final bool neverAuthorize,
           :final String chartMode,
-          :final double budgetScale
+          :final double budgetScale,
+          :final bool prefetch
         ):
         final BenchRunner runner = BenchRunner(token: token);
         await runner.runBatch(
@@ -255,12 +256,24 @@ class ScenarioRunner extends ChangeNotifier {
               neverAuthorize: neverAuthorize,
               chartMode: chartMode,
               budgetScale: budgetScale,
+              prefetch: prefetch,
             ),
           ],
           repeats: 1,
           awaitViewMounted: host.awaitViewMounted,
         );
         obs.records.addAll(runner.records);
+        // One line per open, so two opens in a case (with and without prefetch) can be compared from
+        // the log. The result line only carries the last one.
+        final int n = obs.records.length;
+        if (runner.records.isNotEmpty) {
+          final Map<String, int?> m = runner.records.last.metrics;
+          obs.summaries['open.$n'] = 'prefetch=$prefetch outcome=${runner.records.last.outcome.name} '
+              'authorizeRtt=${m['authorizeRtt']} chartRender=${m['chartRender']} endToEnd=${m['endToEnd']}';
+        }
+        if (runner.prefetchOutcomes.isNotEmpty) {
+          obs.summaries['prefetch.$n'] = runner.prefetchOutcomes.toString();
+        }
         runner.dispose();
         if (chartMode != kChartMode) obs.notes.add('requested mode $chartMode');
 
@@ -346,7 +359,7 @@ class ScenarioRunner extends ChangeNotifier {
         final Map<String, Object?> seen = obs.probes[label]!;
         obs.summaries['probe.$label'] = 'symbol=${seen['symbol']} resolution=${seen['resolution']} '
             'bars=${seen['bars']} widgetReady=${seen['widgetReady']} hasToken=${seen['hasToken']} '
-            'rangeEvents=${seen['rangeEvents']} saveCost=${seen['saveCost']} legendPolls=${seen['legendPolls']} legendMs=${seen['legendMs']} studies=${seen['studies']}';
+            'rangeEvents=${seen['rangeEvents']} saveCost=${seen['saveCost']} legendPolls=${seen['legendPolls']} legendMs=${seen['legendMs']} studies=${seen['studies']} preload=${seen['preload']} net=${seen['net']}';
 
       case RecreateHost(:final String label):
         final Map<String, Object?> observed = await host.recreateChartScreen();
@@ -479,6 +492,11 @@ class ScenarioRunner extends ChangeNotifier {
           'count': entries.length,
           'error': d is Map ? d['error'] : 'no reply',
           'capped': d is Map ? d['capped'] : null,
+          'paths': _hostCounts(
+            entries.whereType<Map<Object?, Object?>>().map(
+                  (Map<Object?, Object?> e) => '${e['p']}'.split('?').first.toLowerCase(),
+                ),
+          ),
           // Which origin each API call went to: a bundled page must reach the real server.
           'hosts': _hostCounts(
             entries.whereType<Map<Object?, Object?>>().map((Map<Object?, Object?> e) => '${e['h']}'),
@@ -500,6 +518,27 @@ class ScenarioRunner extends ChangeNotifier {
               '+${e['st']}ms ${e['end'] == null ? '' : '${(e['end'] as num) - (e['st'] as num)}ms '}'
               'xfer=${e['transfer']} dec=${e['decoded']} st=${e['status']} ${e['h']} ${e['p']}?${e['q']}';
         }
+
+      case WaitForBars(:final String label, :final Duration timeout, :final Duration poll):
+        final Stopwatch sw = Stopwatch()..start();
+        Map<String, Object?> seen = const <String, Object?>{};
+        int polls = 0;
+        while (sw.elapsed < timeout) {
+          final String runId = _runId();
+          await IosWebViewPlugin.runJavaScript(hbBootstrapJs);
+          await IosWebViewPlugin.runJavaScript(buildProbeJs(runId, label));
+          seen = await _ack.awaitProbe(runId) ?? seen;
+          polls++;
+          final Object? bars = seen['bars'];
+          if (bars is num && bars > 0) break;
+          await Future<void>.delayed(poll);
+        }
+        final Object? bars = seen['bars'];
+        final bool got = bars is num && bars > 0;
+        obs.probes[label] = <String, Object?>{..._sessionFields(), ...seen};
+        obs.summaries['candles.$label'] = got
+            ? 'bars=$bars after ${sw.elapsedMilliseconds} ms ($polls looks) preload=${seen['preload']}'
+            : 'no bars after ${sw.elapsedMilliseconds} ms ($polls looks) preload=${seen['preload']}';
 
       case WaitForLibQuiet(:final Duration quiet, :final Duration max, :final Duration poll):
         final Stopwatch sw = Stopwatch()..start();
@@ -577,6 +616,7 @@ class ScenarioRunner extends ChangeNotifier {
       'scrollBack' => buildScrollBackJs(runId),
       'panZoom' => buildPanZoomJs(runId),
       'saveCost' => buildSaveCostJs(runId),
+      'networkFailure' => buildNetworkFailureJs(runId),
       'removeStudies' => buildRemoveStudiesJs(runId, arg?.toString() ?? ''),
       'countLegendPolls' => buildLegendCounterJs(runId),
       'addStudy' => buildAddStudyJs(runId, arg?.toString() ?? 'Relative Strength Index'),
