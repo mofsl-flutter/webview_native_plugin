@@ -16,7 +16,21 @@ const String kChartApiBase = 'https://tradingapi.motilaloswaluat.com/chart/api';
 
 /// The server's chart root: the URL `api/...` is relative to, and what a bundled page is told as
 /// `apiBase` (see `ChartBundle.localUrl`).
-const String kChartRoot = 'https://tradingapi.motilaloswaluat.com/chart/';
+///
+/// UAT unless `--dart-define=CHART_API_ROOT=<url>` says otherwise, which is how the bundled page is
+/// pointed at another environment (it ends in `/`, e.g. `https://<host>/charts/`). It only moves
+/// the page's API calls: the hosted page, the token lookup and the cache-warm cases stay on UAT.
+const String kChartRoot = String.fromEnvironment(
+  'CHART_API_ROOT',
+  defaultValue: 'https://tradingapi.motilaloswaluat.com/chart/',
+);
+
+/// A token to authorise the page with instead of asking UAT's token service for one
+/// (`--dart-define=CHART_TOKEN=<token>`); empty means "ask UAT".
+///
+/// A UAT token is no use against another environment's API, and this harness cannot know that
+/// environment's token service. The value is only ever handed to the page; it is not logged.
+const String kChartToken = String.fromEnvironment('CHART_TOKEN');
 
 /// Whether the harness loads the chart from the bundle inside the plugin instead of the hosted
 /// page. Off by default so existing runs stay comparable; turn on with

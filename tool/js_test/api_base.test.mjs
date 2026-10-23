@@ -50,6 +50,26 @@ test("resolves both relative forms onto the server, and equals what the browser 
   }
 });
 
+test("production's /charts/ root resolves exactly like production's own page does", () => {
+  // The bundled page runs UAT's code against production's API, so the one thing that must hold is
+  // that each API path lands where production's hosted page would have sent it.
+  const prodPage = "https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/v4/RiseApp_Mobile.html";
+  const prodRoot = "https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/";
+  for (const href of [ANDROID, IOS]) {
+    const a = load(href + q(prodRoot));
+    assert.equal(a.base, prodRoot);
+    for (const path of [
+      "../api/Chart/Config?page=RiseApp_Mobile_V4.html",
+      "../api/chart/GetChartSavedInfo?symbol=NSE:ACC&page=RiseApp_Mobile.html",
+      "../api/Chart/HistoryV3?symbol=NSE%3AACC&resolution=1&from=1&to=2&countBack=300&firstDataRequest=true",
+      "../api/chart/SaveChartData?page=RiseApp_Mobile.html",
+    ]) {
+      assert.equal(a.resolve(path), new URL(path, prodPage).href, path);
+      assert.equal(a.resolve(path.replace("../", "")), new URL(path, prodPage).href, path);
+    }
+  }
+});
+
 test("the 'api/' form and the '../api/' form are the same request", () => {
   const a = load(IOS + q(SERVER));
   assert.equal(a.resolve("api/Chart/Symbols?symbol=0%3A22"), a.resolve("../api/Chart/Symbols?symbol=0%3A22"));

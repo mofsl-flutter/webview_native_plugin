@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ios_webview_plugin/chart_session.dart';
 import 'package:ios_webview_plugin/ios_webview_plugin.dart';
 
+import 'src/config/endpoints.dart';
 import 'src/regression/autorun.dart';
 import 'src/regression/scenario.dart';
 import 'src/regression/scenario_catalog.dart';
@@ -76,7 +77,18 @@ class _AutorunBootstrapState extends State<_AutorunBootstrap> {
   }
 
   Future<void> _boot() async {
-    final TokenResult r = await TokenApi().fetch(
+    // A token supplied at build time replaces the UAT lookup. rawBody is left empty on purpose: it
+    // is what the UI would show, and a token should not end up on screen.
+    final TokenResult r = kChartToken.isNotEmpty
+        ? TokenResult(
+            ok: true,
+            statusCode: 200,
+            rawBody: '',
+            totalMicros: 0,
+            connectMicros: 0,
+            token: kChartToken,
+          )
+        : await TokenApi().fetch(
       clientCode: widget.session.clientCode,
       userType: widget.session.userType,
       appId: widget.session.appId,

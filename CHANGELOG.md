@@ -24,7 +24,12 @@
   * Live ticks are matched to their symbol exactly. A tick for `NSE:ACC` used to also move
     `NSE:ACCELYA`, because the lookup compared key prefixes.
   * The raw bar arrays `getBars` wrote to `console.log` on every first request are debug-level.
-* Example app: `--dart-define=CHART_LOCAL=true` loads the bundled chart, `--dart-define=SCENARIO=L1`
+* The bundled code is UAT's, and the API it calls is whatever the host passes as `apiBase`, so the
+  same bundle can call production: `https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/`.
+  Both environments define the same 34 endpoints and the TradingView library is the same build;
+  their app scripts differ (UAT is ahead). `tool/chart_page_changes.md` has the comparison.
+* Example app: `--dart-define=CHART_API_ROOT=<root>` and `--dart-define=CHART_TOKEN=<token>` point the
+  bundled page at another environment's API. `--dart-define=CHART_LOCAL=true` loads the bundled chart, `--dart-define=SCENARIO=L1`
   starts a regression case on iOS, cases `L1`/`L2` check the bundled chart on both platforms, and `S1`/`S2`
   record save traffic and legend-poll cost.
 

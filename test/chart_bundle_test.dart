@@ -38,6 +38,15 @@ void main() {
       );
     });
 
+    test("accepts production's API Gateway root and keeps its /charts/ path", () {
+      final Uri prod = Uri.parse("https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/");
+      for (final TargetPlatform platform in <TargetPlatform>[TargetPlatform.android, TargetPlatform.iOS]) {
+        final Uri url = ChartBundle.localUrl(apiBase: prod, theme: "dark", platform: platform);
+        expect(Uri.parse(url.queryParameters["apiBase"]!), prod);
+        expect(url.queryParameters["apiBase"], endsWith("/charts/"));
+      }
+    });
+
     test("refuses an apiBase the page would reject", () {
       final List<Uri> bad = <Uri>[
         Uri.parse("http://tradingapi.motilaloswaluat.com/chart/"),

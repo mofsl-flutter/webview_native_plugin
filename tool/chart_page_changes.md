@@ -11,6 +11,39 @@ When you merge from `upstream/v4/`, these are the places where our copy is delib
 Everything below is covered by `tool/js_test/*.test.mjs` (run by `flutter test`) unless it says
 otherwise, and `S1` / `L1` / `L2` in the example app check it on a device.
 
+## Environments: which code, which API
+
+The bundle was mirrored from **UAT** (`https://tradingapi.motilaloswaluat.com/chart/`, page version
+`20260724_01`). The host app chooses the API separately, through `apiBase`, so the same bundled code
+can call UAT or production. Production's chart root is
+`https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/` (note `/charts/`, plural).
+
+What was compared on 2026-10-24:
+
+- **Endpoints: identical.** Both define the same 34 endpoints with the same methods. `Config` returns
+  a byte-identical body, the read endpoints answer 401 without a token on both, and both allow the
+  bundled origins (`https://appassets.androidplatform.net`, `mochart://app`) for GET and for POST
+  with `authorization, content-type`, including on the 401 response.
+- **TradingView library: the same build.** The loader, `runtime.js` and `library.js` are identical
+  once line endings are normalised (UAT's files use CRLF, production's LF).
+- **App scripts: different.** Production is page `20260921_01` (`static_config.js` v6, `main.js` v7);
+  all four app scripts differ from UAT's. UAT is the one with extra code: the colour-blind-friendly
+  buy/sell palette (`isColorBlindFriendly`, a SEBI requirement), the `getBars` last-bar alignment
+  fix, and calendar-aware bar timing in `stream.js`. So bundling UAT's page ships those to anyone
+  using it.
+- **Transport differs.** Production serves the 2.7 MB library uncompressed (UAT: gzip, 0.9 MB) and
+  sends no cache headers on the page; UAT's page is `no-store`.
+
+`dart tool/sync_chart_bundle.dart` mirrors `/chart/` on a UAT-shaped host only; it cannot sync from
+production's `/charts/` yet. The edits listed below were made against UAT's scripts, so a production
+bundle would need them re-applied to production's.
+
+Running the example against another environment: `--dart-define=CHART_LOCAL=true
+--dart-define=CHART_API_ROOT=<root ending in />  --dart-define=CHART_TOKEN=<token for that
+environment>`. **A bundled page writes as soon as it opens a chart** (`SaveChartData`,
+`SaveSettings`, `SaveInterval`), and the `S1` case adds and removes indicators, so a real token
+changes that user's saved layout. Use a dedicated test client.
+
 ## `RiseApp_Mobile.html`
 
 - The Akamai mPulse (boomerang) analytics snippet is removed. It phones home on every open.
