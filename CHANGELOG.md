@@ -1,5 +1,13 @@
 ## Unreleased
 
+* Example app: `tool/bench/` times the open of the chart on an emulator in interleaved blocks and
+  checks where the requests went. `run_block.sh` runs cold, priming and warm launches of one build and
+  records the WebView version and free memory; `analyze.mjs` prints medians, minimums and maximums, the
+  median without the slowest run and each block's median (so drift between blocks is visible);
+  `netcap.mjs` records every request the WebView makes over DevTools; `hosts.mjs` fails a capture that
+  has a request to a UAT host, plain http, or a host nobody expected (or no call to the API at all).
+  Everything refuses a device that is not an emulator. Case `O2` is `O1` with the opening data
+  prefetched from Dart, so the prefetch can be timed on the same build.
 * **Fix: the bundled page could not open in a WebView the hosted page had used.** Production's `Symbols`
   (cached for 2 hours) and `Config` (6 hours) carry their CORS header only when the request has an Origin
   and say nothing about `Vary: Origin`, so a copy stored by the hosted page, or by the hosted Peak page that

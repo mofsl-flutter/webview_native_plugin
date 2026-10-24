@@ -67,6 +67,7 @@ final List<Scenario> localBundleScenarios = <Scenario>[
   gapFillScenario,
   tickAfterGapScenario,
   hostedThenBundledScenario,
+  openWithPrefetchScenario,
 ];
 
 /// Not a pass/fail case: it records how much the page saves while it is panned, so a change to the
@@ -212,6 +213,25 @@ final Scenario openSymbolScenario = Scenario(
 );
 
 bool _chartIsUp(ScenarioObservations o) => o.probes['opened']?['widgetReady'] == true;
+
+/// O1 with the opening data (symbol, saved layout, config, first candles) fetched from Dart while the
+/// page loads and handed to it, so a first open can be timed with and without the prefetch on the
+/// same build and the same account. Everything else is O1's, which the tests keep true.
+final Scenario openWithPrefetchScenario = Scenario(
+  id: 'O2',
+  title: 'Bundled chart: open the symbol given by CHART_SYMBOL, prefetched from Dart',
+  dimension: Dimension.storage,
+  precondition: ExternalPrecondition.fullCold,
+  steps: const <ScenarioStep>[
+    OpenChart(kChartSymbol, budgetScale: 6, prefetch: true),
+    Wait(Duration(seconds: 6)),
+    Probe('opened'),
+  ],
+  expectations: <Expectation>[
+    const ExpectCustom('the harness was started with CHART_LOCAL=true', _localModeOn),
+    const ExpectCustom('the chart for that symbol is up', _chartIsUp),
+  ],
+);
 
 /// Candles a gap in live ticks leaves behind are filled from history, cheaply, on the real library.
 ///
