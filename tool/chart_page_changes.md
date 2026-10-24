@@ -74,6 +74,13 @@ first ask `ChartApp.preload` for a response the host already fetched; see the ne
 
 `fetchWith401Retry`'s one `fetch` now goes through `ChartApp.netRetry.fetch` (next section).
 
+`RemoveLegendHiddenClasses` re-armed itself with `this.RemoveLegendHiddenClasses()`, so every poll
+started again at the default of 10 and the polling never stopped (the 32 and 133 calls recorded
+under "Looked at and left alone" were that, not ten polls per change). It now passes `retries - 1`:
+the first call and ten re-polls, 500 ms apart, then it stops. Tested by running the real function
+(cut out of the file by brace matching) against fake timers: `tool/js_test/legend_poll.test.mjs`.
+The 0.1 ms per call figure below still holds, so this is a tidy-up, not a speed-up.
+
 ## `js/core/net_retry.js` (new file)
 
 **The problem (the rollout blocker).** The bundled page's API calls are cross-origin. Production's
@@ -291,9 +298,9 @@ behaviours were broken one at a time and each was caught) and `test/chart_sessio
 
 ## Looked at and left alone
 
-- `RemoveLegendHiddenClasses` polls up to every 500 ms after an interval or symbol change: 32 calls
+- `RemoveLegendHiddenClasses` polled every 500 ms and never stopped (a bug, fixed above): 32 calls
   for one interval change, 133 for one symbol change. All 184 calls in a run took 22 ms in total
-  (about 0.1 ms each), so it is not a cost worth the risk of replacing it with a CSS override.
+  (about 0.1 ms each), so it was not a cost worth the risk of replacing it with a CSS override.
 - `getQuote` reads the library's private `bars()._items`. It is O(1), so not slow, but it is a
   private API that a library upgrade can break. Not changed.
 - A bar opened by a tick takes the tick's raw `tradeTime`, not the start of its period, and the next

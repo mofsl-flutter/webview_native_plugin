@@ -10,6 +10,9 @@
   an outage is still rejected. iOS (simulator only) did not show the problem. Still wanted from the API:
   the CORS header on every response and `Vary: Origin`. Details and measurements in
   `tool/chart_page_changes.md`.
+* The page's legend poll (`RemoveLegendHiddenClasses`) now stops after its ten re-polls; it re-armed with
+  its default count and polled for as long as the page lived (32 calls for an interval change, 133 for a
+  symbol change).
 * `IosWebViewPlugin.resetCache` is documented as what it does: on Android the HTTP disk cache only, on iOS
   every website data type in the default store (cookies, localStorage and IndexedDB included, for every
   WebView using it), without waiting. No behaviour change. A host that calls it on iOS, for example when the

@@ -1257,8 +1257,10 @@
                 
                 if(retries>0)
                 {
-                    setTimeout(()=>this.RemoveLegendHiddenClasses(),500);
-                    retries -= 1;
+                    // Passes what is left: calling it with no argument started again at 10 each
+                    // time, so the poll never ended (32 calls for an interval change, 133 for a
+                    // symbol change, measured).
+                    setTimeout(()=>this.RemoveLegendHiddenClasses(retries - 1),500);
                 }
             } catch (e) {
                 log.debug('RemoveLegendHiddenClasses error:', e);
