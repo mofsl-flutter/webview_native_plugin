@@ -311,6 +311,19 @@
             }
         }
     }
+    // A fill of the candles live ticks missed could not close the gap (reason 'too-large' or
+    // 'failed'). Same envelope as sendError, which the host already parses; the host then decides
+    // whether to load the page again.
+    channel.sendGapFill = function (status, ticker) {
+        pushMessage({
+            context: 'GapFill',
+            error: {
+                source: 'stream',
+                reason: status,
+                symbol: chartApp.data.tickerSymbolMap.get(ticker) || ticker,
+            }
+        });
+    }
     channel.sendError = function (context, source, message, symbol) {
         pushMessage({
             context: context,

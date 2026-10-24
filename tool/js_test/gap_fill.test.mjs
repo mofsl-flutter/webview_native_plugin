@@ -382,3 +382,126 @@ test("a handler that throws does not stop the rest of the bars", async () => {
   assert.equal(result.status, "filled");
   assert.equal(seen.length, 3);
 });
+
+// What the host is told when a fill could not close the gap (stream.onGapNotClosed, which main.js
+// turns into a `GapFill` message so the app can load the page again).
+
+/** Collects what the stream tells the host. */
+function listen(stream) {
+  const told = [];
+  stream.onGapNotClosed = (result) => told.push(result);
+  return told;
+}
+
+test("a host fill that is too large tells the host, once", async () => {
+  const { stream, clock, source } = load();
+  stream.gap.maxFeed = 50;
+  const told = listen(stream);
+  subscribe(stream, "NSE:ACC", "1", "g");
+  clock.now = T0 + 200 * MIN;
+  source.answer = () => [...Array(120).keys()].map((k) => bar(T0 + (k + 1) * MIN, 100));
+
+  await stream.fillGaps();
+
+  assert.equal(told.length, 1);
+  assert.equal(told[0].status, "too-large");
+  assert.equal(told[0].ticker, "NSE:ACC");
+});
+
+test("a tick-started fill that is too large tells the host, and the tick still lands", async () => {
+  const { stream, clock, source } = load();
+  stream.gap.maxFeed = 50;
+  const told = listen(stream);
+  const seen = subscribe(stream, "NSE:ACC", "1", "g");
+  clock.now = T0 + 200 * MIN;
+  source.answer = () => [...Array(120).keys()].map((k) => bar(T0 + (k + 1) * MIN, 100));
+
+  stream.onTickReceived("NSE:ACC", "1", 111, 99, 10, T0 + 200 * MIN + 5000);
+  await settle();
+
+  assert.deepEqual(told.map((r) => r.status), ["too-large"]);
+  assert.equal(seen.length, 1, "no bars fed, the tick applied as before");
+});
+
+test("a failing host fill tells the host", async () => {
+  const { stream, clock, source } = load();
+  const told = listen(stream);
+  subscribe(stream, "NSE:ACC", "1", "g");
+  clock.now = T0 + 5 * MIN;
+  source.answer = () => Promise.reject(new Error("HTTP 500"));
+
+  await stream.fillGaps();
+
+  assert.deepEqual(told.map((r) => r.status), ["failed"]);
+});
+
+test("a failing tick-started fill does not: slow history there is routine", async () => {
+  const { stream, clock, source } = load();
+  const told = listen(stream);
+  subscribe(stream, "NSE:ACC", "1", "g");
+  clock.now = T0 + 10 * MIN;
+  source.answer = () => Promise.reject(new Error("HTTP 500"));
+
+  stream.onTickReceived("NSE:ACC", "1", 111, 99, 10, T0 + 10 * MIN + 5000);
+  await settle();
+
+  assert.equal(stream.data.fills.get("NSE:ACC_1").status, "failed");
+  assert.deepEqual(told, []);
+});
+
+test("a host call that joins a tick-started fill that fails is told", async () => {
+  const { stream, clock, source } = load();
+  const told = listen(stream);
+  subscribe(stream, "NSE:ACC", "1", "g");
+  clock.now = T0 + 10 * MIN;
+  const answer = deferred();
+  source.answer = () => answer.promise;
+
+  stream.onTickReceived("NSE:ACC", "1", 111, 99, 10, T0 + 10 * MIN + 5000);
+  const joined = stream.fillGaps();
+  answer.reject(new Error("HTTP 500"));
+  await joined;
+
+  assert.deepEqual(told.map((r) => r.status), ["failed"]);
+});
+
+test("a fill that worked, found nothing, or had nothing to do tells no one", async () => {
+  const { stream, clock, source } = load();
+  const told = listen(stream);
+  subscribe(stream, "NSE:ACC", "1", "g");
+
+  clock.now = T0 + 30 * 1000;
+  await stream.fillGaps(); // current
+  clock.now = T0 + 5 * MIN;
+  source.answer = () => [];
+  await stream.fillGaps(); // nothing-new
+  source.answer = () => [1, 2, 3].map((k) => bar(T0 + k * MIN, 100 + k));
+  await stream.fillGaps(); // filled
+
+  assert.deepEqual(told, []);
+});
+
+test("a listener that throws does not break the fill", async () => {
+  const { stream, clock, source } = load();
+  stream.gap.maxFeed = 2;
+  stream.onGapNotClosed = () => { throw new Error("host said no"); };
+  subscribe(stream, "NSE:ACC", "1", "g");
+  clock.now = T0 + 20 * MIN;
+  source.answer = () => [1, 2, 3, 4].map((k) => bar(T0 + k * MIN, 100));
+
+  const [result] = await stream.fillGaps();
+
+  assert.equal(result.status, "too-large");
+});
+
+test("with no listener set, a too-large fill is still just reported in its result", async () => {
+  const { stream, clock, source } = load();
+  stream.gap.maxFeed = 2;
+  subscribe(stream, "NSE:ACC", "1", "g");
+  clock.now = T0 + 20 * MIN;
+  source.answer = () => [1, 2, 3, 4].map((k) => bar(T0 + k * MIN, 100));
+
+  const [result] = await stream.fillGaps();
+
+  assert.equal(result.status, "too-large");
+});

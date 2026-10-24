@@ -66,6 +66,9 @@
   hosted page URL a host app already knows (`<root>/v4/RiseApp_Mobile.html` gives `<root>/`), and returns
   null for any other shape so the host keeps loading the hosted page. `localUrl` and `apiBaseOf` share
   one validator.
+* The bundled page tells the host when a fill of missed candles could not close the gap: a `GapFill`
+  message (reason `too-large`, or `failed` for a fill the host asked for), in the envelope hosts already
+  parse for errors, so a host can fall back to loading the page again.
 * Example app: cases `L3` (the host asks for a fill) and `L4` (the first tick after a gap triggers it)
   open a chart with its last 8 candles hidden from the first history answer and check what the
   library's own export holds afterwards. `OpenChart(hideLastBars:)` and the `FillGap` step are the

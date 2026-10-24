@@ -1421,6 +1421,9 @@
 
         chartApp.v1 = v1;
 
+        //A fill that could not close the gap tells the host, which may load the page again.
+        chartApp.stream.onGapNotClosed = result => chartApp.channel.sendGapFill(result.status, result.ticker);
+
         //Send Page Ready Event.
         chartApp.channel.sendPageReady(chartApp.config.version);
 

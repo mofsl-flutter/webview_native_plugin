@@ -180,6 +180,14 @@ mechanism (`stream.fillGaps`):
   the library refuses a bar older than its last one: if ticks resume before the host asks, the first
   tick would otherwise open a bar past the gap and make the missing ones impossible to add.
 
+**Telling the host.** When a fill could not close the gap the page posts one
+`{context:'GapFill', error:{source:'stream', reason, symbol}}` (the same envelope as `sendError`, which
+hosts already parse), so a host can fall back to loading the page again. `reason` is `too-large` (more
+than 1000 new bars; a retry changes nothing) always, and `failed` (history errored or timed out) only for
+a fill the host or the page becoming visible asked for. A fill a tick started that fails is routine on a
+slow network, and the held tick has already been applied as before, so it is not reported. Nothing is
+posted for `filled`, `nothing-new` or `current`.
+
 **Fail-safe.** If history is slow (3 s for a held tick, 10 s for a host call), empty or failing, held
 ticks are applied exactly as before, and a tick-triggered fill is not tried again for 20 s. The worst
 case is today's behaviour. More than 1000 new bars is reported as `too-large` and not fed; the host

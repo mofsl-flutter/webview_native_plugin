@@ -138,6 +138,9 @@
 
     stream.gap = gap;
     stream.data.fills = _fills;
+    // Called with the fill's result when a fill could not close the gap, so the host can fall back to
+    // loading the page again. See report(). Set by main.js; optional.
+    stream.onGapNotClosed = null;
     stream.setHistorySource = function (source) {
         _historySource = typeof source === 'function' ? source : null;
     };
@@ -214,10 +217,28 @@
         return outcome('filled', {fetched: bars.length, fed: toFeed.length, toMs: item.lastDailyBar.time});
     }
 
+    // Tells the host a fill could not close the gap, once per fill. 'too-large' always: nothing a retry
+    // does changes it. 'failed' only when the host asked for the fill; a fill a tick started failing
+    // (slow or erroring history) is routine, and the held tick has already been applied as before.
+    function report(result, byHost) {
+        const reportable = result.status === 'too-large' || (byHost && result.status === 'failed');
+        if (!reportable || typeof stream.onGapNotClosed !== 'function') return;
+        try {
+            stream.onGapNotClosed(result);
+        } catch (err) {
+            logger.warn('exception in onGapNotClosed', err);
+        }
+    }
+
     // Fetches the bars between the subscription's last bar and now (or untilMs if later) and feeds
-    // them. One request per subscription at a time. Never rejects.
-    function fillGap(item, untilMs, timeoutMs) {
-        if (item.fill) return item.fill;
+    // them. One request per subscription at a time. Never rejects. source is 'host' for a fill the host
+    // (or the page becoming visible) asked for and 'tick' for one a tick started.
+    function fillGap(item, untilMs, timeoutMs, source) {
+        if (item.fill) {
+            // A host call that joins a fill a tick started still wants to hear if it failed.
+            if (source === 'host') item.fillByHost = true;
+            return item.fill;
+        }
         const quick = status =>
             Promise.resolve({status, ticker: item.ticker, resolution: item.resolution, ms: 0});
         const last = item.lastDailyBar;
@@ -244,6 +265,9 @@
             .then(result => {
                 if (item.fill === record) item.fill = null;
                 _fills.set(`${item.ticker}_${item.resolution}`, result);
+                const byHost = source === 'host' || item.fillByHost === true;
+                item.fillByHost = false;
+                report(result, byHost);
                 return result;
             });
         item.fill = record;
@@ -279,7 +303,7 @@
         const done = () => release(item, held);
         // A fill the host started earlier may have a longer timeout than a tick should wait.
         held.timer = setTimeout(done, gap.timeoutMs);
-        fillGap(item, tradeTime, gap.timeoutMs).then(done, done);
+        fillGap(item, tradeTime, gap.timeoutMs, 'tick').then(done, done);
     }
 
     // Fills the gap on every subscription of ticker (every subscription if omitted). Never rejects;
@@ -288,7 +312,7 @@
         const items = ticker === undefined
             ? Array.from(_subscriptions.values())
             : stream.getV2(ticker);
-        return Promise.all(items.map(item => fillGap(item, 0, gap.hostTimeoutMs)));
+        return Promise.all(items.map(item => fillGap(item, 0, gap.hostTimeoutMs, 'host')));
     };
 
     function applyTick(subscriptionItem, resolution, ltp, close, volume, tradeTime) {
