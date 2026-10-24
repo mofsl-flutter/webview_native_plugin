@@ -317,10 +317,20 @@ class IosWebViewPlugin {
     }
   }
 
-  /// Clears the WebView's HTTP cache.
+  /// Clears cached web content. **What that means differs by platform.**
   ///
-  /// Only the HTTP cache: DOM storage, cookies and history are untouched. Use
-  /// [clearBrowsingData] when more is needed.
+  /// - **Android:** the WebView's HTTP disk cache only (`WebView.clearCache(true)`), which is shared by
+  ///   every WebView in the process. DOM storage, cookies and history are untouched. Does nothing
+  ///   until a WebView exists.
+  /// - **iOS:** every website data type in the default data store (`WKWebsiteDataStore.default()`):
+  ///   the disk and memory caches **and** cookies, localStorage, sessionStorage, IndexedDB, service
+  ///   workers and offline data, for every WebView that uses that store. That includes what the chart
+  ///   page keeps in localStorage (its token and theme). The call returns before removal finishes.
+  ///
+  /// Do not use it to repair a stale HTTP-cache entry on iOS. The bundled chart does not need it for
+  /// that: its network layer retries a cache-poisoned GET itself (`net_retry.js`). On Android,
+  /// [clearBrowsingData] with `httpCache: true` says what it clears and waits for it; iOS has no
+  /// equivalent that clears the cache alone.
   static Future<void> resetCache() async {
     try {
       await _channel.invokeMethod<void>("resetCache");

@@ -1,5 +1,9 @@
 ## Unreleased
 
+* `IosWebViewPlugin.resetCache` is documented as what it does: on Android the HTTP disk cache only, on iOS
+  every website data type in the default store (cookies, localStorage and IndexedDB included, for every
+  WebView using it), without waiting. No behaviour change. A host that calls it on iOS, for example when the
+  page asks for a cache reset, clears the chart's stored token and theme too.
 * The chart page and the TradingView charting library (29.1.0) now ship inside the plugin
   (`assets/chart/`, 516 files, 11.6 MB, 3.7 MB stored in a debug APK; release size not measured)
   and are served locally, so opening

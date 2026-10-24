@@ -33,7 +33,9 @@ class WebViewMoFlutterController {
     }
   }
 
-  /// Resets the web view's cache.
+  /// Clears cached web content. On Android that is the HTTP disk cache only; on iOS it is every
+  /// website data type in the default store, cookies and localStorage included. See
+  /// `IosWebViewPlugin.resetCache` for the details.
   Future<void> resetCache() async {
     try {
       await _methodChannel.invokeMethod<void>("resetCache");
