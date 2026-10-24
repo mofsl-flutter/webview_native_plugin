@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import 'production_guard.dart';
 import 'scenario.dart';
 import 'scenario_runner.dart';
 
@@ -127,6 +128,27 @@ void emitResult(ScenarioResult result) {
 /// Reports that a case could not start, so the host script shows why instead of silence.
 void emitBootError(String id, String message) {
   debugPrintSynchronously('$kResultTag\t$id\tERROR\t$message');
+}
+
+/// [selected] split by whether this build's environment may run each case. See `environment.dart`.
+({List<Scenario> run, List<Scenario> blocked}) partitionForEnvironment(List<Scenario> selected) => (
+      run: selected.where(runsInThisEnvironment).toList(),
+      blocked: selected.where((Scenario s) => !runsInThisEnvironment(s)).toList(),
+    );
+
+final Set<String> _announcedSkips = <String>{};
+
+/// Reports each of [blocked] once as `SKIPPED`, with why, so a host script that asked for a case
+/// sees that it did not run instead of an absence. Returns whether anything new was reported, which
+/// lets a caller that then has nothing to run say "done" exactly once.
+bool emitSkipped(List<Scenario> blocked) {
+  bool any = false;
+  for (final Scenario s in blocked) {
+    if (!_announcedSkips.add(s.id)) continue;
+    any = true;
+    debugPrintSynchronously('$kResultTag\t${s.id}\tSKIPPED\t${blockedReason(s)}');
+  }
+  return any;
 }
 
 /// Emits a line marking the end of a batch, so the script knows when to stop polling.

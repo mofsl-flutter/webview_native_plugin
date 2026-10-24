@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../config/environment.dart';
 import '../service/token_api.dart';
 import 'config_screen.dart';
 import 'recovery_screen.dart';
+import 'environment_banner.dart';
 import 'session.dart';
 
 /// Generates an access token from a client code.
@@ -76,6 +78,8 @@ class _AuthScreenState extends State<AuthScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: <Widget>[
+          EnvironmentBanner(production: kChartProd, clientCode: widget.session.clientCode),
+          const SizedBox(height: 12),
           TextField(
             controller: _clientCode,
             decoration: const InputDecoration(

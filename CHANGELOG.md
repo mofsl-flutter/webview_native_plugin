@@ -49,6 +49,16 @@
   bundled page at another environment's API. `--dart-define=CHART_LOCAL=true` loads the bundled chart, `--dart-define=SCENARIO=L1`
   starts a regression case on iOS, cases `L1`/`L2` check the bundled chart on both platforms, and `S1`/`S2`
   record save traffic and legend-poll cost.
+* Example app: it now defaults to production (`https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/`,
+  client `T029342`), with a banner that names the environment and the client. `--dart-define=CHART_ENV=uat`
+  restores the previous behaviour (UAT page, UAT API, client `T06794`), and `CHART_CLIENT_CODE` picks the
+  client. Production runs only the regression cases whose every step opens a chart and observes
+  (`A1 A5 E3 E4 G2 L1 L2 N1 O1 P1 WC`, pinned in `test/environment_test.dart`); the rest are hidden in
+  the app and reported as `SKIPPED` by `SCENARIO=...` runs, because they add indicators, switch
+  intervals and symbols, or save repeatedly on a real account. `--dart-define=ALLOW_PROD_WRITES=true`
+  runs them anyway. Opening a chart still records it as the account's last-viewed one. Anything that
+  ran the suite against UAT (including `example/tool/run_regression.sh`) now needs
+  `--dart-define=CHART_ENV=uat` in its build.
 
 ## 0.0.4
 

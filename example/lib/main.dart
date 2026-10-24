@@ -3,6 +3,7 @@ import 'package:ios_webview_plugin/chart_session.dart';
 import 'package:ios_webview_plugin/ios_webview_plugin.dart';
 
 import 'src/config/endpoints.dart';
+import 'src/config/environment.dart';
 import 'src/regression/autorun.dart';
 import 'src/regression/scenario.dart';
 import 'src/regression/scenario_catalog.dart';
@@ -28,6 +29,12 @@ void main() {
   IosWebViewPlugin.setProgressForwarding(enabled: false);
   IosWebViewPlugin.setConsoleForwarding(enabled: false);
 
+  // Refuse an unknown CHART_ENV rather than guess which environment was meant, then say which one
+  // this is: production is the default and a run can write to a real account.
+  requireKnownEnvironment();
+  debugPrint('environment: ${kChartProd ? 'PRODUCTION' : 'UAT'}, client $kDefaultClientCode, '
+      'page $kChartUrl, API $kChartRoot');
+
   final BenchmarkSession session = BenchmarkSession();
 
   // A relaunch delivered to an already-running instance (see MainActivity.onNewIntent) never
@@ -42,11 +49,17 @@ void main() {
       return;
     }
     if (!args.hasWork) return;
-    final List<Scenario> selected = selectScenarios(args, buildCatalog());
-    if (selected.isEmpty) return;
+    final ({List<Scenario> run, List<Scenario> blocked}) parts =
+        partitionForEnvironment(selectScenarios(args, buildCatalog()));
+    final bool newlyBlocked = emitSkipped(parts.blocked);
+    if (parts.run.isEmpty) {
+      // Everything asked for was blocked: say so and say done, or a script waits for nothing.
+      if (newlyBlocked) emitDone(0, 0);
+      return;
+    }
     _navigatorKey.currentState?.push(
       MaterialPageRoute<void>(
-        builder: (_) => RegressionScreen(session: session, autorunScenarios: selected),
+        builder: (_) => RegressionScreen(session: session, autorunScenarios: parts.run),
       ),
     );
   });
@@ -155,10 +168,13 @@ class BenchmarkApp extends StatelessWidget {
           final LaunchArgs args = snap.data!;
           if (args.hasRecoveryWork) return RecoveryScreen(autorun: args.recovery);
           if (args.hasWork) {
-            final List<Scenario> selected = selectScenarios(args, buildCatalog());
-            if (selected.isNotEmpty) {
-              return _AutorunBootstrap(session: session, scenarios: selected);
+            final ({List<Scenario> run, List<Scenario> blocked}) parts =
+                partitionForEnvironment(selectScenarios(args, buildCatalog()));
+            final bool newlyBlocked = emitSkipped(parts.blocked);
+            if (parts.run.isNotEmpty) {
+              return _AutorunBootstrap(session: session, scenarios: parts.run);
             }
+            if (newlyBlocked) emitDone(0, 0);
           }
           return AuthScreen(session: session);
         },

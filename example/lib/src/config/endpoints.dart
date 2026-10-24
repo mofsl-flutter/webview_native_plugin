@@ -3,26 +3,37 @@ library;
 
 import 'package:ios_webview_plugin/chart_bundle.dart';
 
+import 'environment.dart';
+
 /// Access-token API base.
+///
+/// The one token service, for both environments: a token it issues is accepted by UAT and by
+/// production, so the environment is chosen by [kChartUrl] / [kChartRoot], not here.
 const String kTokenBase =
     'https://tradingapi.motilaloswaluat.com/tradingapiV2/api/Authorize/AccessToken';
 
-/// The chart page under test.
-const String kChartUrl =
-    'https://tradingapi.motilaloswaluat.com/chart/v4/RiseApp_Mobile.html';
+/// The chart page under test: production's hosted page by default, UAT's with `CHART_ENV=uat`.
+///
+/// Used when the harness loads the hosted page; with `--dart-define=CHART_LOCAL=true` the bundled
+/// page is loaded instead and only [kChartRoot] decides which API it calls.
+const String kChartUrl = kChartProd
+    ? 'https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/v4/RiseApp_Mobile.html'
+    : 'https://tradingapi.motilaloswaluat.com/chart/v4/RiseApp_Mobile.html';
 
 /// Chart data API base, for reference when reading resource timings.
-const String kChartApiBase = 'https://tradingapi.motilaloswaluat.com/chart/api';
+const String kChartApiBase = '${kChartRoot}api';
 
 /// The server's chart root: the URL `api/...` is relative to, and what a bundled page is told as
 /// `apiBase` (see `ChartBundle.localUrl`).
 ///
-/// UAT unless `--dart-define=CHART_API_ROOT=<url>` says otherwise, which is how the bundled page is
-/// pointed at another environment (it ends in `/`, e.g. `https://<host>/charts/`). It only moves
-/// the page's API calls: the hosted page, the token lookup and the cache-warm cases stay on UAT.
+/// Production's by default, UAT's with `CHART_ENV=uat`, and `--dart-define=CHART_API_ROOT=<url>`
+/// overrides either (it ends in `/`, e.g. `https://<host>/charts/`). The cache-warm cases and their
+/// URL fixture belong to UAT and only run with `CHART_ENV=uat`.
 const String kChartRoot = String.fromEnvironment(
   'CHART_API_ROOT',
-  defaultValue: 'https://tradingapi.motilaloswaluat.com/chart/',
+  defaultValue: kChartProd
+      ? 'https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/'
+      : 'https://tradingapi.motilaloswaluat.com/chart/',
 );
 
 /// The symbol case `O1` opens (`--dart-define=CHART_SYMBOL=<symbol>`), in the form `loadChart` takes
@@ -70,8 +81,15 @@ String chartPageUrl({String? theme, String? runId}) {
       .toString();
 }
 
-/// Default client code.
-const String kDefaultClientCode = 'T06794';
+/// Default client code: the one the token is minted for, so the account the run acts as.
+///
+/// Production's is `T029342` (the example app's production test client) and UAT's `T06794`. Override
+/// with `--dart-define=CHART_CLIENT_CODE=<code>`; it is also editable on the token screen. A client
+/// code that belongs to a real person means every run writes to that person's account.
+const String kDefaultClientCode = String.fromEnvironment(
+  'CHART_CLIENT_CODE',
+  defaultValue: kChartProd ? 'T029342' : 'T06794',
+);
 
 /// Default user type.
 const String kDefaultUserType = 'T';

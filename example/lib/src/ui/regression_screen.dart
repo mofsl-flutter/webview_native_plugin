@@ -5,11 +5,14 @@ import 'package:ios_webview_plugin/chart_session.dart';
 import 'package:ios_webview_plugin/webview_events.dart';
 import 'package:ios_webview_plugin/webview_mo_flutter_view.dart';
 
+import '../config/environment.dart';
 import '../regression/autorun.dart';
+import '../regression/production_guard.dart';
 import '../regression/expectation.dart';
 import '../regression/scenario.dart';
 import '../regression/scenario_catalog.dart';
 import '../regression/scenario_runner.dart';
+import 'environment_banner.dart';
 import 'log_screen.dart';
 import 'session.dart';
 
@@ -36,7 +39,11 @@ class _RegressionScreenState extends State<RegressionScreen> {
   // Stable identity: the platform view must not be remounted by a rebuild, only by the
   // deliberate navigate-away step.
   final GlobalKey _hostKey = GlobalKey();
-  final List<Scenario> _catalog = buildCatalog();
+  // Only what this environment may run. On production that is the cases that just open charts; the
+  // rest would change what a real account has saved. The banner says how many are hidden.
+  late final List<Scenario> _all = buildCatalog();
+  late final List<Scenario> _catalog =
+      _all.where(runsInThisEnvironment).toList();
 
   Completer<void> _viewReady = Completer<void>();
   late final ScenarioRunner _runner;
@@ -143,6 +150,11 @@ class _RegressionScreenState extends State<RegressionScreen> {
       ),
       body: Column(
         children: <Widget>[
+          EnvironmentBanner(
+            production: kChartProd,
+            clientCode: widget.session.clientCode,
+            hiddenCases: _all.length - _catalog.length,
+          ),
           // Kept small but mounted: the platform view must exist for any case to run.
           SizedBox(
             height: 140,
