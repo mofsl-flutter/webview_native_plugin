@@ -58,6 +58,31 @@ Decides where API calls go. A page served from the app has no API next to it, so
 server in the URL (`?apiBase=https://server/chart/`). Missing or invalid is an error, never a guess.
 Tests: `api_base.test.mjs`.
 
+It also adds `<link rel="preconnect" href="<API origin>" crossorigin="anonymous">` to the head at parse
+time, so the DNS lookup, TCP connection and TLS handshake to the API run while the rest of the page and
+the charting library load, instead of inside the first API call. Only when the API is on another origin
+(a hosted page's own origin is already connected), only once, never when `apiBase` is missing or invalid,
+and never able to break the page (`apiBase.preconnected` says whether this load added it). `crossorigin`
+is what makes the connection usable by the page's CORS `fetch` calls. Tests: `preconnect.test.mjs`.
+
+**Measured** (Android 16 emulator, 4 GB, production API, case `O1`, 8 launches per cell, interleaved):
+
+| | without | with preconnect |
+|---|---|---|
+| First preflight (DevTools capture, 2 captures each) | 93, 97 ms | 59, 80 ms |
+| Cold open, end to end, median | 884 ms | 846 ms |
+| Warm open, end to end, median | 822 ms | 789 ms |
+| Cold open with the prefetch (case `O2`) | 669 ms | 656 ms |
+| Warm open with the prefetch (case `O2`) | 658 ms | 672 ms |
+
+So about 25 to 40 ms where the page makes its own calls, and nothing measurable with the prefetch (which
+moves those calls to Dart). A one-sided permutation test on the 8 values per cell gives p of about 0.06
+for the two `O1` cells and 0.14 and 0.49 for the `O2` ones: a small effect that is not clearly outside
+the run-to-run noise. It is kept because it is cheap and cannot do harm, **not** because it was shown to
+matter. The earlier estimate of "up to 0.45 s" came from a first preflight of 503 ms seen on a 2 GB
+emulator under memory pressure; on a healthy one the whole connection set-up costs about 60 ms. A phone
+on a mobile network, where a TLS handshake costs more round trips, could benefit more. That is untested.
+
 ## `js/core/static_config.js`
 
 `fetchWith401Retry` resolves the URL through `ChartApp.apiBase` before `fetch`. The relative form

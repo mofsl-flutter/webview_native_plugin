@@ -1,5 +1,11 @@
 ## Unreleased
 
+* The bundled page asks the browser to connect to the API's origin as soon as it knows it
+  (`<link rel="preconnect" crossorigin>` added by `api_base.js`), so the first API call no longer pays for
+  the DNS lookup, TCP connection and TLS handshake itself. Measured on a 4 GB Android emulator against
+  production it saves about 25 to 40 ms on an open and nothing measurable once the prefetch is used (a
+  first preflight of 93 to 97 ms became 59 to 80 ms); not clearly outside run-to-run noise (p of about
+  0.06), kept because it is cheap and cannot do harm. A phone on a mobile network is untested.
 * Example app: `tool/bench/` times the open of the chart on an emulator in interleaved blocks and
   checks where the requests went. `run_block.sh` runs cold, priming and warm launches of one build and
   records the WebView version and free memory; `analyze.mjs` prints medians, minimums and maximums, the

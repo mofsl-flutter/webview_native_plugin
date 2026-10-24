@@ -62,10 +62,38 @@
 
     const parsed = parse(window.location);
 
+    // Asks the browser to open the connection to the API's origin now, while the rest of the page and
+    // the charting library are still loading. A page served from the app calls an API on another
+    // origin, and its first call otherwise pays for the DNS lookup, the TCP connection and the TLS
+    // handshake itself (measured: a first preflight of about half a second, 40 to 60 ms for the ones
+    // after it). `crossorigin` matters: the page's calls are CORS requests, and a connection opened
+    // without it is of the wrong kind and the first call cannot use it.
+    //
+    // Only for an API on another origin (a hosted page's own origin is already connected), only once,
+    // and never allowed to break the page: a hint that cannot be added is simply not added.
+    function preconnect(doc, base, loc) {
+        try {
+            if (!doc || !doc.head || !base) return false;
+            const origin = new URL(base).origin;
+            if (origin === loc.origin) return false;
+            if (doc.head.querySelector('link[rel="preconnect"][href="' + origin + '"]')) return false;
+            const link = doc.createElement('link');
+            link.rel = 'preconnect';
+            link.href = origin;
+            link.crossOrigin = 'anonymous';
+            doc.head.appendChild(link);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
     chartApp.apiBase = {
         // The resolved base ("https://server/chart/"), or null on a remote page.
         base: parsed.base === undefined ? null : parsed.base,
         error: parsed.error || null,
+        // Whether this load of the script added the connection hint (see preconnect above).
+        preconnected: preconnect(window.document, parsed.base, window.location),
         resolve: function (url) {
             return resolve(parsed, url);
         },
