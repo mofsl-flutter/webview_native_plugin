@@ -235,9 +235,22 @@ class BenchRunner extends ChangeNotifier {
     await _terminal!.future;
   }
 
-  String _buildUrl(String runId, RunConfig config) {
-    return chartPageUrl(theme: 'dark', runId: config.cacheBustUrl ? runId : null);
-  }
+  String _buildUrl(String runId, RunConfig config) => pageUrl(runId, config);
+
+  /// The URL a run loads: the page the build was started with, or the hosted one when the run asks
+  /// for it ([RunConfig.forceHosted]).
+  @visibleForTesting
+  static String pageUrl(String runId, RunConfig config) => chartPageUrl(
+        theme: 'dark',
+        runId: config.cacheBustUrl ? runId : null,
+        local: localFor(config),
+      );
+
+  /// Which page a run loads: `false` (hosted) when it asks for that, otherwise `null`, which follows
+  /// the build. Separate from [pageUrl] because in a hosted build the two are the same URL, so only
+  /// the decision itself can be told apart from "always follow the build".
+  @visibleForTesting
+  static bool? localFor(RunConfig config) => config.forceHosted ? false : null;
 
   void _resetRunState(RunConfig config) {
     _marks.clear();

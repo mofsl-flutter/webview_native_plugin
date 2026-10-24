@@ -46,6 +46,8 @@ changes that user's saved layout. Use a dedicated test client.
 
 ## `RiseApp_Mobile.html`
 
+Loads `js/core/net_retry.js` before `static_config.js`.
+
 - The Akamai mPulse (boomerang) analytics snippet is removed. It phones home on every open.
 - Three scripts are added before `static_config.js`: `js/core/api_base.js`,
   `js/core/save_scheduler.js` and `js/core/preload.js`.
@@ -69,6 +71,65 @@ error). Measured with case `N1`: the adapter went from `hung` to `rejected: Fail
 
 The four adapter calls that open a chart (`config`, `symbolInfo`, `GetChartSavedInfo`, `getData`)
 first ask `ChartApp.preload` for a response the host already fetched; see the next section.
+
+`fetchWith401Retry`'s one `fetch` now goes through `ChartApp.netRetry.fetch` (next section).
+
+## `js/core/net_retry.js` (new file)
+
+**The problem (the rollout blocker).** The bundled page's API calls are cross-origin. Production's
+cacheable GETs, `Symbols` (`max-age=7200`) and `Config` (`max-age=21600`), carry
+`access-control-allow-origin` only when the request has an Origin header, and the server sends no
+`Vary: Origin`. A copy stored by a same-origin request has no such header. The hosted page stores
+one that way, and so does the hosted **Peak** page, which requests both endpoints and shares the
+app's one WebView. The bundled page's request is then served that copy from the HTTP cache, fails
+the CORS check (`net::ERR_FAILED`), and the chart reports `SymbolNotFound` with no candles.
+
+Observed on an Android 16 emulator (case `L5`, one APK, hosted page first and then the bundled page
+in the same profile): the hosted open drew 300 candles, the bundled open ended in `SymbolNotFound`
+with 0 bars, on a clean profile and on a used one, every run. Every existing user's WebView is in
+that state, for up to 2 and 6 hours after the last hosted or Peak open, and this WebView did not
+partition its HTTP cache by top-level site (otherwise it could not have happened). Clearing the
+cache once is not a fix: the next Peak open refills it.
+
+**The fix.** `ChartApp.netRetry.fetch(target, options)` runs the request, and if it fails with a
+network error (`TypeError`) and is a GET and the caller chose no `cache` mode and was not aborted,
+asks again once with `cache: 'reload'`. That goes to the server and stores a copy that has the
+header, so later requests (this page's, and the hosted page's) are served a copy the bundled page
+can read. Never a write (it may have reached the server), never a second retry, never an HTTP status
+(that is an answer). The caller's options are copied, not changed (the 401 queue keeps the same
+object). `window.fetch` is looked up at call time because the harness replaces it for case `N1`.
+The log line carries the path only.
+
+There is one request call site in the page, `fetchWith401Retry`, so one edit covers every endpoint,
+and `tool/js_test/net_retry.test.mjs` fails if any script gains a request that bypasses the module
+or if `net_retry.js` stops loading before `static_config.js`. The prefetch hand-off (Dart's
+`HttpClient`) never touches the WebView cache and is unaffected.
+
+**Measured** (Android emulator, production API, client `T029342`):
+
+| Page | `L5` result |
+|---|---|
+| Retry disabled (deliberately) | FAIL, twice: bundled open `SymbolNotFound`, 0 bars |
+| Retry enabled, clean profile (3 runs) | PASS, 300 candles; `retried: 2, recovered: 2` (Symbols and Config) |
+| Retry enabled, used profile (3 runs) | PASS; `retried: 0`: the earlier recovery left healthy entries |
+
+`L1` to `L4`, `O1`, `P1` and `N1` still pass. `N1` (every `fetch` fails) shows `retried: 1, failed: 1`
+and still ends in `rejected`, so an outage is not hidden.
+
+iOS simulator (correctness only, one run each): `L5` passes **without** the retry, so the hosted
+page did not poison the bundled page there. Why is not established (WebKit may key its cache by
+site; nothing here shows it), and a simulator is not a device. With the retry, `L5` passes and `N1` shows WebKit's failed fetch is a
+`TypeError` too (`retried: 1, failed: 1`), so the retry is live on iOS and harmless.
+
+**Still wanted from the API owners:** `access-control-allow-origin: *` on every response and
+`Vary: Origin` on the cacheable GETs. With that the retry is a safety net, and the hosted Peak page
+stops being able to poison anything. (`Access-Control-Max-Age: 7200` on OPTIONS would save repeat
+preflights of the same URL, which are rare here.) `Peak`'s own `fetchWith401Retry` is the old
+version with no `try`/`catch`, so a network error leaves its promise hanging; that is the server's
+page, not ours.
+
+**Not the fix:** `IosWebViewPlugin.resetCache()`. On iOS it removes every website data type, cookies
+and localStorage included (see its corrected doc); on Android it clears the HTTP disk cache only.
 
 ## `js/core/preload.js` (new file)
 

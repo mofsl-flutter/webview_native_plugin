@@ -111,6 +111,7 @@ class RunConfig {
     this.budgetScale = 1.0,
     this.prefetch = false,
     this.hideLastBars = 0,
+    this.forceHosted = false,
   });
 
   /// Symbol to load.
@@ -171,6 +172,10 @@ class RunConfig {
   /// Only meaningful for a bundled page, which carries the store that receives it
   /// (`--dart-define=CHART_LOCAL=true`); a hosted page ignores the hand-off.
   final bool prefetch;
+
+  /// Loads the hosted page even when the build was started with `CHART_LOCAL=true`. For a case that
+  /// needs the hosted page to have used the WebView profile before the bundled page does.
+  final bool forceHosted;
 
   /// Hides this many of the last candles from the page's first history answer, as if live ticks had
   /// stopped that many bars before the chart opened. For a case that fills them back in.

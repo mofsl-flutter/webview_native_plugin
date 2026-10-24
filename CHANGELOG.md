@@ -1,9 +1,22 @@
 ## Unreleased
 
+* **Fix: the bundled page could not open in a WebView the hosted page had used.** Production's `Symbols`
+  (cached for 2 hours) and `Config` (6 hours) carry their CORS header only when the request has an Origin
+  and say nothing about `Vary: Origin`, so a copy stored by the hosted page, or by the hosted Peak page that
+  shares the app's WebView, is served to the bundled page's cross-origin request, which fails, and the chart
+  reports `SymbolNotFound` with no candles. Reproduced every time on an Android emulator. The page now asks
+  a failed cacheable GET once more with the cache bypassed (`js/core/net_retry.js`; GETs only, one retry, not
+  when the caller chose a cache mode), which also stores a copy the page can read. A failure that is really
+  an outage is still rejected. iOS (simulator only) did not show the problem. Still wanted from the API:
+  the CORS header on every response and `Vary: Origin`. Details and measurements in
+  `tool/chart_page_changes.md`.
 * `IosWebViewPlugin.resetCache` is documented as what it does: on Android the HTTP disk cache only, on iOS
   every website data type in the default store (cookies, localStorage and IndexedDB included, for every
   WebView using it), without waiting. No behaviour change. A host that calls it on iOS, for example when the
   page asks for a cache reset, clears the chart's stored token and theme too.
+* Example app: case `L5` opens the hosted page and then the bundled one in the same WebView profile and
+  expects the bundled chart to open (`OpenChart(forceHosted:)` loads the hosted page in a bundled build); the
+  probe reports the page's origin and how often the cache had to be bypassed.
 * The chart page and the TradingView charting library (29.1.0) now ship inside the plugin
   (`assets/chart/`, 516 files, 11.6 MB, 3.7 MB stored in a debug APK; release size not measured)
   and are served locally, so opening

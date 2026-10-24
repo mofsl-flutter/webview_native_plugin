@@ -7,6 +7,7 @@
 library;
 
 import '../config/endpoints.dart';
+import '../model/bench_models.dart' show TerminalOutcome;
 import 'expectation.dart';
 import 'scenario.dart';
 import 'scenario_catalog.dart' show kEquityA, kEquityB;
@@ -65,6 +66,7 @@ final List<Scenario> localBundleScenarios = <Scenario>[
   openSymbolScenario,
   gapFillScenario,
   tickAfterGapScenario,
+  hostedThenBundledScenario,
 ];
 
 /// Not a pass/fail case: it records how much the page saves while it is panned, so a change to the
@@ -255,6 +257,71 @@ final Scenario gapFillScenario = Scenario(
     const ExpectCustom('a second fill finds nothing new', _secondFillIsNoop),
   ],
 );
+
+/// The bundled page opens in a WebView profile the hosted page used first.
+///
+/// Production's `Symbols` (cacheable for 2 hours) and `Config` (6 hours) carry their CORS header only
+/// when the request has an Origin, and the server says nothing about `Vary: Origin`. The hosted page
+/// (and the hosted Peak page, which shares the app's one WebView) requests them same-origin, so the
+/// copy it leaves in the HTTP cache has no header; the bundled page's CORS request is then served that
+/// copy and fails (`net::ERR_FAILED`), and the chart reports SymbolNotFound with no candles. Every
+/// existing user's WebView is in that state, so a bundled page that cannot open in it breaks the
+/// rollout. `netRetry` (the page's one retry of a failed GET with the cache bypassed) is what makes
+/// it open; the retry counter is printed as evidence, not required, because a healthy cache needs none.
+///
+/// Opens a chart twice, so it records the symbol twice: use `--dart-define=CHART_SYMBOL` to leave an
+/// account on the symbol it was on.
+final Scenario hostedThenBundledScenario = Scenario(
+  id: 'L5',
+  title: 'Bundled chart: opens in a profile the hosted page used first',
+  dimension: Dimension.storage,
+  precondition: ExternalPrecondition.fullCold,
+  hypothesis: 'The hosted page leaves Symbols and Config in the HTTP cache without a CORS header; '
+      'the bundled page must still open, by asking again with the cache bypassed.',
+  steps: const <ScenarioStep>[
+    // Same-origin to the API: stores Symbols and Config the way the hosted page and Peak do.
+    OpenChart(kChartSymbol, budgetScale: 6, forceHosted: true),
+    // Its own saves finish, and the cache entries exist.
+    Wait(Duration(seconds: 6)),
+    Probe('hosted'),
+    // Cross-origin to the API, in the same profile and with no clearing in between.
+    OpenChart(kChartSymbol, budgetScale: 6),
+    Wait(Duration(seconds: 8)),
+    Probe('bundled'),
+  ],
+  expectations: <Expectation>[
+    const ExpectCustom('the harness was started with CHART_LOCAL=true', _localModeOn),
+    const ExpectCustom('the first open was the hosted page and it drew candles', _hostedOpenWorked),
+    const ExpectCustom('the second open was the bundled page', _secondOpenWasBundled),
+    const ExpectCustom('the bundled page opened and drew candles after the hosted one', _bundledOpenedAfterHosted),
+  ],
+);
+
+String _originOf(String url) {
+  final Uri u = Uri.parse(url);
+  return '${u.scheme}://${u.host}';
+}
+
+bool _drewCandles(Map<String, Object?>? probe) {
+  final Object? bars = probe?['bars'];
+  return probe?['widgetReady'] == true && bars is num && bars > 0;
+}
+
+bool _hostedOpenWorked(ScenarioObservations o) {
+  final Map<String, Object?>? p = o.probes['hosted'];
+  return o.records.isNotEmpty &&
+      o.records[0].outcome == TerminalOutcome.chartSuccess &&
+      p?['origin'] == _originOf(chartPageUrl(local: false)) &&
+      _drewCandles(p);
+}
+
+bool _secondOpenWasBundled(ScenarioObservations o) =>
+    o.records.length >= 2 && o.probes['bundled']?['origin'] == _originOf(chartPageUrl(local: true));
+
+bool _bundledOpenedAfterHosted(ScenarioObservations o) =>
+    o.records.length >= 2 &&
+    o.records[1].outcome == TerminalOutcome.chartSuccess &&
+    _drewCandles(o.probes['bundled']);
 
 /// The first tick after a gap arrives before anything asked for a fill.
 ///

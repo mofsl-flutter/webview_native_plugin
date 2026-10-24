@@ -551,6 +551,10 @@ String buildProbeJs(String runId, String label) {
       'try{'
       'var A=window.ChartApp||{};'
       'out.version=(A.config&&A.config.version)||null;'
+      // Which page this is: the hosted one (the API's own origin) or the bundled one (the app's).
+      'out.origin=location.protocol+"//"+location.host;'
+      // How often a cached API response had to be bypassed (net_retry.js); null on a page without it.
+      'out.netRetry=null;try{out.netRetry=A.netRetry&&A.netRetry.stats?A.netRetry.stats():null;}catch(e){}'
       'out.theme=null;try{out.theme=localStorage.getItem("chart.user.theme");}catch(e){}'
       'out.hasToken=false;try{out.hasToken=!!localStorage.getItem("chart.user.token");}catch(e){}'
       'var w=A.tvWidget;'

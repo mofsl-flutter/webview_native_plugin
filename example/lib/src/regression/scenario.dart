@@ -108,10 +108,15 @@ final class OpenChart extends ScenarioStep {
     this.budgetScale = 1.0,
     this.prefetch = false,
     this.hideLastBars = 0,
+    this.forceHosted = false,
   });
 
   /// Symbol to load.
   final String symbol;
+
+  /// Loads the hosted page even in a build started with `CHART_LOCAL=true`. See
+  /// [RunConfig.forceHosted].
+  final bool forceHosted;
 
   /// Hides this many of the last candles from the first history answer. See
   /// [RunConfig.hideLastBars].
@@ -139,6 +144,7 @@ final class OpenChart extends ScenarioStep {
       '${chartMode == 'FullChart' ? '' : ' mode=$chartMode'}'
       '${prefetch ? ' with prefetch' : ''}'
       '${hideLastBars == 0 ? '' : ' hiding the last $hideLastBars bars'}'
+      '${forceHosted ? ' (hosted page)' : ''}'
       '${budgetScale == 1.0 ? '' : ' budget x$budgetScale'}';
 }
 

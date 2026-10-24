@@ -96,6 +96,23 @@ class ScenarioResult {
   }
 }
 
+/// The run an [OpenChart] step asks for.
+///
+/// One place, so a field added to the step cannot be dropped on the way to the run. A dropped
+/// `forceHosted` would make the hosted-then-bundled case open the bundled page twice and prove
+/// nothing.
+@visibleForTesting
+RunConfig runConfigFor(OpenChart step) => RunConfig(
+      symbol: step.symbol,
+      authorizeFirst: step.authorizeFirst,
+      neverAuthorize: step.neverAuthorize,
+      chartMode: step.chartMode,
+      budgetScale: step.budgetScale,
+      prefetch: step.prefetch,
+      hideLastBars: step.hideLastBars,
+      forceHosted: step.forceHosted,
+    );
+
 /// Compact metrics summary for [ScenarioResult.line], sourced from the last load record.
 String _metricsSummary(RunRecord? r) {
   if (r == null) return '';
@@ -239,28 +256,10 @@ class ScenarioRunner extends ChangeNotifier {
         );
         obs.notes.add('pre-warmed${loadUrl ? ' with load' : ''}');
 
-      case OpenChart(
-          :final String symbol,
-          :final bool authorizeFirst,
-          :final bool neverAuthorize,
-          :final String chartMode,
-          :final double budgetScale,
-          :final bool prefetch,
-          :final int hideLastBars
-        ):
+      case final OpenChart step:
         final BenchRunner runner = BenchRunner(token: token);
         await runner.runBatch(
-          configs: <RunConfig>[
-            RunConfig(
-              symbol: symbol,
-              authorizeFirst: authorizeFirst,
-              neverAuthorize: neverAuthorize,
-              chartMode: chartMode,
-              budgetScale: budgetScale,
-              prefetch: prefetch,
-              hideLastBars: hideLastBars,
-            ),
-          ],
+          configs: <RunConfig>[runConfigFor(step)],
           repeats: 1,
           awaitViewMounted: host.awaitViewMounted,
         );
@@ -270,14 +269,14 @@ class ScenarioRunner extends ChangeNotifier {
         final int n = obs.records.length;
         if (runner.records.isNotEmpty) {
           final Map<String, int?> m = runner.records.last.metrics;
-          obs.summaries['open.$n'] = 'prefetch=$prefetch outcome=${runner.records.last.outcome.name} '
+          obs.summaries['open.$n'] = 'prefetch=${step.prefetch} outcome=${runner.records.last.outcome.name} '
               'authorizeRtt=${m['authorizeRtt']} chartRender=${m['chartRender']} endToEnd=${m['endToEnd']}';
         }
         if (runner.prefetchOutcomes.isNotEmpty) {
           obs.summaries['prefetch.$n'] = runner.prefetchOutcomes.toString();
         }
         runner.dispose();
-        if (chartMode != kChartMode) obs.notes.add('requested mode $chartMode');
+        if (step.chartMode != kChartMode) obs.notes.add('requested mode ${step.chartMode}');
 
       case ChangeSymbol(:final String symbol, :final String chartMode):
         // No navigation: reuse the live page. A load record is still produced so the
@@ -363,7 +362,7 @@ class ScenarioRunner extends ChangeNotifier {
             'bars=${seen['bars']} widgetReady=${seen['widgetReady']} hasToken=${seen['hasToken']} '
             'rangeEvents=${seen['rangeEvents']} saveCost=${seen['saveCost']} legendPolls=${seen['legendPolls']} legendMs=${seen['legendMs']} studies=${seen['studies']} preload=${seen['preload']} net=${seen['net']}';
         // A fill's evidence on lines of its own: a long line is split by the platform and loses the tag.
-        for (final String extra in <String>['gap', 'census', 'fills']) {
+        for (final String extra in <String>['gap', 'census', 'fills', 'netRetry', 'origin']) {
           final Object? v = seen[extra];
           if (v != null && !(v is List && v.isEmpty)) obs.summaries['probe.$label.$extra'] = '$v';
         }

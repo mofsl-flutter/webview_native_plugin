@@ -1468,7 +1468,9 @@
                 }
                 let response;
                 try {
-                    response = await fetch(target, options);
+                    // Through net_retry: a cacheable GET that fails because the HTTP cache holds a
+                    // copy without its CORS header is asked for once more, bypassing the cache.
+                    response = await chartApp.netRetry.fetch(target, options);
                 } catch (err) {
                     // The request itself failed (offline, DNS, TLS, blocked). Without this the throw
                     // escapes the async executor, nothing settles the promise, and every caller

@@ -41,4 +41,34 @@ void main() {
   test('theme and run id are `?theme=dark&hbRun=<id>` in that order', () {
     expect(chartPageUrl(theme: 'dark', runId: 'r42'), '$kChartUrl?theme=dark&hbRun=r42');
   }, skip: hostedOnly);
+
+  // A case can load either page whatever the build was started with. The hosted-then-bundled case
+  // (L5) needs both in one run, in the same WebView profile.
+  group('choosing the page for one load', () {
+    test('local: false is the hosted URL, with the same query as always', () {
+      expect(chartPageUrl(local: false), kChartUrl);
+      expect(chartPageUrl(local: false, theme: 'dark', runId: 'r1'), '$kChartUrl?theme=dark&hbRun=r1');
+    });
+
+    test('local: true is the bundled page, told to call the configured API', () {
+      final Uri page = Uri.parse(chartPageUrl(local: true, theme: 'dark', runId: 'r1'));
+
+      expect(page.host, 'appassets.androidplatform.net');
+      expect(page.path, '/chart/v4/RiseApp_Mobile.html');
+      expect(page.queryParameters['apiBase'], kChartRoot);
+      expect(page.queryParameters['theme'], 'dark');
+      expect(page.queryParameters['hbRun'], 'r1');
+    });
+
+    test('left out, it follows CHART_LOCAL as it always did', () {
+      expect(chartPageUrl(), chartPageUrl(local: kChartLocal));
+      expect(chartPageUrl(theme: 'dark', runId: 'r1'), chartPageUrl(local: kChartLocal, theme: 'dark', runId: 'r1'));
+    });
+
+    test('the two pages are on different origins, which is what makes the second a CORS client', () {
+      expect(Uri.parse(chartPageUrl(local: true)).origin, isNot(Uri.parse(chartPageUrl(local: false)).origin));
+      expect(Uri.parse(chartPageUrl(local: false)).host, Uri.parse(kChartRoot).host,
+          reason: 'the hosted page is same-origin to its API: that is how it poisons the cache');
+    });
+  });
 }

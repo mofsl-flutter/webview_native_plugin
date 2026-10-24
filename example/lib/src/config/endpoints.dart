@@ -60,21 +60,25 @@ const bool kChartLocal = bool.fromEnvironment('CHART_LOCAL');
 /// With nothing else asked for and [kChartLocal] off this is exactly [kChartUrl], so the hosted
 /// runs keep the URLs (and so the cache keys) they always had. [theme] and [runId] (`hbRun`, the
 /// harness's cache-bust and stray-event marker) are added as query parameters in that order.
-String chartPageUrl({String? theme, String? runId}) {
+///
+/// [local] picks the page for one load whatever the build was started with: `false` the hosted page,
+/// `true` the bundled one. A case that needs both in the same WebView profile (the bundled page
+/// after the hosted one has filled the HTTP cache) uses it; everything else leaves it out.
+String chartPageUrl({String? theme, String? runId, bool? local}) {
   final Map<String, String> extra = <String, String>{
     'theme': ?theme,
     'hbRun': ?runId,
   };
-  if (!kChartLocal) {
+  if (!(local ?? kChartLocal)) {
     return extra.isEmpty
         ? kChartUrl
         : Uri.parse(kChartUrl).replace(queryParameters: extra).toString();
   }
-  final Uri local = ChartBundle.localUrl(apiBase: Uri.parse(kChartRoot), theme: theme);
-  return local
+  final Uri bundled = ChartBundle.localUrl(apiBase: Uri.parse(kChartRoot), theme: theme);
+  return bundled
       .replace(
         queryParameters: <String, String>{
-          ...local.queryParameters,
+          ...bundled.queryParameters,
           'hbRun': ?runId,
         },
       )
