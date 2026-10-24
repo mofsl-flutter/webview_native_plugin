@@ -14,8 +14,13 @@ an emulator, so a phone attached by USB is never touched.
 - **Interleave.** Run the variants in alternating blocks (`H1 B1 B2 H2`), so a slow stretch of the
   emulator or the network lands on every variant, and read `byBlock` to see how far blocks drift.
 - **Say what you ran on.** Each block writes a `.meta` file with the WebView version, free memory and
-  the APK's checksum. Timings depend heavily on those: the same build opened in about 4 s on a 2 GB
-  emulator and about 1 s on a 4 GB one.
+  the APK's checksum. Timings depend on those, and the emulator itself drifts: the same build opened in
+  3 to 5 s on one emulator in the morning and in 0.8 to 0.9 s on it later that day, with about the same
+  free memory both times, so RAM was not the cause and the cause is unknown. Compare variants run in the
+  same sitting, never against numbers from another one.
+- **WebView version matters for the code cache.** WebView 133 gives even the hosted page no V8 code
+  cache; WebView 156 gives it one from its third load of a script. A code-cache question has to be
+  judged on the newer WebView.
 - **Check where requests went.** `netcap.mjs` records every request the WebView makes and `hosts.mjs`
   fails the capture on a UAT host, a plain-http request or an unknown host, so "the charting library
   uses production for everything" is asserted, not eyeballed.

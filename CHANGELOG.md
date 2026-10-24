@@ -1,5 +1,12 @@
 ## Unreleased
 
+* Measured, not built: two ways to open the chart faster. A hidden widget built ahead (warm-up) saves
+  at most 74 ms for a rebuilt or second widget (gate was 1.0 s); reusing one widget instance saves 120
+  to 150 ms but is an invasive lifecycle change. A V8 code cache for the bundled scripts is impossible
+  through `shouldInterceptRequest` (headers do not help; 0 of 63 scripts cached), and serving the bundle
+  from a loopback `http://127.0.0.1` origin makes 57 of 63 scripts consume a cache yet saves only about
+  46 ms warm with prefetch (400 ms was the gate) and is 56 ms slower cold. Emulators only; details and
+  tables in `tool/chart_page_changes.md`.
 * The bundled page asks the browser to connect to the API's origin as soon as it knows it
   (`<link rel="preconnect" crossorigin>` added by `api_base.js`), so the first API call no longer pays for
   the DNS lookup, TCP connection and TLS handshake itself. Measured on a 4 GB Android emulator against

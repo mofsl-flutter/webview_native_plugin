@@ -321,6 +321,73 @@ datafeed (no `getBars`, no `subscribeBars`), so it cannot repair a chart.
 Tests: `gap_fill.test.mjs` (20 cases against the real `stream.js` with a fake history source; five
 behaviours were broken one at a time and each was caught) and `test/chart_session_fill_test.dart`.
 
+## Two ways to open faster that were measured and not built
+
+Both were spikes with a gate set before measuring. Neither passed, so nothing was added to the plugin
+or the page. Android emulators only, production API, account `T029342`; the account's saved layout was
+identical before and after. Real devices and iOS were not measured.
+
+### Warming up a chart widget (gate: save 1.0 s or more)
+
+The idea: build a hidden `TradingView.widget` early, so the library's start-up cost is paid before the
+user taps. Run over DevTools in a fresh document each repeat, with the page's real widget options but
+adapters whose write methods do nothing and a `fetch` that refuses everything except GETs (0 writes,
+0 blocked requests). Times are from `new TradingView.widget(...)` to the first drawn candles.
+
+| | Bench_4GB (WebView 133), n=8 | 2 GB emulator (WebView 156), n=5 |
+|---|---|---|
+| (a) first widget of the document | 320 ms | 320 ms |
+| (b) rebuilt after `remove()` | 383 ms (gain -63) | 246 ms (gain +74) |
+| (c) built beside a hidden live widget | 318 ms (gain +2) | 327 ms (gain -7) |
+| (d1) `widget.load(saved layout)` on a warmed widget | 200 ms (gain +120) | 169 ms (gain +151) |
+| (d2) `setSymbol` on a warmed widget (does not apply the layout) | 168 ms (gain +152) | 165 ms (gain +155) |
+
+A widget builds its own iframe and the library compiles in that iframe's realm, so a second widget
+carries nothing over from the first: (b) and (c) save nothing worth having (the gate was 1.0 s; the
+best gain was 74 ms). Only reusing the same widget instance helps, by 120 to 150 ms, and that means
+keeping one widget alive across symbol changes and screens, an invasive change to a chart that writes
+to the account. Not built.
+
+The whole first widget takes about 320 ms here, so there is no 1 to 2 s inside it to win. The plan's
+earlier estimate of about 2.5 s for "library start-up and widget creation" came from the slow state of
+the 2 GB emulator that morning (see `example/tool/bench/README.md`). These runs start after the page's
+scripts have loaded, so the page's own script load (about 200 ms of `EvaluateScript`) is not in them.
+
+### A V8 code cache for the bundled scripts (gate: 0.4 s or more warm, 50 of the scripts cached)
+
+Android's `shouldInterceptRequest` responses never get a V8 code cache, so the bundled page recompiles
+the library on every launch while the hosted page (on a WebView that supports it) does not.
+
+- **Headers cannot fix it.** With `Cache-Control`, `Last-Modified` and `ETag` added to the asset
+  responses, 0 of 63 scripts consumed a cache, on WebView 133 and on WebView 156 alike.
+- **WebView 133 gives even the hosted page no code cache** (59 scripts streamed, 0 consumed). A code
+  cache question has to be judged on WebView 156, where the hosted page consumes 53 of 59 to 69 scripts
+  from its third load of a script.
+- **A loopback origin does get one.** Serving the same bundle from a Dart `HttpServer` on
+  `127.0.0.1:<fixed port>` (plain http, `Cache-Control: max-age`, `Last-Modified`, `ETag`) made 57 of 63
+  scripts consume a cache from the third launch on, with the library's 2.2 MB cache used and
+  `EvaluateScript` falling from about 205-220 ms to about 125 ms.
+
+That is the whole prize in CPU terms, and it did not turn into a win a user would notice
+(WebView 156, 8 launches per cell, interleaved blocks, 2 priming launches, production API):
+
+| Open, end to end (median ms) | Bundled | Loopback | Loopback saves | Permutation p |
+|---|---|---|---|---|
+| Warm, no prefetch (`O1`) | 894 | 725 | 169 | 0.15 |
+| Warm, with prefetch (`O2`, what RISE runs) | 666 | 620 | 46 | 0.02 |
+| Cold, no prefetch | 1,065 | 988 | 76 | 0.64 |
+| Cold, with prefetch | 694 | 750 | -56 | 0.003 |
+
+With prefetch the best case is about 46 ms warm and the loopback server is 56 ms slower cold (cause not
+investigated). The gate was 400 ms. Not built, and a loopback server
+would also need what a release app does not have today: cleartext traffic allowed to `127.0.0.1`,
+and a port and path token because any other app on the phone can reach loopback, which matters for a
+licensed library. iOS has no documented bytecode cache for custom-scheme responses and was not tried.
+
+The hosted-versus-bundled warm gap seen earlier (about 166 ms) therefore appears to come mostly from
+the CORS preflights of the API calls in the render phase, not from the code cache: prefetch brought the
+bundled page's warm open down to about the hosted page's. Not isolated further.
+
 ## Looked at and left alone
 
 - `RemoveLegendHiddenClasses` polled every 500 ms and never stopped (a bug, fixed above): 32 calls
