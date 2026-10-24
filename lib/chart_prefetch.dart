@@ -2,6 +2,8 @@ import "dart:async";
 import "dart:convert";
 import "dart:io";
 
+import "package:flutter/foundation.dart" show visibleForTesting;
+
 /// Fetches what the bundled chart needs to open before its page has finished loading, and hands it
 /// to the page, so the chart does not wait for a chain of requests that could have run in parallel
 /// with the page loading.
@@ -127,8 +129,71 @@ class ChartPrefetch {
   // What the page reads as `data.ticker` from the Symbols response.
   String? _tickerOf(_Fetched? symbols) => _field(symbols, "ticker");
 
-  // The interval the page opens at: the saved one, or one minute when there is none.
-  String _intervalOf(_Fetched saved) => _field(saved, "interval") ?? "1";
+  /// The interval the chart opens at, which decides which history to fetch.
+  ///
+  /// It is NOT the saved-info `interval` field. When the account has a saved layout the library
+  /// restores the layout's main series, and opens at that series' interval whatever the widget was
+  /// told: on a real account the field said `1D` while the layout's main series was at `1`, and the
+  /// chart asked for one-minute bars. So: the main series' interval from the layout if there is one;
+  /// else the `interval` field; else one minute (the page's own default). A wrong guess costs only a
+  /// wasted request, because the page looks history up by the resolution it actually asks for.
+  String _intervalOf(_Fetched saved) {
+    final Object? decoded = _decode(saved.body);
+    if (decoded is Map<String, Object?>) {
+      final String? fromLayout = _mainSeriesInterval(decoded["saveData"]);
+      if (fromLayout != null) return fromLayout;
+      final Object? field = decoded["interval"];
+      if (field != null && "$field".isNotEmpty) return "$field";
+    }
+    return "1";
+  }
+
+  /// [_intervalOf] for a saved-info response body, so a test can feed it awkward shapes.
+  @visibleForTesting
+  String intervalOfSavedInfoForTest(String body) => _intervalOf(_Fetched(body, 0));
+
+  static Object? _decode(String text) {
+    try {
+      return jsonDecode(text);
+    } on FormatException {
+      return null;
+    }
+  }
+
+  // `saveData` is a JSON document inside the JSON response. The interval is the first main series
+  // found: a drawing in the same layout carries an `interval` of its own that must not be mistaken
+  // for it. Anything unexpected is "no answer", never an error.
+  static String? _mainSeriesInterval(Object? saveData) {
+    if (saveData is! String || saveData.isEmpty) return null;
+    final Object? layout = _decode(saveData);
+    if (layout is! Map) return null;
+    final Object? charts = layout["charts"];
+    if (charts is! List || charts.isEmpty) return null;
+    final Object? chart = charts.first;
+    if (chart is! Map) return null;
+    final Object? panes = chart["panes"];
+    if (panes is! List) return null;
+    for (final Object? pane in panes) {
+      final Object? sources = pane is Map ? pane["sources"] : null;
+      if (sources is! List) continue;
+      for (final Object? source in sources) {
+        if (source is Map && source["type"] == "MainSeries") {
+          final Object? state = source["state"];
+          final Object? interval = state is Map ? state["interval"] : null;
+          if (interval != null && "$interval".isNotEmpty) return "$interval";
+        }
+      }
+    }
+    return null;
+  }
+
+  /// The one spelling of a resolution used in history keys: TradingView says `D` in some places and
+  /// `1D` in others for the same thing, and a mismatch would silently waste the prefetch. Mirrors the
+  /// page's own normalisation in `core/preload.js`.
+  static String normalizeResolution(String resolution) =>
+      RegExp(r"^[dwm]$", caseSensitive: false).hasMatch(resolution)
+          ? "1${resolution.toUpperCase()}"
+          : resolution;
 
   /// How far back, in seconds, to ask for history at [resolution], so the window reaches past the
   /// one the chart library will ask for.
@@ -238,7 +303,7 @@ class ChartPrefetch {
         return;
       }
       final String interval = _intervalOf(saved);
-      final String historyKey = "$ticker|$interval";
+      final String historyKey = "$ticker|${normalizeResolution(interval)}";
       await run(_script(<String>[_expect("history", historyKey), _deliver("savedInfo", savedKey, saved)]));
 
       final _Fetched? history = await _historyFetch;

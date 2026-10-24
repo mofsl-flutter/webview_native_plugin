@@ -20,6 +20,12 @@ class _FakeApi {
   final List<String> requests = <String>[];
   final List<String?> authorizations = <String?>[];
 
+  /// The `interval` field of the saved-info response, and the interval inside its layout's main
+  /// series. They are different things (the field is the last interval saved, the layout's is what
+  /// the chart opens at), so a test can set them apart. Null omits the layout.
+  String savedInterval = "5";
+  String? layoutInterval;
+
   /// Per endpoint name (the last path segment): status, body override and delay.
   final Map<String, int> status = <String, int>{};
   final Map<String, Duration> delay = <String, Duration>{};
@@ -48,7 +54,33 @@ class _FakeApi {
       case "Symbols":
         return <String, Object?>{"ticker": "NSE:ACC", "name": "ACC", "currency_code": "INR"};
       case "GetChartSavedInfo":
-        return <String, Object?>{"interval": "5", "saveData": null};
+        return <String, Object?>{
+          "interval": savedInterval,
+          // A saved layout is a JSON document inside the JSON response. Its drawings carry their own
+          // `interval`, which is not the chart's.
+          "saveData": layoutInterval == null
+              ? null
+              : jsonEncode(<String, Object?>{
+                  "charts": <Object?>[
+                    <String, Object?>{
+                      "panes": <Object?>[
+                        <String, Object?>{
+                          "sources": <Object?>[
+                            <String, Object?>{
+                              "type": "LineToolEmoji",
+                              "state": <String, Object?>{"interval": "1D"},
+                            },
+                            <String, Object?>{
+                              "type": "MainSeries",
+                              "state": <String, Object?>{"symbol": "IDX:1:SENSEX", "interval": layoutInterval},
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                }),
+        };
       case "Config":
         return <String, Object?>{"supported_resolutions": <String>["1", "5"]};
       case "HistoryV3":
@@ -138,6 +170,52 @@ void main() {
       expect(q["firstDataRequest"], "true");
       expect(int.parse(q["to"]!) - int.parse(q["from"]!), ChartPrefetch.historyLookbackSeconds("5"));
       expect(api.authorizations.toSet(), <String?>{"Bearer test-token"});
+    });
+
+    test("opens at the layout's own interval, not the saved-interval field and not a drawing's", () async {
+      // The shape of a real account: the field says 1D, the layout's main series is at 1, and a
+      // drawing in the layout is at 1D. The library opens at the main series' interval.
+      api.savedInterval = "1D";
+      api.layoutInterval = "1";
+      final ChartPrefetch p = ChartPrefetch(apiBase: api.base, token: "t")..start("0:22");
+      final List<String> scripts = await _deliver(p);
+      final String history = api.requests.singleWhere((String r) => r.contains("HistoryV3"));
+      expect(Uri.parse(history).queryParameters["resolution"], "1");
+      expect(scripts.join("\n"), contains("p.put(\"history\",\"NSE:ACC|1\""));
+    });
+
+    test("without a layout it falls back to the saved-interval field, then to one minute", () async {
+      api.savedInterval = "15";
+      api.layoutInterval = null;
+      final ChartPrefetch withField = ChartPrefetch(apiBase: api.base, token: "t")..start("0:22");
+      await _deliver(withField);
+      expect(Uri.parse(api.requests.singleWhere((String r) => r.contains("HistoryV3"))).queryParameters["resolution"], "15");
+
+      api.requests.clear();
+      api.savedInterval = "";
+      final ChartPrefetch neither = ChartPrefetch(apiBase: api.base, token: "t")..start("0:22");
+      await _deliver(neither);
+      expect(Uri.parse(api.requests.singleWhere((String r) => r.contains("HistoryV3"))).queryParameters["resolution"], "1");
+    });
+
+    test("a layout that is not what is expected is ignored, not trusted or thrown on", () async {
+      // Truncated JSON in saveData must not stop the open, only the guess.
+      final ChartPrefetch p = ChartPrefetch(apiBase: api.base, token: "t");
+      expect(p.intervalOfSavedInfoForTest("{\"interval\":\"5\",\"saveData\":\"{not json\"}"), "5");
+      expect(p.intervalOfSavedInfoForTest("{\"interval\":\"5\",\"saveData\":\"{\\\"charts\\\":[]}\"}"), "5");
+      expect(p.intervalOfSavedInfoForTest("{\"interval\":\"5\",\"saveData\":42}"), "5");
+      expect(p.intervalOfSavedInfoForTest("not json at all"), "1");
+    });
+
+    test("daily is one key whether it is spelled D or 1D", () {
+      expect(ChartPrefetch.normalizeResolution("D"), "1D");
+      expect(ChartPrefetch.normalizeResolution("1D"), "1D");
+      expect(ChartPrefetch.normalizeResolution("w"), "1W");
+      expect(ChartPrefetch.normalizeResolution("M"), "1M");
+      expect(ChartPrefetch.normalizeResolution("5"), "5");
+      expect(ChartPrefetch.normalizeResolution("60"), "60");
+      expect(ChartPrefetch.normalizeResolution("15S"), "15S");
+      expect(ChartPrefetch.normalizeResolution("2D"), "2D");
     });
 
     test("the layout waits for the symbol, and the history for the layout", () async {

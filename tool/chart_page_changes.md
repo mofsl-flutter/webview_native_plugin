@@ -87,20 +87,45 @@ Rules, each pinned by `preload.test.mjs`:
   ending 24 Oct), which the guards correctly refuse. Waiting for it and then refusing it doubled the
   chart's open time on UAT (11.8 s to 20.8 s) before this rule. Now it is used only if it has
   already arrived, and the page asks itself otherwise.
-- History is served only for the first request, from a fresh prefetch (at most 15 s old, and no
-  more than the bar length), that reaches back past the library's `from`, whose `to` trails the
-  library's by no more than that, and whose slice to `[from, to]` still holds at least `countBack`
-  bars. The server returns exactly the bars inside `[from, to]` (no padding to `countBack`, no
-  trimming; checked on both environments), so such a slice is the answer it would have given.
+- History is served only for the first request, and only when all of these hold:
+  - the prefetch reaches back past the library's `from`;
+  - its `to` trails **now** by no more than 15 s or the bar length, whichever is less. It is
+    measured against now, not against the library's `to`, because the library asks up to the END of
+    the current bar (a full minute ahead for one-minute bars) and no bars exist in that future;
+  - its slice to `[from, to]` is **non-empty**.
+  The server's answer, as observed on production: a window with bars in it comes back as exactly
+  those bars, however few (1, 2, 4, 10 and 12 bars, with `countBack` 300 and 1, two symbols, three
+  resolutions) and however many; a window with **no** bars in it (the market is closed) comes back
+  as a long run of older bars from outside the window. So a non-empty slice is the server's answer
+  and an empty one is refused. There is no `countBack` condition: the library's window starts at
+  the previous close, so before about 14:15 it holds fewer than 300 bars all morning, and such a
+  short slice is still exactly what the server returns.
+  Checked against real production data at five moments from 09:20 to 15:20, for two symbols and
+  one- and five-minute bars (20 cases): 4,418 older bars compared, none differing, and the newest
+  bars identical too. The only bars a slice lacks are ones that did not exist yet at that moment.
+  UAT is not consistent about any of this (it can return an older window whatever was asked), so
+  nothing is served from a UAT response that does not cover the window.
+- The store keeps why it last refused something (`stats().lastReject`): a refusal otherwise looks
+  exactly like a miss, which is how a wrong guard hid behind a green run during development.
+- The history key uses the interval the chart really opens at. With a saved layout that is the
+  layout's main series' interval, not the `interval` field of the saved-info response (on a real
+  account the field said `1D` while the layout, and so the chart, was at `1`). A drawing in the same
+  layout carries an `interval` of its own, which is not the chart's. `D`/`1D` (and `W`, `M`) are one
+  key.
 - Every other doubt returns "not here" and the page makes the request.
 
-Measured (`P1`, UAT, same chart opened without and with the prefetch): the page made 4 requests
-itself, then 1 (history only); end to end 11.9 / 11.3 / 11.6 s, then 10.6 / 11.0 / 10.7 s on an
-Android emulator, 12.1 s then 10.7 s on the iOS simulator. UAT's slow history dominates both. On
-production the history prefetch is accepted: replaying a production capture through this store
-served 367 bars. The page itself was not run against production (it writes), so production's
-end-to-end gain is an estimate from request times (about 0.4 s for symbol, layout and config plus
-about 0.25 s for history, partly overlapped with page start-up), not a measurement.
+Measured with case `P1` (the same chart opened without, then with, the prefetch):
+
+- **Production** (the bundled page against the production API, Android emulator, six runs): the page
+  made 4 requests itself then 1 (history refused because the market was closed, see above) and 0 of
+  symbol, layout and config; end to end 0.97 / 1.19 / 0.90 / 0.94 / 0.88 / 1.29 s without, 0.41 /
+  0.54 / 0.40 / 0.41 / 0.53 / 0.55 s with: median about 0.96 s down to 0.47 s. Both arms show the
+  same 307 candles. This is without the history prefetch, which cannot be exercised on a device
+  while the market is closed: it is verified by replaying real production data (above), and in
+  session it should save roughly another 0.1-0.2 s.
+- **UAT** (Android emulator, three runs): 11.9 / 11.3 / 11.6 s down to 10.6 / 11.0 / 10.7 s; iOS
+  simulator, one run, 12.1 s to 10.7 s. UAT's slow `HistoryV3` dominates both, and its response is
+  refused (it does not cover the window).
 
 ## `js/core/save_scheduler.js` (new file) and `js/main.js`
 

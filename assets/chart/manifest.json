@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-23T20:50:47.249691Z",
+  "generatedAt": "2026-10-24T05:33:20.853935Z",
   "host": "https://tradingapi.motilaloswaluat.com",
   "page": "/chart/v4/RiseApp_Mobile.html",
   "library": "TT_v29_1_0",
@@ -3072,7 +3072,7 @@
       "sha256": "b463271a94a6e3ead4f79814b8a0101e1e58f9d67bdcf1607c31be1d8c0c73e2",
       "source": "https://tradingapi.motilaloswaluat.com/chart/v4/RiseApp_Mobile.html",
       "owned": true,
-      "upstreamSha256": "d851f8c5a7aa6a358591525e03aca09cd20d75d2c1708f8f1a778659e031b62b"
+      "upstreamSha256": "959b5dca23e51114e894fae5c95e872c9718b3af5c2e927b0461ce6547e9555d"
     },
     {
       "path": "v4/js/core/api_base.js",
@@ -3084,8 +3084,8 @@
     },
     {
       "path": "v4/js/core/preload.js",
-      "bytes": 11055,
-      "sha256": "d6904c8568d6ca7d88e9a44aa4be69e2ceebcc0fde3db93d75704aebe58ea307",
+      "bytes": 12732,
+      "sha256": "4eab4ecfcc27587bfab6c4f25867e33c52170d552d27e36350c89d2fc7d1af56",
       "source": null,
       "owned": true,
       "localOnly": true

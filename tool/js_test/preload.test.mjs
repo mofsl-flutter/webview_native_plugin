@@ -8,7 +8,8 @@ const SOURCE = fs.readFileSync(new URL("../../assets/chart/v4/js/core/preload.js
 
 /** A clock the test drives by hand, so nothing here waits on real time. */
 function fakeClock() {
-  let nowMs = 1_000_000, nextId = 1;
+  // 2,000,000 s: the `to` the history tests use, so "now" and the library's window agree.
+  let nowMs = 2_000_000_000, nextId = 1;
   const timers = new Map();
   return {
     now: () => nowMs,
@@ -176,11 +177,22 @@ test("history: refused when the prefetch stops well before the library's `to`", 
   assert.equal(r, undefined, "an hour of newer bars would be missing");
 });
 
-test("history: refused when the window holds fewer bars than countBack", async () => {
-  // The server pads nothing: with fewer than countBack bars in range it returns what it has, so a
-  // slice that is short could not have come from the server's own answer either.
+test("history: a short but non-empty window is served, because the server pads nothing there", async () => {
+  // Checked on production for windows of 1, 2, 4, 10 and 12 bars, with countBack 300 and 1: a
+  // non-empty window is answered with exactly its bars. Early in the session the library's window
+  // (which starts at the previous close) holds only today's bars, far fewer than countBack.
   const to = 2_000_000;
   const r = await historyCase({ asked: { from: to - 600_000, to }, req: { from: to - 6_000, to, countBack: 300 } });
+  assert.ok(r, "50-odd bars is what the server would have returned");
+  const body = await json(r);
+  assert.ok(body.t.length > 0 && body.t.length < 300);
+});
+
+test("history: an empty window is refused, because the server answers it with older bars", async () => {
+  // Observed on production: a window with no bars in it (the market is closed) comes back as a
+  // long run of bars from BEFORE the window. A slice of a prefetch cannot reproduce that.
+  const to = 2_000_000;
+  const r = await historyCase({ asked: { from: to - 600_000, to }, req: { from: to + 10, to: to + 100, countBack: 300 } });
   assert.equal(r, undefined);
 });
 
@@ -209,12 +221,52 @@ test("history is never waited for: in flight means a miss at once, and the late 
     "and must not be offered to a later request");
 });
 
+test("history: the library asks up to the END of the current bar, which is in the future", async () => {
+  // Observed on a real account: for one-minute bars the library's `to` was exactly 60 s ahead of the
+  // prefetch's. No bars exist in that future minute, so it must not count as bars the prefetch
+  // missed; staleness is the gap between the prefetch's `to` and NOW.
+  const to = 2_000_000; // "now" for the fake clock
+  const overshoot = await historyCase({ asked: { from: to - 600_000, to: to - 1 }, req: { from: to - 69_060, to: to + 60, countBack: 300 }, ageMs: 0 });
+  assert.ok(overshoot, "a 60 s overshoot past now with a 1 s old prefetch must be accepted");
+  const reallyStale = await historyCase({ asked: { from: to - 600_000, to: to - 40 }, req: { from: to - 69_060, to: to + 60, countBack: 300 }, ageMs: 0 });
+  assert.equal(reallyStale, undefined, "40 s of real, unseen time is still too much for one-minute bars (15 s)");
+});
+
 test("history: refused when stale, limited by the bar length for short bars", async () => {
   const to = 2_000_000;
   const old = await historyCase({ asked: { from: to - 600_000, to }, req: { from: to - 69_120, to, countBack: 300 }, ageMs: 16_000 });
   assert.equal(old, undefined, "older than 15 s");
   const fiveSec = await historyCase({ asked: { from: to - 600_000, to }, req: { from: to - 69_120, to, countBack: 300 }, ageMs: 6_000, resolution: "5S" });
   assert.equal(fiveSec, undefined, "older than one 5-second bar");
+});
+
+test("history: daily is one entry whether the library asks for D or 1D", async () => {
+  const to = 2_000_000;
+  // Daily bars: one a day, so the window needs about 300 days.
+  const t = []; for (let i = 0; i < 400; i++) t.push(to - (400 - i) * 86_400);
+  const body = JSON.stringify({ t, o: t.map(() => 1), h: t.map(() => 2), l: t.map(() => 0), c: t.map(() => 1), v: t.map(() => 5), divisor: 100 });
+  for (const spelling of ["D", "1D"]) {
+    const { preload, clock } = create();
+    // Delivered under the one canonical spelling, as ChartPrefetch does.
+    preload.put("history", "NSE:ACC|1D", body, clock.now(), { from: to - 500 * 86_400, to });
+    const r = await preload.takeHistory({ ticker: "NSE:ACC", resolution: spelling, firstDataRequest: true, from: to - 350 * 86_400, to, countBack: 300 });
+    assert.ok(r, `asked as ${spelling}, delivered as 1D`);
+  }
+});
+
+test("a refusal records why, so a silent miss can be explained", async () => {
+  const to = 2_000_000;
+  const cases = [
+    [{ asked: { from: to - 30_000, to }, req: { from: to - 69_120, to, countBack: 300 } }, /reach back/],
+    [{ asked: { from: to - 600_000, to: to - 3600 }, req: { from: to - 69_120, to, countBack: 300 } }, /trails/],
+    [{ asked: { from: to - 600_000, to }, req: { from: to + 10, to: to + 100, countBack: 300 } }, /no bars in the window/],
+  ];
+  for (const [c, why] of cases) {
+    const { preload, clock } = create();
+    preload.put("history", "NSE:ACC|1", bars(c.asked.from, c.asked.to), clock.now(), { from: c.asked.from, to: c.asked.to });
+    assert.equal(await preload.takeHistory({ ticker: "NSE:ACC", resolution: "1", firstDataRequest: true, ...c.req }), undefined);
+    assert.match(preload.stats().lastReject, why);
+  }
 });
 
 test("history: a different symbol or resolution is a different entry", async () => {

@@ -47,28 +47,49 @@
         return n * 60000;
     }
 
-    // The server answers a history request with exactly the bars whose time lies in [from, to]: it
-    // does not pad up to countBack when the window holds fewer, and does not trim when it holds more
-    // (checked against both UAT and production). So a wider prefetch, cut to the library's window,
-    // is the answer the server would have given, provided the cut keeps at least countBack bars.
-    // Anything else returns null and the page asks the server itself.
-    function sliceHistory(data, meta, request, maxLagSec) {
-        if (!data || !Array.isArray(data.t) || data.t.length === 0) return null;
-        if (typeof meta.from !== 'number' || typeof meta.to !== 'number') return null;
-        if (!Number.isFinite(request.countBack)) return null;
+    // TradingView says `D` in some places and `1D` in others for the same resolution; one spelling
+    // for the key, matching ChartPrefetch.normalizeResolution on the Dart side.
+    function normalizeResolution(resolution) {
+        const r = String(resolution);
+        return /^[DWM]$/i.test(r) ? '1' + r.toUpperCase() : r;
+    }
+
+    // What the server answers a history request with, as observed on production:
+    //   * a window with bars in it: exactly the bars whose time lies in [from, to], however few
+    //     (windows of 1, 2, 4, 10 and 12 bars came back as exactly those, with countBack 300 and 1)
+    //     and however many (no trimming to countBack);
+    //   * a window with NO bars in it (the market is closed): a long run of bars from before the
+    //     window, none of them inside it.
+    // So a wider prefetch, cut to the library's window, is the answer the server would have given
+    // whenever the cut is non-empty. An empty cut is refused: the server's answer to that is
+    // something else, which a slice cannot reproduce. (UAT is not consistent about any of this: it
+    // can return an older window whatever was asked, so nothing is served from a UAT response that
+    // does not cover the window.) Anything refused returns null and the page asks the server itself.
+    function sliceHistory(data, meta, request, maxLagSec, nowSec, why) {
+        if (!data || !Array.isArray(data.t) || data.t.length === 0) return why('the body has no bars');
+        if (typeof meta.from !== 'number' || typeof meta.to !== 'number') return why('no window was recorded');
         // The prefetch has to reach back past the library's window, or the older bars were never
         // fetched...
-        if (!(meta.from < request.from)) return null;
-        // ...and forward to about where the library's window ends. The newest bars the prefetch
-        // could not have seen are the ones between its own `to` and the library's: that gap, not how
-        // long the response has sat here, is how stale it is.
-        if (request.to - meta.to > maxLagSec) return null;
+        if (!(meta.from < request.from)) {
+            return why('does not reach back far enough: starts ' + (meta.from - request.from) + ' s after the library\'s from');
+        }
+        // ...and forward to about now. The bars the prefetch could not have seen are those between
+        // its own `to` and the present: that gap, not how long the response has sat here, is how
+        // stale it is. The library's `to` is not the present: it asks up to the END of the current
+        // bar (a full minute ahead for one-minute bars), and no bars exist in that future, so it is
+        // capped at now.
+        const lag = Math.min(request.to, nowSec) - meta.to;
+        if (lag > maxLagSec) {
+            return why('its to trails now by ' + lag + ' s (allowed ' + maxLagSec + ' s)');
+        }
 
         const keep = [];
         for (let i = 0; i < data.t.length; i++) {
             if (data.t[i] >= request.from && data.t[i] <= request.to) keep.push(i);
         }
-        if (keep.length < request.countBack) return null;
+        if (keep.length === 0) {
+            return why('no bars in the window (the server answers an empty window with older bars)');
+        }
 
         const out = {};
         Object.keys(data).forEach(function (key) {
@@ -93,6 +114,8 @@
         const counters = {
             hits: 0, misses: 0, expired: 0, rejected: 0, timedOut: 0, discarded: 0, skipped: 0, notReady: 0,
         };
+        // Why the most recent refusal happened. A refusal otherwise looks like a plain miss.
+        let lastReject = null;
 
         const idOf = function (kind, key) { return kind + '|' + key; };
 
@@ -124,7 +147,8 @@
                 return undefined;
             }
             if (opts.accept) {
-                data = opts.accept(data, entry.meta || {}, ageMs);
+                const why = function (reason) { lastReject = reason; return null; };
+                data = opts.accept(data, entry.meta || {}, ageMs, why);
                 if (!data) {
                     counters.rejected++;
                     return undefined;
@@ -215,10 +239,12 @@
                 return Promise.resolve(undefined);
             }
             const maxAgeMs = Math.min(MAX_HISTORY_AGE_MS, resolutionMs(request.resolution));
-            return take('history', request.ticker + '|' + request.resolution, {
+            return take('history', request.ticker + '|' + normalizeResolution(request.resolution), {
                 wait: false,
                 maxAgeMs: maxAgeMs,
-                accept: function (data, meta) { return sliceHistory(data, meta, request, maxAgeMs / 1000); },
+                accept: function (data, meta, ageMs, why) {
+                    return sliceHistory(data, meta, request, maxAgeMs / 1000, now() / 1000, why);
+                },
             });
         }
 
@@ -228,7 +254,7 @@
             cancel: cancel,
             take: take,
             takeHistory: takeHistory,
-            stats: function () { return Object.assign({}, counters); },
+            stats: function () { return Object.assign({}, counters, {lastReject: lastReject}); },
         };
     }
 

@@ -34,12 +34,17 @@
   uses the host's own token, and is a shortcut only: anything missing, late, stale, or not covering
   what the chart asks for is requested by the page as before. The page asks for the symbol, layout and
   config no longer (measured on UAT: 4 requests, then 1) and the chart ends up with the same candles.
-  History is used only if it has already arrived, because UAT can return a wrong window for a wide
-  range and waiting for it made the open slower. Production's response is accepted by the page's
-  checks; the page itself has not been run against production, so its end-to-end gain there is an
-  estimate (see `tool/chart_page_changes.md`).
+  History is used only if it has already arrived (UAT can return a wrong window and waiting for it
+  made the open slower), only for a non-empty window (the server answers an empty one with older
+  bars), and at the interval the chart really opens at, which is the saved layout's, not the
+  `interval` field. On production, with a real account, an open went from a median of about 0.96 s
+  to 0.47 s (six runs, emulator); history itself could not be exercised on a device while the market
+  was closed and is verified against real production data instead. See `tool/chart_page_changes.md`.
 * The bundled page now rejects when a request fails outright (offline, DNS, TLS) instead of never
   settling, so the chart reports no data and the host gets the symbol error rather than silence.
+* Example app: `--dart-define=CHART_SYMBOL=<symbol>` and case `O1` open a chosen chart through the
+  page's own save path. Opening a chart records it as the account's last-viewed one, so that is also
+  how to put an account back after a run.
 * Example app: `--dart-define=CHART_API_ROOT=<root>` and `--dart-define=CHART_TOKEN=<token>` point the
   bundled page at another environment's API. `--dart-define=CHART_LOCAL=true` loads the bundled chart, `--dart-define=SCENARIO=L1`
   starts a regression case on iOS, cases `L1`/`L2` check the bundled chart on both platforms, and `S1`/`S2`

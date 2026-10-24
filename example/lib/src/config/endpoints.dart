@@ -25,6 +25,13 @@ const String kChartRoot = String.fromEnvironment(
   defaultValue: 'https://tradingapi.motilaloswaluat.com/chart/',
 );
 
+/// The symbol case `O1` opens (`--dart-define=CHART_SYMBOL=<symbol>`), in the form `loadChart` takes
+/// (e.g. `0:22`, `IDX:1:SENSEX`). Defaults to the symbol the other bundled-chart cases use.
+///
+/// Opening a chart records it as the account's last-viewed symbol, so this is also how to put an
+/// account back to the chart it was on.
+const String kChartSymbol = String.fromEnvironment('CHART_SYMBOL', defaultValue: '0:3045');
+
 /// A token to authorise the page with instead of asking UAT's token service for one
 /// (`--dart-define=CHART_TOKEN=<token>`); empty means "ask UAT".
 ///

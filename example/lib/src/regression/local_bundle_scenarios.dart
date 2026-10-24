@@ -62,6 +62,7 @@ final List<Scenario> localBundleScenarios = <Scenario>[
   legendPollScenario,
   prefetchScenario,
   networkFailureScenario,
+  openSymbolScenario,
 ];
 
 /// Not a pass/fail case: it records how much the page saves while it is panned, so a change to the
@@ -183,6 +184,30 @@ bool _networkFailureRejects(ScenarioObservations o) {
   final Object? net = o.probes['net']?['net'];
   return net is String && net.startsWith('rejected');
 }
+
+/// Opens one chart, the symbol named by `--dart-define=CHART_SYMBOL`, and lets the page save.
+///
+/// Not a test: a way to open a chosen chart through the page's own save path. The page records the
+/// symbol it opens as the account's last-viewed one, so a run that had to open something else (the
+/// other cases use SBIN) can be undone by opening whatever the account was on.
+final Scenario openSymbolScenario = Scenario(
+  id: 'O1',
+  title: 'Bundled chart: open the symbol given by CHART_SYMBOL',
+  dimension: Dimension.storage,
+  precondition: ExternalPrecondition.fullCold,
+  steps: const <ScenarioStep>[
+    OpenChart(kChartSymbol, budgetScale: 6),
+    // The page saves its state a moment after the chart is ready.
+    Wait(Duration(seconds: 6)),
+    Probe('opened'),
+  ],
+  expectations: <Expectation>[
+    const ExpectCustom('the harness was started with CHART_LOCAL=true', _localModeOn),
+    const ExpectCustom('the chart for that symbol is up', _chartIsUp),
+  ],
+);
+
+bool _chartIsUp(ScenarioObservations o) => o.probes['opened']?['widgetReady'] == true;
 
 /// The opening requests the page made itself, per endpoint, for a trace probe.
 int _pageCalls(ScenarioObservations o, String trace, String endpoint) {
