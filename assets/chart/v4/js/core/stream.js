@@ -109,58 +109,254 @@
         }
     }
 
+    // Candles a gap in live ticks leaves behind (app backgrounded, feed dropped).
+    //
+    // A tick only extends the last bar or opens the next one, so after a gap the chart jumps from
+    // the last bar to the tick's and every bar in between is missing. History is the only place those
+    // bars exist; setHistorySource says how to ask it. The library refuses a bar older than its last
+    // one, so the missing bars must be fed before a tick jumps past them: a tick that skips at least
+    // one whole bar is held back while they are fetched, then applied. If history is slow, empty or
+    // fails, held ticks are applied exactly as they were before this existed.
+    const gap = {
+        // How long a tick that opens a gap waits for history.
+        timeoutMs: 3000,
+        // How long a fill the host asked for waits for history.
+        hostTimeoutMs: 10000,
+        // After a tick-triggered fill, ticks that open a gap are applied as before for this long, so a
+        // server that cannot close the gap is asked once rather than on every tick.
+        cooldownMs: 20000,
+        // More new bars than this are not fed one by one; the caller is told 'too-large'.
+        maxFeed: 1000,
+        // Ticks kept per subscription while a fill runs; the oldest are dropped beyond it.
+        maxHeld: 500,
+        now: () => Date.now(),
+    };
+    //(ticker, resolution, fromSec, toSec, countBack) => Promise<bars>, set by the datafeed.
+    let _historySource = null;
+    //Map ticker_resolution its latest fill result, for probes.
+    const _fills = new Map();
+
+    stream.gap = gap;
+    stream.data.fills = _fills;
+    stream.setHistorySource = function (source) {
+        _historySource = typeof source === 'function' ? source : null;
+    };
+
+    function withTimeout(call, ms) {
+        return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => reject(new Error(`history did not answer within ${ms} ms`)), ms);
+            let pending;
+            try {
+                pending = Promise.resolve(call());
+            } catch (err) {
+                clearTimeout(timer);
+                reject(err);
+                return;
+            }
+            pending.then(
+                value => { clearTimeout(timer); resolve(value); },
+                err => { clearTimeout(timer); reject(err); });
+        });
+    }
+
+    const isNumber = value => typeof value === 'number' && Number.isFinite(value);
+
+    // Feeds what history returned into the subscription, from its current last bar onwards.
+    function feed(item, raw, startedAt) {
+        const outcome = (status, extra) => ({
+            status, ticker: item.ticker, resolution: item.resolution, ms: gap.now() - startedAt, ...extra
+        });
+        // The last bar as of now, not as of the request: ticks may have moved it while history was out.
+        const last = item.lastDailyBar;
+        if (!last) return outcome('no-bar');
+
+        // The server answers an empty window with older bars, so only bars from the last one onwards count.
+        const byTime = new Map();
+        for (const bar of Array.isArray(raw) ? raw : []) {
+            if (bar && isNumber(bar.time) && bar.time >= last.time &&
+                isNumber(bar.open) && isNumber(bar.high) && isNumber(bar.low) && isNumber(bar.close)) {
+                byTime.set(bar.time, bar);
+            }
+        }
+        const bars = Array.from(byTime.values()).sort((a, b) => a.time - b.time);
+        if (bars.length === 0) return outcome('nothing-new', {fetched: 0});
+        if (bars.length > gap.maxFeed) return outcome('too-large', {fetched: bars.length});
+
+        let toFeed = bars;
+        if (bars[0].time === last.time) {
+            if (bars.length > 1) {
+                // Later bars exist, so the last one is closed and history's version is the final one.
+                toFeed = bars;
+            } else if (bars[0].high > last.high || bars[0].low < last.low) {
+                // Still the current bar. Ticks lost while away may have moved its range; widen it and
+                // keep what ticks established.
+                toFeed = [{
+                    ...last,
+                    high: Math.max(last.high, bars[0].high),
+                    low: Math.min(last.low, bars[0].low),
+                }];
+            } else {
+                return outcome('nothing-new', {fetched: 1});
+            }
+        }
+
+        for (const bar of toFeed) {
+            item.lastDailyBar = bar;
+            item.handlers.forEach(handler => {
+                try {
+                    handler.callback(bar);
+                } catch (err) {
+                    logger.warn(`exception feeding a missing bar: ${item.ticker}_${item.resolution}`, err);
+                }
+            });
+        }
+        stream.saveBar(item.ticker, item.resolution, {...item.lastDailyBar});
+        return outcome('filled', {fetched: bars.length, fed: toFeed.length, toMs: item.lastDailyBar.time});
+    }
+
+    // Fetches the bars between the subscription's last bar and now (or untilMs if later) and feeds
+    // them. One request per subscription at a time. Never rejects.
+    function fillGap(item, untilMs, timeoutMs) {
+        if (item.fill) return item.fill;
+        const quick = status =>
+            Promise.resolve({status, ticker: item.ticker, resolution: item.resolution, ms: 0});
+        const last = item.lastDailyBar;
+        const interval = getFixedIntervalMs(item.resolution);
+        if (!_historySource) return quick('no-source');
+        if (!last) return quick('no-bar');
+        if (!interval) return quick('unsupported');
+        const startedAt = gap.now();
+        const until = Math.max(startedAt, untilMs || 0);
+        // The bar the last one belongs to has not ended yet: nothing can be missing.
+        if (until < last.time + interval) return quick('current');
+
+        const fromSec = Math.floor(last.time / 1000);
+        const toSec = Math.ceil((until + interval) / 1000);
+        const countBack = Math.min(Math.ceil((until - last.time) / interval) + 1, gap.maxFeed);
+        const record = withTimeout(
+            () => _historySource(item.ticker, item.resolution, fromSec, toSec, countBack), timeoutMs)
+            .then(
+                raw => feed(item, raw, startedAt),
+                err => ({
+                    status: 'failed', ticker: item.ticker, resolution: item.resolution,
+                    ms: gap.now() - startedAt, error: String((err && err.message) || err)
+                }))
+            .then(result => {
+                if (item.fill === record) item.fill = null;
+                _fills.set(`${item.ticker}_${item.resolution}`, result);
+                return result;
+            });
+        item.fill = record;
+        return record;
+    }
+
+    // Whether a tick at tradeTime skips at least one whole bar after the subscription's last one.
+    function opensGap(item, tradeTime) {
+        const last = item.lastDailyBar;
+        const interval = getFixedIntervalMs(item.resolution);
+        return !!(_historySource && last && interval &&
+            gap.now() >= (item.noGapFillUntil || 0) &&
+            tradeTime >= last.time + 2 * interval);
+    }
+
+    function release(item, held) {
+        if (item.held !== held) return;
+        clearTimeout(held.timer);
+        item.held = null;
+        item.noGapFillUntil = gap.now() + gap.cooldownMs;
+        held.ticks.forEach(tick => {
+            try {
+                applyTick(item, ...tick);
+            } catch (err) {
+                logger.warn(`exception applying a held tick: ${item.ticker}_${item.resolution}`, err);
+            }
+        });
+    }
+
+    function startHold(item, tick, tradeTime) {
+        const held = {ticks: [tick], timer: null};
+        item.held = held;
+        const done = () => release(item, held);
+        // A fill the host started earlier may have a longer timeout than a tick should wait.
+        held.timer = setTimeout(done, gap.timeoutMs);
+        fillGap(item, tradeTime, gap.timeoutMs).then(done, done);
+    }
+
+    // Fills the gap on every subscription of ticker (every subscription if omitted). Never rejects;
+    // resolves with one result per subscription.
+    stream.fillGaps = function (ticker) {
+        const items = ticker === undefined
+            ? Array.from(_subscriptions.values())
+            : stream.getV2(ticker);
+        return Promise.all(items.map(item => fillGap(item, 0, gap.hostTimeoutMs)));
+    };
+
+    function applyTick(subscriptionItem, resolution, ltp, close, volume, tradeTime) {
+        const lastDailyBar = subscriptionItem.lastDailyBar;
+        if (!lastDailyBar || lastDailyBar.close === ltp)
+            return;
+
+        if (close !== 0) {
+            let ch = ltp - close;
+            let chp = ch / close * 100;
+            chartApp.quote.publishQuote(subscriptionItem.ticker, ch, chp);
+        }
+        try {
+            const nextBarTime = computeNextBarTime(lastDailyBar.time, resolution);
+            let bar;
+            if (tradeTime >= nextBarTime) {
+                bar = {
+                    time: tradeTime,
+                    open: ltp,
+                    high: ltp,
+                    low: ltp,
+                    close: ltp,
+                    volume: 0,
+                    firstVolume: volume,
+                };
+            } else if (tradeTime >= lastDailyBar.time) {
+                let tickVolume;
+                if (lastDailyBar.firstVolume === undefined) {
+                    lastDailyBar.firstVolume = volume;
+                    tickVolume = 0;
+                } else {
+                    tickVolume = (volume ?? 0) - (lastDailyBar.firstVolume ?? 0);
+                }
+                bar = {
+                    ...lastDailyBar,
+                    high: Math.max(lastDailyBar.high, ltp),
+                    low: Math.min(lastDailyBar.low, ltp),
+                    close: ltp,
+                    volume: tickVolume,
+                };
+            } else {
+                logger.warn(`tradeTime: ${tradeTime} is less than lastBarTime: ${lastDailyBar.time}`);
+                return;
+            }
+            subscriptionItem.lastDailyBar = bar;
+            subscriptionItem.handlers.forEach(handler => handler.callback(bar));
+        } catch (err) {
+            logger.warn(`exception in stream.onTickReceived: ${subscriptionItem.ticker}_${resolution}`, err);
+        }
+    }
+
     stream.onTickReceived = function (ticker, resolution, ltp, close, volume, tradeTime) {
         const subscriptionItems = stream.getV2(ticker, resolution);
         subscriptionItems.forEach((subscriptionItem) => {
             if (subscriptionItem === undefined)
                 return;
 
-            const lastDailyBar = subscriptionItem.lastDailyBar;
-            if (!lastDailyBar || lastDailyBar.close === ltp)
+            const tick = [resolution, ltp, close, volume, tradeTime];
+            if (subscriptionItem.held) {
+                subscriptionItem.held.ticks.push(tick);
+                if (subscriptionItem.held.ticks.length > gap.maxHeld) subscriptionItem.held.ticks.shift();
                 return;
-
-            if (close !== 0) {
-                let ch = ltp - close;
-                let chp = ch / close * 100;
-                chartApp.quote.publishQuote(ticker, ch, chp);
             }
-            try {
-                const nextBarTime = computeNextBarTime(lastDailyBar.time, resolution);
-                let bar;
-                if (tradeTime >= nextBarTime) {
-                    bar = {
-                        time: tradeTime,
-                        open: ltp,
-                        high: ltp,
-                        low: ltp,
-                        close: ltp,
-                        volume: 0,
-                        firstVolume: volume,
-                    };
-                } else if (tradeTime >= lastDailyBar.time) {
-                    let tickVolume;
-                    if (lastDailyBar.firstVolume === undefined) {
-                        lastDailyBar.firstVolume = volume;
-                        tickVolume = 0;
-                    } else {
-                        tickVolume = (volume ?? 0) - (lastDailyBar?.firstVolume ?? 0);
-                    }
-                    bar = {
-                        ...lastDailyBar,
-                        high: Math.max(lastDailyBar.high, ltp),
-                        low: Math.min(lastDailyBar.low, ltp),
-                        close: ltp,
-                        volume: tickVolume,
-                    };
-                } else {
-                    logger.warn(`tradeTime: ${tradeTime} is less than lastBarTime: ${lastDailyBar.time}`);
-                    return;
-                }
-                subscriptionItem.lastDailyBar = bar;
-                subscriptionItem.handlers.forEach(handler => handler.callback(bar));
-            } catch (err) {
-                logger.warn(`exception in stream.onTickReceived: ${ticker}_${resolution}`, err);
+            if (opensGap(subscriptionItem, tradeTime)) {
+                startHold(subscriptionItem, tick, tradeTime);
+                return;
             }
+            applyTick(subscriptionItem, ...tick);
         });
     }
 

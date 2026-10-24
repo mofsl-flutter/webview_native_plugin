@@ -245,7 +245,8 @@ class ScenarioRunner extends ChangeNotifier {
           :final bool neverAuthorize,
           :final String chartMode,
           :final double budgetScale,
-          :final bool prefetch
+          :final bool prefetch,
+          :final int hideLastBars
         ):
         final BenchRunner runner = BenchRunner(token: token);
         await runner.runBatch(
@@ -257,6 +258,7 @@ class ScenarioRunner extends ChangeNotifier {
               chartMode: chartMode,
               budgetScale: budgetScale,
               prefetch: prefetch,
+              hideLastBars: hideLastBars,
             ),
           ],
           repeats: 1,
@@ -360,6 +362,11 @@ class ScenarioRunner extends ChangeNotifier {
         obs.summaries['probe.$label'] = 'symbol=${seen['symbol']} resolution=${seen['resolution']} '
             'bars=${seen['bars']} widgetReady=${seen['widgetReady']} hasToken=${seen['hasToken']} '
             'rangeEvents=${seen['rangeEvents']} saveCost=${seen['saveCost']} legendPolls=${seen['legendPolls']} legendMs=${seen['legendMs']} studies=${seen['studies']} preload=${seen['preload']} net=${seen['net']}';
+        // A fill's evidence on lines of its own: a long line is split by the platform and loses the tag.
+        for (final String extra in <String>['gap', 'census', 'fills']) {
+          final Object? v = seen[extra];
+          if (v != null && !(v is List && v.isEmpty)) obs.summaries['probe.$label.$extra'] = '$v';
+        }
 
       case RecreateHost(:final String label):
         final Map<String, Object?> observed = await host.recreateChartScreen();
@@ -382,6 +389,16 @@ class ScenarioRunner extends ChangeNotifier {
           'error': result.error,
         };
         obs.notes.add('tracked op $label -> ${result.status.name} in ${result.elapsedMs} ms');
+
+      case FillGap(:final String label):
+        final OperationResult result = await ChartSession.instance.fillMissingCandles();
+        obs.probes[label] = <String, Object?>{
+          'status': result.status.name,
+          'elapsedMs': result.elapsedMs,
+          'error': result.error,
+        };
+        obs.notes.add('fill missing candles $label -> ${result.status.name} in ${result.elapsedMs} ms');
+        obs.summaries['fill.$label'] = '${result.status.name} in ${result.elapsedMs} ms as the host sees it';
 
       case CacheCensus(:final String label):
         final Map<String, Object?> raw = await IosWebViewPlugin.getWebCacheStats();
@@ -616,6 +633,7 @@ class ScenarioRunner extends ChangeNotifier {
       'scrollBack' => buildScrollBackJs(runId),
       'panZoom' => buildPanZoomJs(runId),
       'saveCost' => buildSaveCostJs(runId),
+      'barCensus' => buildBarCensusJs(runId),
       'networkFailure' => buildNetworkFailureJs(runId),
       'removeStudies' => buildRemoveStudiesJs(runId, arg?.toString() ?? ''),
       'countLegendPolls' => buildLegendCounterJs(runId),

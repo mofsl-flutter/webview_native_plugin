@@ -298,6 +298,60 @@ String buildSaveCostJs(String runId) => buildOpJs(
       jsCall: 'fn()',
     );
 
+/// Makes the page's first history answer lose its last [dropBars] candles, as if live ticks had
+/// stopped that many bars before the chart opened, so a fill has something real to fetch.
+///
+/// Installed after the page is ready and before it is told to load: the page's history adapter is
+/// wrapped for exactly one first request, whose answer loses its last bars, and then put back. The
+/// bars stay on the server, which is what makes a later fill a real test. Stashes
+/// `{dropped, fullLastMs, truncatedLastMs, fullBars}` on `window.__hbGap` when that answer arrives,
+/// read back by [buildProbeJs].
+String buildHideLastBarsJs(int dropBars) => '(function(n){'
+    'var h=window.ChartApp&&window.ChartApp.adapter&&window.ChartApp.adapter.chartHttp;'
+    'if(!h)return;'
+    'var orig=h.getData;'
+    'h.getData=function(t,r,f,to,cb,firstReq){'
+    'var p=orig.apply(this,arguments);'
+    'if(!firstReq)return p;'
+    'return p.then(function(bars){'
+    'h.getData=orig;'
+    'if(bars.length>n){'
+    'window.__hbGap={dropped:n,fullLastMs:bars[bars.length-1].time,'
+    'truncatedLastMs:bars[bars.length-n-1].time,fullBars:bars.length};'
+    'return bars.slice(0,bars.length-n);}'
+    'window.__hbGap={dropped:0,fullBars:bars.length,note:"too few bars to hide"};'
+    'return bars;});};'
+    '})($dropBars);';
+
+/// Exports the candles the chart actually holds around the last bar the page knew of, and stashes a
+/// summary on `window.__hbBars`: how many rows, the first and last times (seconds), whether times
+/// strictly increase, the last dozen, and the time of the stream's last bar.
+///
+/// Reads the library's own data through its public `exportData`, not the page's bookkeeping, because
+/// the point is what the chart would draw. Anchored on `window.__hbGap.fullLastMs` when a gap was
+/// set up, so a census before and after a fill covers the same stretch of time.
+String buildBarCensusJs(String runId) => buildOpJs(
+      runId: runId,
+      op: 'barCensus',
+      resolver: '(function(){'
+          'var A=window.ChartApp,w=A&&A.tvWidget;'
+          'if(!w)throw new Error("no tvWidget");'
+          'var item=Array.from(A.stream.data._subscriptions.values())[0];'
+          'var streamLast=item&&item.lastDailyBar?item.lastDailyBar.time:null;'
+          'var anchor=(window.__hbGap&&window.__hbGap.fullLastMs)||streamLast||Date.now();'
+          'return w.activeChart().exportData({from:Math.floor((anchor-86400000*10)/1000),'
+          'to:Math.ceil(Date.now()/1000)+3600,includeTime:true,includeSeries:true,includedStudies:[]})'
+          '.then(function(d){'
+          'var times=d.data.map(function(r){return r[0];});'
+          'window.__hbBars={rows:times.length,firstSec:times.length?times[0]:null,'
+          'lastSec:times.length?times[times.length-1]:null,'
+          'strictlyIncreasing:times.every(function(t,i){return i===0||t>times[i-1];}),'
+          'tail:times.slice(-12),streamLastMs:streamLast};'
+          '});'
+          '})',
+      jsCall: 'fn()',
+    );
+
 /// Counts calls to the page's `RemoveLegendHiddenClasses` (its legend un-hiding poll) from now on,
 /// in `window.__hbLegend`, by wrapping it. Wrapping, not replacing: the real work still runs.
 String buildLegendCounterJs(String runId) => buildOpJs(
@@ -509,6 +563,8 @@ String buildProbeJs(String runId, String label) {
       '}'
       'try{out.charts=(w&&w.chartsCount)?w.chartsCount():null;}catch(e){}'
       'try{var pl=window.ChartApp&&window.ChartApp.preload;out.preload=pl&&pl.stats?pl.stats():null;}catch(e){out.preload=null;}'
+      'out.gap=window.__hbGap||null;out.census=window.__hbBars||null;'
+      'try{out.fills=Array.from(A.stream.data.fills.entries());}catch(e){out.fills=null;}'
       'out.rangeEvents=window.__hbRange||0;out.net=window.__hbNet||null;out.saveCost=window.__hbSaveCost||null;out.legendPolls=window.__hbLegend||0;out.legendMs=Math.round((window.__hbLegendMs||0)*10)/10;'
       'try{out.studies=w&&w._ready?w.activeChart().getAllStudies().map(function(s){return s.name;}):null;}catch(e){out.studies=null;}'
       // Ground truth for whether a tick can possibly render. Without these, a dead tick

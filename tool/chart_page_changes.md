@@ -158,6 +158,68 @@ thousand). Tests: `stream.test.mjs`.
 The two `console.log` calls in `getBars` (raw bar arrays, on every first history request) are
 `logger.debug`, behind a level check so the objects are not built unless debug logging is on.
 
+## Candles a gap in live ticks leaves behind (`stream.js`, `datafeed.js`, `main.js`)
+
+**The problem.** The page builds candles from ticks: a tick either updates the last bar or, when it is
+at or past the next bar's time, opens one new bar at its own time. While the app is in the background
+no ticks arrive, so the first tick after returning opens one bar and every bar in between is missing
+(the chart draws a straight line across). The page had no way to ask for history once the chart was up;
+loading the chart again was the only repair. `getBarTimeForTick` in `stream.js` was never called.
+
+**What the page does now.** The missing bars are fetched on their own and fed to the library as live
+bars, in order: one `HistoryV3` request for the window from the last bar to now, through the same
+adapter the chart's own history uses (so it carries the auth, base URL and 401 handling). No widget
+rebuild, no `Symbols`, `GetChartSavedInfo` or `Config` request, no library parse. Three triggers, one
+mechanism (`stream.fillGaps`):
+
+- `window.FillMissingCandles(symbol?)` (also `v1.fillMissingCandles` and a `FillMissingCandles` web
+  message), for the host to call on resume. Resolves with one result per subscription, never rejects.
+  Plugin side: `ChartSession.fillMissingCandles()`.
+- The page's own `visibilitychange`: hidden for 5 s or more, then visible, fills.
+- A tick that skips at least one whole bar is held while the bars are fetched, then applied, because
+  the library refuses a bar older than its last one: if ticks resume before the host asks, the first
+  tick would otherwise open a bar past the gap and make the missing ones impossible to add.
+
+**Fail-safe.** If history is slow (3 s for a held tick, 10 s for a host call), empty or failing, held
+ticks are applied exactly as before, and a tick-triggered fill is not tried again for 20 s. The worst
+case is today's behaviour. More than 1000 new bars is reported as `too-large` and not fed; the host
+reloads the chart in that case.
+
+**What it asks.** Only bars at or after the chart's last bar count, because the server answers an empty
+window with older bars. When only the current bar comes back, its high and low are widened and what the
+ticks established is kept (history lags ticks by seconds). Nothing is asked while the last bar is still
+the current one. Monthly charts are left alone (their bars are not a fixed length). Results are kept in
+`ChartApp.stream.data.fills` for probes.
+
+**Measured** (Android emulator, production API, client `T029342`, SENSEX 1m, last 8 of 2,625 bars hidden
+from the first history answer so the server really has them; cases `L3` and `L4`, `example/`):
+
+| | |
+| --- | --- |
+| fill as the host sees it (`ChartSession.fillMissingCandles`) | 89, 92, 95, 102 ms |
+| full open of the same chart, end to end | 905 to 1,065 ms |
+| requests during a fill | one `HistoryV3` (9 bars); none of `Symbols`, `GetChartSavedInfo`, `Config` |
+| the chart afterwards | 300 rows became 308 (the 8 hidden), times strictly increasing, last row the real last bar |
+| first tick after the gap, no fill asked for (`L4`) | the page fetched and fed the 9 bars itself, then applied the tick |
+| backgrounded 9 s, then resumed | `visibilitychange` fired both ways and the page filled on its own |
+
+L3 passed in 7 runs and L4 in 3 on the emulator (earlier runs failed on mistakes in the cases, not in the page; they are not counted). The account's saved layout was identical before and
+after (every field), because the cases open `CHART_SYMBOL`.
+
+**Not verified.** Live ticks and a real market: the market was closed, so the gap was made by hiding
+bars and the "tick" was synthetic (stamped outside the session, so the library draws no candle for it;
+the case checks the page applied it after the fill). Whether `visibilitychange` fires in the iOS
+WebView, on a screen lock, or on a physical phone. The `LightWeightChart` mode (`compactChart`). Bars
+the server returns for the minutes of a real session boundary. For those, call
+`ChartSession.fillMissingCandles()` from the app's resume handler as well; it asks for nothing when no
+bar is due.
+
+`chart.resetData()` is not an alternative here: in this library build it re-requested nothing from the
+datafeed (no `getBars`, no `subscribeBars`), so it cannot repair a chart.
+
+Tests: `gap_fill.test.mjs` (20 cases against the real `stream.js` with a fake history source; five
+behaviours were broken one at a time and each was caught) and `test/chart_session_fill_test.dart`.
+
 ## Looked at and left alone
 
 - `RemoveLegendHiddenClasses` polls up to every 500 ms after an interval or symbol change: 32 calls
@@ -165,3 +227,7 @@ The two `console.log` calls in `getBars` (raw bar arrays, on every first history
   (about 0.1 ms each), so it is not a cost worth the risk of replacing it with a CSS override.
 - `getQuote` reads the library's private `bars()._items`. It is O(1), so not slow, but it is a
   private API that a library upgrade can break. Not changed.
+- A bar opened by a tick takes the tick's raw `tradeTime`, not the start of its period, and the next
+  bar is computed from that (`computeNextBarTime` rounds to the minute, so a 5-minute chart drifts off
+  its grid). The datafeed already snaps history's last bar for the same reason. Not changed: the
+  library accepts it today, and a fill's bars come from history, which is on the grid.

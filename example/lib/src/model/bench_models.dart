@@ -110,6 +110,7 @@ class RunConfig {
     this.chartMode = 'FullChart',
     this.budgetScale = 1.0,
     this.prefetch = false,
+    this.hideLastBars = 0,
   });
 
   /// Symbol to load.
@@ -170,6 +171,10 @@ class RunConfig {
   /// Only meaningful for a bundled page, which carries the store that receives it
   /// (`--dart-define=CHART_LOCAL=true`); a hosted page ignores the hand-off.
   final bool prefetch;
+
+  /// Hides this many of the last candles from the page's first history answer, as if live ticks had
+  /// stopped that many bars before the chart opened. For a case that fills them back in.
+  final int hideLastBars;
 
   /// Short identifier for grouping results by arm.
   String get armKey => 'pw=${preWarm ? 1 : 0},cm=$cacheMode,'

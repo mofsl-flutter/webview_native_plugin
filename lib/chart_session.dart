@@ -242,6 +242,36 @@ class ChartSession {
     return gate.future;
   }
 
+  /// Fills in the candles a gap in live ticks left behind, from history, without reloading the chart.
+  ///
+  /// While the app was in the background no ticks arrived, so the chart jumps from its last candle to
+  /// the first tick after. This asks the page for just the missing candles (one request) and feeds
+  /// them to the chart as live bars. It does not rebuild the chart, authorise again, or fetch the
+  /// symbol, layout or library again, which loading the chart again does. It asks for nothing when no
+  /// candle is due, so calling it on every return to the foreground is cheap.
+  ///
+  /// The bundled page also does this by itself when it becomes visible again after 5 s or more
+  /// (observed on an Android emulator), and when a tick arrives that skips a candle. Calling this from
+  /// the app's resume handler as well costs nothing and covers a WebView that does not report
+  /// visibility (not checked on iOS, on a screen lock, or on a physical phone).
+  ///
+  /// [symbol] is the symbol passed to `LoadChart`; leave it out to fill every chart. Completes as
+  /// [OperationStatus.ok] once the page has finished (including when there was nothing to fill) and
+  /// as [OperationStatus.threw] when the page has no such function, which is the hosted page: only
+  /// the bundled one has it.
+  Future<OperationResult> fillMissingCandles({
+    String? symbol,
+    Duration timeout = const Duration(seconds: 15),
+  }) =>
+      runOperation(fillMissingCandlesScript(symbol), timeout: timeout);
+
+  /// The script [fillMissingCandles] runs.
+  @visibleForTesting
+  static String fillMissingCandlesScript(String? symbol) =>
+      'if(typeof window.FillMissingCandles!=="function")'
+      'throw new Error("this chart page cannot fill missing candles (only the bundled page can)");'
+      'return window.FillMissingCandles(${symbol == null ? '' : jsonEncode(symbol)});';
+
   /// Begins tracking page state. Idempotent, and safe to call before any WebView exists.
   ///
   /// Call this once at app startup. The session must be listening from process start, not from

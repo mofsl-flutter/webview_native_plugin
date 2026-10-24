@@ -63,6 +63,8 @@ final List<Scenario> localBundleScenarios = <Scenario>[
   prefetchScenario,
   networkFailureScenario,
   openSymbolScenario,
+  gapFillScenario,
+  tickAfterGapScenario,
 ];
 
 /// Not a pass/fail case: it records how much the page saves while it is panned, so a change to the
@@ -208,6 +210,201 @@ final Scenario openSymbolScenario = Scenario(
 );
 
 bool _chartIsUp(ScenarioObservations o) => o.probes['opened']?['widgetReady'] == true;
+
+/// Candles a gap in live ticks leaves behind are filled from history, cheaply, on the real library.
+///
+/// Live ticks build the last candle and open the next; while the app is away none arrive, so the
+/// chart jumps from its last candle to the next tick's. The chart is opened with its last 8 candles
+/// hidden from the first history answer (the real server still has them), then `ChartSession.fillMissingCandles` is asked to bring them
+/// back. What is checked is what the chart holds, read from the library's own export, and what the
+/// page requested: history only, none of the symbol, layout or config requests that loading the
+/// chart again makes.
+///
+/// Opens the chart named by `--dart-define=CHART_SYMBOL`, so an account is left on the symbol it was
+/// on. Needs the market closed or history that has bars for the last candles: the fetch is real.
+final Scenario gapFillScenario = Scenario(
+  id: 'L3',
+  title: 'Bundled chart: candles a gap in ticks left are filled from history',
+  dimension: Dimension.storage,
+  hypothesis: 'After a gap in ticks the missing candles can be fetched on their own (one history '
+      'request) and fed to the chart as live bars, giving the chart the candles it would have had, '
+      'without loading the chart again.',
+  steps: const <ScenarioStep>[
+    OpenChart(kChartSymbol, budgetScale: 6, hideLastBars: 8),
+    // The chart reports ready before its data arrives.
+    Wait(Duration(seconds: 12)),
+    Operate('barCensus'),
+    Wait(Duration(seconds: 2)),
+    Probe('holed'),
+    TraceApi('open'),
+    FillGap('fill'),
+    Operate('barCensus'),
+    Wait(Duration(seconds: 2)),
+    Probe('filled'),
+    TraceApi('fill'),
+    // Nothing is missing any more, so a second fill must change nothing.
+    FillGap('again'),
+    Probe('afterAgain'),
+  ],
+  expectations: <Expectation>[
+    const ExpectCustom('the harness was started with CHART_LOCAL=true', _localModeOn),
+    const ExpectCustom('the chart really lost its last candles', _gapWasMade),
+    const ExpectCustom('the fill fed those candles back', _fillFedThem),
+    const ExpectCustom('the chart holds those candles again, in order', _gapIsFilled),
+    const ExpectCustom('the fill asked for history only, nothing a reload asks for', _fillIsCheap),
+    const ExpectCustom('a second fill finds nothing new', _secondFillIsNoop),
+  ],
+);
+
+/// The first tick after a gap arrives before anything asked for a fill.
+///
+/// Same set-up as L3. A tick for a time long after the chart's last candle would, unhandled, open one
+/// candle at its own time and leave every candle in between missing, and the library then refuses the
+/// missing ones as older than its last. The page must hold the tick, fetch what is missing, feed it,
+/// and only then apply the tick. The tick is synthetic and stamped with the time of the run, which is
+/// outside the symbol's session when the market is closed, so the library draws no candle for it; what
+/// shows it was applied is the page's own last bar.
+final Scenario tickAfterGapScenario = Scenario(
+  id: 'L4',
+  title: 'Bundled chart: the first tick after a gap brings the missing candles with it',
+  dimension: Dimension.storage,
+  hypothesis: 'A tick that jumps over missing candles is held while they are fetched from history, '
+      'fed in order, and then applied, so the chart has every candle and the tick lands after them.',
+  steps: const <ScenarioStep>[
+    OpenChart(kChartSymbol, budgetScale: 6, hideLastBars: 8),
+    Wait(Duration(seconds: 12)),
+    Operate('barCensus'),
+    Wait(Duration(seconds: 2)),
+    Probe('holed'),
+    TraceApi('open'),
+    Operate('appendLiveTick', arg: kChartSymbol),
+    // Held while history is fetched, then applied: well inside this.
+    Wait(Duration(seconds: 4)),
+    Operate('barCensus'),
+    Wait(Duration(seconds: 2)),
+    Probe('afterTick'),
+    TraceApi('tick'),
+  ],
+  expectations: <Expectation>[
+    const ExpectCustom('the harness was started with CHART_LOCAL=true', _localModeOn),
+    const ExpectCustom('the chart really lost its last candles', _gapWasMade),
+    const ExpectCustom('the page fetched and fed the missing candles by itself', _tickFilledByItself),
+    const ExpectCustom('the chart holds them and the tick, in order', _tickLandedAfterThem),
+    const ExpectCustom('it asked for history only, nothing a reload asks for', _tickFillIsCheap),
+  ],
+);
+
+bool _tickFilledByItself(ScenarioObservations o) {
+  final Object? dropped = _mapAt(o.probes['holed'], 'gap')?['dropped'];
+  final Map<Object?, Object?>? result = _lastFill(o, 'afterTick');
+  final Object? fed = result?['fed'];
+  return dropped is num && result?['status'] == 'filled' && fed is num && fed >= dropped;
+}
+
+bool _tickLandedAfterThem(ScenarioObservations o) {
+  final Map<Object?, Object?>? gap = _mapAt(o.probes['holed'], 'gap');
+  final Object? dropped = gap?['dropped'];
+  final Object? full = gap?['fullLastMs'];
+  final Object? before = _mapAt(o.probes['holed'], 'census')?['rows'];
+  final Map<Object?, Object?>? after = _mapAt(o.probes['afterTick'], 'census');
+  final Object? rows = after?['rows'];
+  final Object? streamLast = after?['streamLastMs'];
+  // The missing candles are back, in order, ending on the real last one. The tick was applied after
+  // them (the stream's last bar is the tick's, later than the last real one). The library draws no
+  // candle for it: the run is outside the symbol's session, and the library ignores a live bar there.
+  return dropped is num &&
+      full is num &&
+      before is num &&
+      rows is num &&
+      rows == before + dropped &&
+      after?['strictlyIncreasing'] == true &&
+      _seconds(after?['lastSec']) == full ~/ 1000 &&
+      streamLast is num &&
+      streamLast > full;
+}
+
+bool _tickFillIsCheap(ScenarioObservations o) =>
+    _pageCalls(o, 'trace.tick', 'chart/historyv3') == 1 &&
+    _pageCalls(o, 'trace.tick', 'chart/symbols') == 0 &&
+    _pageCalls(o, 'trace.tick', 'chart/getchartsavedinfo') == 0 &&
+    _pageCalls(o, 'trace.tick', 'chart/config') == 0;
+
+/// A time from the library's export or the page, in whole seconds: it may arrive as ms or s.
+int? _seconds(Object? v) {
+  if (v is! num) return null;
+  final int n = v.toInt();
+  return n > 100000000000 ? n ~/ 1000 : n;
+}
+
+Map<Object?, Object?>? _mapAt(Map<String, Object?>? probe, String key) {
+  final Object? v = probe?[key];
+  return v is Map ? v : null;
+}
+
+/// The latest fill result the page recorded, from a probe's `fills` entries (`[key, result]`).
+Map<Object?, Object?>? _lastFill(ScenarioObservations o, String probe) {
+  final Object? fills = o.probes[probe]?['fills'];
+  if (fills is! List || fills.isEmpty) return null;
+  final Object? entry = fills.first;
+  if (entry is! List || entry.length < 2) return null;
+  final Object? result = entry[1];
+  return result is Map ? result : null;
+}
+
+bool _gapWasMade(ScenarioObservations o) {
+  final Map<Object?, Object?>? gap = _mapAt(o.probes['holed'], 'gap');
+  final Map<Object?, Object?>? census = _mapAt(o.probes['holed'], 'census');
+  if (gap == null || census == null) return false;
+  final Object? dropped = gap['dropped'];
+  final Object? truncated = gap['truncatedLastMs'];
+  final Object? full = gap['fullLastMs'];
+  return dropped is num &&
+      dropped > 0 &&
+      gap['timedOut'] != true &&
+      truncated is num &&
+      full is num &&
+      truncated < full &&
+      _seconds(census['lastSec']) == truncated ~/ 1000 &&
+      census['streamLastMs'] == truncated;
+}
+
+bool _fillFedThem(ScenarioObservations o) {
+  if (o.probes['fill']?['status'] != 'ok') return false;
+  final Object? dropped = _mapAt(o.probes['holed'], 'gap')?['dropped'];
+  final Map<Object?, Object?>? result = _lastFill(o, 'filled');
+  final Object? fed = result?['fed'];
+  return dropped is num && result?['status'] == 'filled' && fed is num && fed >= dropped;
+}
+
+bool _gapIsFilled(ScenarioObservations o) {
+  final Map<Object?, Object?>? gap = _mapAt(o.probes['holed'], 'gap');
+  final Map<Object?, Object?>? before = _mapAt(o.probes['holed'], 'census');
+  final Map<Object?, Object?>? after = _mapAt(o.probes['filled'], 'census');
+  if (gap == null || before == null || after == null) return false;
+  final Object? dropped = gap['dropped'];
+  final Object? full = gap['fullLastMs'];
+  final Object? rowsBefore = before['rows'];
+  final Object? rowsAfter = after['rows'];
+  return dropped is num &&
+      full is num &&
+      rowsBefore is num &&
+      rowsAfter is num &&
+      rowsAfter == rowsBefore + dropped &&
+      after['strictlyIncreasing'] == true &&
+      _seconds(after['lastSec']) == full ~/ 1000 &&
+      after['streamLastMs'] == full;
+}
+
+bool _fillIsCheap(ScenarioObservations o) =>
+    _pageCalls(o, 'trace.fill', 'chart/historyv3') == 1 &&
+    _pageCalls(o, 'trace.fill', 'chart/symbols') == 0 &&
+    _pageCalls(o, 'trace.fill', 'chart/getchartsavedinfo') == 0 &&
+    _pageCalls(o, 'trace.fill', 'chart/config') == 0;
+
+bool _secondFillIsNoop(ScenarioObservations o) {
+  if (o.probes['again']?['status'] != 'ok') return false;
+  return _lastFill(o, 'afterAgain')?['status'] == 'nothing-new';
+}
 
 /// The opening requests the page made itself, per endpoint, for a trace probe.
 int _pageCalls(ScenarioObservations o, String trace, String endpoint) {

@@ -1331,6 +1331,21 @@
         }
     }
 
+    //Fills the candles a gap in live ticks left behind (app backgrounded, feed dropped) from history,
+    //without reloading the chart: one request for the missing bars, fed to the chart as live bars.
+    //Resolves with one result per subscription, never rejects. Safe to call at any time; it asks
+    //nothing when no bar is due. An unresolved symbol fills nothing rather than everything.
+    function FillMissingCandles(symbol) {
+        let ticker;
+        if (symbol !== undefined && symbol !== null) {
+            const symbolInfo = chartApp.data.symbolInfoMap.get(symbol);
+            if (!symbolInfo) return Promise.resolve([{status: 'unknown-symbol', symbol: symbol}]);
+            ticker = symbolInfo.ticker;
+        }
+        logger.debug("FillMissingCandles :", symbol);
+        return chartApp.stream.fillGaps(ticker);
+    }
+
     function UpdateAskAndBidValues(symbol, ask, bid) {
         const symbolInfo = chartApp.data.symbolInfoMap.get(symbol);
         if (!symbolInfo) return;
@@ -1379,6 +1394,7 @@
         window.ChangeChartType = ChangeChartType;
         window.ChartEvents = ChartEvents;
         window.UpdateAskAndBidValues = UpdateAskAndBidValues;
+        window.FillMissingCandles = FillMissingCandles;
 
         //V1 api for Charts @lalkishor - 20th Oct 2023
         const v1 = {};
@@ -1398,6 +1414,7 @@
         v1.appendLiveTick = function (symbol, ltp, close, volume, tradeTime) {
             AppendLiveTick(symbol, ltp, close, volume, tradeTime);
         }
+        v1.fillMissingCandles = FillMissingCandles;
         v1.setTimeFrame = SetTimeFrame;
         v1.changeTheme = ChangeTheme;
         v1.ChartEvents = ChartEvents;
@@ -1410,6 +1427,21 @@
         //for web 
         window.addEventListener('message', receiveMessage);
 
+        //A page that was hidden misses ticks just as one whose host stopped sending them does. Hidden
+        //for less than 5 s is a flicker, not a gap worth a request.
+        let hiddenAt = 0;
+        document.addEventListener('visibilitychange', () => {
+            const wasHiddenAt = hiddenAt;
+            if (document.visibilityState === 'hidden') {
+                hiddenAt = Date.now();
+                return;
+            }
+            hiddenAt = 0;
+            if (wasHiddenAt && Date.now() - wasHiddenAt >= 5000) {
+                chartApp.stream.fillGaps().then(results => logger.debug('fill on visible', results));
+            }
+        });
+
         function receiveMessage(event) {
             let data = event.data
             if (data.method === 'Authorize') {
@@ -1421,6 +1453,8 @@
             } else if (data.method === 'UpdateAskAndBidValues') {
                 /* as per the chart first button is ask but we have override the design to make it as bid hence here we are passing bid price to ask and ask to bid*/
                 UpdateAskAndBidValues(data.symbol, data.bid, data.ask)
+            } else if (data.method === 'FillMissingCandles') {
+                FillMissingCandles(data.symbol)
             } else if (data.method === 'SetTimeFrame') {
                 SetTimeFrame(data.timeFrame)
             } else if (data.method === 'ChangeChartType') {

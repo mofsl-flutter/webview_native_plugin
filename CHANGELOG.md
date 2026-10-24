@@ -49,6 +49,23 @@
   bundled page at another environment's API. `--dart-define=CHART_LOCAL=true` loads the bundled chart, `--dart-define=SCENARIO=L1`
   starts a regression case on iOS, cases `L1`/`L2` check the bundled chart on both platforms, and `S1`/`S2`
   record save traffic and legend-poll cost.
+* Candles that live ticks missed are filled in without reloading the chart. While the app is in the
+  background no ticks arrive, so the first tick after returning used to open one candle and leave every
+  one in between missing; the only repair was to load the chart again. New
+  `ChartSession.fillMissingCandles({symbol})` (page side `window.FillMissingCandles`) asks for just the
+  missing candles (one `HistoryV3` request, no symbol, layout or config requests, no widget rebuild) and
+  feeds them to the chart as live bars. The bundled page also does it by itself when it becomes visible
+  again after 5 s or more, and when a tick arrives that skips a whole candle (the tick is held while the
+  candles are fetched, because the library refuses a candle older than its last). If history is slow
+  (3 s for a held tick), empty or failing, ticks are applied as before; more than 1000 new candles are
+  not fed one by one (`too-large`). On an emulator against production, with 8 candles hidden from the
+  first history answer, a fill took about 95 ms as the host sees it, against about 1 s for a full open,
+  and the chart ended with the 8 candles in order. Only the bundled page has it. Live ticks, iOS, a
+  screen lock and a physical phone are not verified; see `tool/chart_page_changes.md`.
+* Example app: cases `L3` (the host asks for a fill) and `L4` (the first tick after a gap triggers it)
+  open a chart with its last 8 candles hidden from the first history answer and check what the
+  library's own export holds afterwards. `OpenChart(hideLastBars:)` and the `FillGap` step are the
+  tools; both cases run on production.
 * Example app: it now defaults to production (`https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/`,
   client `T029342`), with a banner that names the environment and the client. `--dart-define=CHART_ENV=uat`
   restores the previous behaviour (UAT page, UAT API, client `T06794`), and `CHART_CLIENT_CODE` picks the

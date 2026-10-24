@@ -107,10 +107,15 @@ final class OpenChart extends ScenarioStep {
     this.chartMode = 'FullChart',
     this.budgetScale = 1.0,
     this.prefetch = false,
+    this.hideLastBars = 0,
   });
 
   /// Symbol to load.
   final String symbol;
+
+  /// Hides this many of the last candles from the first history answer. See
+  /// [RunConfig.hideLastBars].
+  final int hideLastBars;
 
   /// Fetch the opening data from Dart while the page loads. See [RunConfig.prefetch].
   final bool prefetch;
@@ -133,6 +138,7 @@ final class OpenChart extends ScenarioStep {
       '${neverAuthorize ? ' (no authorize)' : (authorizeFirst ? '' : ' (inverted order)')}'
       '${chartMode == 'FullChart' ? '' : ' mode=$chartMode'}'
       '${prefetch ? ' with prefetch' : ''}'
+      '${hideLastBars == 0 ? '' : ' hiding the last $hideLastBars bars'}'
       '${budgetScale == 1.0 ? '' : ' budget x$budgetScale'}';
 }
 
@@ -286,6 +292,20 @@ final class OperateTracked extends ScenarioStep {
 
   @override
   String get describe => 'tracked op "$label"';
+}
+
+/// Asks the page for the candles a gap in live ticks left behind, through
+/// `ChartSession.fillMissingCandles`, and records how that call ended under [label] (`status`,
+/// `elapsedMs`, `error`). What the page did is read back with a [Probe] (`fills`).
+final class FillGap extends ScenarioStep {
+  /// Creates the step.
+  const FillGap(this.label);
+
+  /// Probe label the call's outcome is recorded under.
+  final String label;
+
+  @override
+  String get describe => 'fill missing candles "$label"';
 }
 
 /// Records what the WebView currently holds on disk.

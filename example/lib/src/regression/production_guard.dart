@@ -12,6 +12,11 @@ library;
 import '../config/environment.dart';
 import 'scenario.dart';
 
+/// Operations that act on the page's own state and nothing on the server: a stubbed failure that is
+/// put back, a read of what the chart holds, and a tick pushed into the chart (which moves candles in
+/// the page only).
+const Set<String> _pageLocalOps = <String>{'networkFailure', 'barCensus', 'appendLiveTick'};
+
 /// Whether [step] does nothing to an account beyond opening a chart and looking at the result.
 bool isOpenOnlyStep(ScenarioStep step) => switch (step) {
       OpenChart() ||
@@ -22,8 +27,9 @@ bool isOpenOnlyStep(ScenarioStep step) => switch (step) {
       CaptureLibUrls() ||
       WaitForLibQuiet() =>
         true,
-      // Stubs the page's own fetch to fail, then puts it back; it reaches no server.
-      Operate(:final String op) => op == 'networkFailure',
+      // Asks the page for candles: a history GET, which reads and writes nothing of the account's.
+      FillGap() => true,
+      Operate(:final String op) => _pageLocalOps.contains(op),
       // Everything else: symbol and interval changes, themes, indicators, ticks, reloads, host
       // lifecycle, cache warming. Not judged, so not allowed here.
       _ => false,

@@ -253,5 +253,11 @@
         }
     };
 
+    // The candles a gap in live ticks left behind are fetched through the adapter the chart's own
+    // history uses, so they carry its auth, base URL and 401 handling. Never the first-request path:
+    // that one may be served from the preload store.
+    chartApp.stream.setHistorySource((ticker, resolution, fromSec, toSec, countBack) =>
+        httpAdapter.getData(ticker, resolution, fromSec, toSec, countBack, false));
+
     chartApp.datafeed = datafeed;
 })(window, ChartApp);

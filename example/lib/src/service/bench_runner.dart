@@ -496,6 +496,9 @@ class BenchRunner extends ChangeNotifier {
     }
 
     final RunConfig config = _activeConfig!;
+    if (config.hideLastBars > 0) {
+      await IosWebViewPlugin.runJavaScript(buildHideLastBarsJs(config.hideLastBars));
+    }
     if (config.neverAuthorize) {
       // Withhold the token entirely: the page parks its unauthorised request and never settles
       // the promise, so this must reach the phase budget rather than erroring.
