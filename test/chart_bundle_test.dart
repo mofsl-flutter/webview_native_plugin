@@ -74,6 +74,69 @@ void main() {
     });
   });
 
+  group("ChartBundle.apiBaseOf", () {
+    test("is the directory above v4, for UAT and for production", () {
+      expect(
+        ChartBundle.apiBaseOf(Uri.parse("https://tradingapi.motilaloswaluat.com/chart/v4/RiseApp_Mobile.html")),
+        Uri.parse("https://tradingapi.motilaloswaluat.com/chart/"),
+      );
+      expect(
+        ChartBundle.apiBaseOf(Uri.parse(
+            "https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/v4/RiseApp_Mobile.html")),
+        Uri.parse("https://6r8bhd8hwi.execute-api.ap-south-1.amazonaws.com/charts/"),
+      );
+    });
+
+    test("drops the query and fragment, the theme and cache-busting the host adds", () {
+      final Uri? root = ChartBundle.apiBaseOf(Uri.parse(
+          "https://h.example/chart/v4/RiseApp_Mobile.html?theme=dark&t=1792822168#x"));
+      expect(root, Uri.parse("https://h.example/chart/"));
+      expect(root!.hasQuery, isFalse);
+      expect(root.hasFragment, isFalse);
+    });
+
+    test("keeps a non-default port and a deeper path", () {
+      expect(
+        ChartBundle.apiBaseOf(Uri.parse("https://h.example:8443/a/b/v4/RiseApp_Mobile.html")),
+        Uri.parse("https://h.example:8443/a/b/"),
+      );
+    });
+
+    test("a page at the host root has the root as its API root", () {
+      expect(
+        ChartBundle.apiBaseOf(Uri.parse("https://h.example/v4/RiseApp_Mobile.html")),
+        Uri.parse("https://h.example/"),
+      );
+    });
+
+    test("is null for anything that is not shaped like the hosted page", () {
+      final List<String> notThePage = <String>[
+        "https://h.example/chart/v4/RiseApp_Mobile_ios12.html",
+        "https://h.example/chart/v4/PeakMobileChart.html",
+        "https://h.example/chart/v5/RiseApp_Mobile.html",
+        "https://h.example/chart/RiseApp_Mobile.html",
+        "https://h.example/chart/xv4/RiseApp_Mobile.html",
+        "https://h.example/chart/v4/RiseApp_Mobile.html/extra",
+        "http://h.example/chart/v4/RiseApp_Mobile.html",
+        "https://user:pw@h.example/chart/v4/RiseApp_Mobile.html",
+        "https://appassets.androidplatform.net/chart/v4/RiseApp_Mobile.html",
+        "/chart/v4/RiseApp_Mobile.html",
+        "https:///chart/v4/RiseApp_Mobile.html",
+        "",
+      ];
+      for (final String url in notThePage) {
+        expect(ChartBundle.apiBaseOf(Uri.parse(url)), isNull, reason: url);
+      }
+    });
+
+    test("whatever it returns, localUrl accepts", () {
+      final Uri? root =
+          ChartBundle.apiBaseOf(Uri.parse("https://h.example/chart/v4/RiseApp_Mobile.html?theme=dark"));
+      final Uri url = ChartBundle.localUrl(apiBase: root!, theme: "dark", platform: TargetPlatform.android);
+      expect(Uri.parse(url.queryParameters["apiBase"]!), root);
+    });
+  });
+
   group("IosWebViewPlugin.chartBundleInfo", () {
     const MethodChannel channel = MethodChannel("webview_mo_flutter");
 

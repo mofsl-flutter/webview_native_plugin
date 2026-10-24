@@ -102,18 +102,8 @@ abstract final class ChartBundle {
     String? theme,
     TargetPlatform? platform,
   }) {
-    if (apiBase.scheme != "https" || apiBase.host.isEmpty) {
-      throw ArgumentError.value(apiBase, "apiBase", "must be an absolute https URL");
-    }
-    if (apiBase.userInfo.isNotEmpty) {
-      throw ArgumentError.value(apiBase, "apiBase", "must not carry credentials");
-    }
-    if (apiBase.hasQuery || apiBase.hasFragment) {
-      throw ArgumentError.value(apiBase, "apiBase", "must not carry a query or fragment");
-    }
-    if (Uri.parse(androidBase).host == apiBase.host) {
-      throw ArgumentError.value(apiBase, "apiBase", "must not be the app's own host");
-    }
+    final String? problem = _apiBaseProblem(apiBase);
+    if (problem != null) throw ArgumentError.value(apiBase, "apiBase", problem);
 
     final TargetPlatform target = platform ?? defaultTargetPlatform;
     final String base = switch (target) {
@@ -127,5 +117,41 @@ abstract final class ChartBundle {
         "apiBase": apiBase.toString(),
       },
     );
+  }
+
+  /// The API root a hosted chart page URL implies, or null when [hostedPage] is not shaped like one.
+  ///
+  /// The hosted page lives at `<root>/v4/RiseApp_Mobile.html` and the API at `<root>/api/...`, so
+  /// `https://tradingapi.motilaloswaluat.com/chart/v4/RiseApp_Mobile.html?theme=dark` gives
+  /// `https://tradingapi.motilaloswaluat.com/chart/`. A host app that already learns the hosted URL
+  /// from its own configuration can derive the [localUrl] `apiBase` from it instead of keeping a
+  /// second copy that drifts.
+  ///
+  /// Null, never a guess, for anything else: another page (`..._ios12.html`), another path layout,
+  /// a non-`https` URL, one carrying credentials, or one an [apiBase] could not be (see [localUrl]).
+  /// The caller then keeps loading the hosted page. The query and fragment (theme, cache-busting
+  /// parameters) are dropped.
+  static Uri? apiBaseOf(Uri hostedPage) {
+    const String suffix = "/$pagePath";
+    if (!hostedPage.path.endsWith(suffix)) return null;
+    final String rootPath = hostedPage.path.substring(0, hostedPage.path.length - pagePath.length);
+    final Uri root = Uri(
+      scheme: hostedPage.scheme,
+      host: hostedPage.host,
+      port: hostedPage.hasPort ? hostedPage.port : null,
+      path: rootPath,
+    );
+    if (hostedPage.userInfo.isNotEmpty) return null;
+    return _apiBaseProblem(root) == null ? root : null;
+  }
+
+  /// Why [apiBase] cannot be the page's `apiBase`, or null if it can. The one place the rules live,
+  /// so [localUrl] and [apiBaseOf] cannot disagree.
+  static String? _apiBaseProblem(Uri apiBase) {
+    if (apiBase.scheme != "https" || apiBase.host.isEmpty) return "must be an absolute https URL";
+    if (apiBase.userInfo.isNotEmpty) return "must not carry credentials";
+    if (apiBase.hasQuery || apiBase.hasFragment) return "must not carry a query or fragment";
+    if (Uri.parse(androidBase).host == apiBase.host) return "must not be the app's own host";
+    return null;
   }
 }

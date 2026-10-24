@@ -62,6 +62,10 @@
   first history answer, a fill took about 95 ms as the host sees it, against about 1 s for a full open,
   and the chart ended with the 8 candles in order. Only the bundled page has it. Live ticks, iOS, a
   screen lock and a physical phone are not verified; see `tool/chart_page_changes.md`.
+* New `ChartBundle.apiBaseOf(hostedPageUrl)` derives the `apiBase` for `ChartBundle.localUrl` from the
+  hosted page URL a host app already knows (`<root>/v4/RiseApp_Mobile.html` gives `<root>/`), and returns
+  null for any other shape so the host keeps loading the hosted page. `localUrl` and `apiBaseOf` share
+  one validator.
 * Example app: cases `L3` (the host asks for a fill) and `L4` (the first tick after a gap triggers it)
   open a chart with its last 8 candles hidden from the first history answer and check what the
   library's own export holds afterwards. `OpenChart(hideLastBars:)` and the `FillGap` step are the
