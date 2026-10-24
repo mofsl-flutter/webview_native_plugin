@@ -103,7 +103,8 @@ const String hbClearAllStorageJs = '(function(){'
     '})();';
 
 /// JavaScript declaring `hbLib()`, which classifies every static asset the chart page loaded from
-/// under `/chart/` as `hit`, `revalidated` or `download`.
+/// under `/chart/` (UAT, and the bundled page) or `/charts/` (production) as `hit`, `revalidated` or
+/// `download`.
 ///
 /// The charting library does not load its bundles into the top window: it builds an iframe and
 /// writes the bundle `<script>` tags into that, so the entries live on the *iframe's* performance
@@ -129,18 +130,19 @@ const String _hbLibFnJs = 'function hbLib(){try{'
     'if(rs.length>=250)capped=true;'
     'for(var i=0;i<rs.length;i++){'
     'var e=rs[i],u;'
-    // The chart API lives under the same /chart/ prefix; only static assets are of interest.
+    // The chart API lives under the same prefix; only static assets are of interest. The prefix is
+    // /chart/ on UAT and on the bundled page and /charts/ on production, so both are matched.
     'if(e.initiatorType==="xmlhttprequest"||e.initiatorType==="fetch")continue;'
     'try{u=new URL(e.name);}catch(x){continue;}'
-    'var at=u.pathname.indexOf("/chart/");'
-    'if(at<0)continue;'
+    'var at=/\\/charts?\\//.exec(u.pathname);'
+    'if(!at)continue;'
     'var t=e.transferSize||0,enc=e.encodedBodySize||0,dec=e.decodedBodySize||0;'
     'var c=(e.deliveryType==="cache"||(t===0&&dec>0))?"hit"'
     ':((t>0&&t<1024&&enc>=2048)?"revalidated"'
     // No size information at all: a cross-origin entry without Timing-Allow-Origin. Counting it as
     // a download would manufacture evidence either way, so it is kept apart.
     ':((t===0&&dec===0&&enc===0)?"opaque":"download"));'
-    'out.push({f:tag,p:u.pathname.slice(at+7),h:u.href,st:e.startTime,c:c,transfer:t,encoded:enc,decoded:dec,'
+    'out.push({f:tag,p:u.pathname.slice(at.index+at[0].length),h:u.href,st:e.startTime,c:c,transfer:t,encoded:enc,decoded:dec,'
     'd:Math.round(e.duration),'
     'status:(typeof e.responseStatus==="number"?e.responseStatus:null)});'
     '}};'
@@ -198,7 +200,7 @@ String buildLibUrlsJs(String runId, {bool includeDom = false}) {
           'var els=w.document.querySelectorAll("script[src],link[href]");'
           'for(var k=0;k<els.length;k++){'
           'var u=els[k].src||els[k].href;'
-          'if(!u||u.indexOf("/chart/")<0)continue;'
+          'if(!u||!/\\/charts?\\//.test(u))continue;'
           'if(els[k].tagName==="LINK"&&!/stylesheet/i.test(els[k].rel||""))continue;'
           'if(!seen[u]){seen[u]=1;urls.push(u);dom++;}}'
           'var fs=w.document.querySelectorAll("iframe");'
